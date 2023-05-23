@@ -1,0 +1,10 @@
+function handle_input(input_char)
+    if input_char == "d" then
+        send_discover()
+    else
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Commands:")
+        print("    d -- Sends a discovery message to turtles")
+    end
+end

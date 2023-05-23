@@ -4,5 +4,7 @@
 			"path": ".."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"craftos-pc.dataPath": "C:\\Users\\siemie\\Documents\\Code\\minecraft_scripts"
+	}
 }

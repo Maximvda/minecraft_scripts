@@ -1,15 +1,23 @@
 local modem_side = "back"
-rednet.open(modem_side)
+
+os.loadAPI("functions")
+functions.test_fnc()
 
 local remote_info = {}
 
 local function main_loop()
-    user_input()
+while true do
     event, params = os.pullEvent()
+    print(event, params)
     if event == "rednet_message" then
         handle_renet_event(params)
     end
 
+    if event == "char" then
+        handle_input(params)
+    end
+
+end
 end
 
 local function handle_renet_event(params)
@@ -20,16 +28,37 @@ local function handle_renet_event(params)
 end
 
 local function user_input()
+    print("Starting user input")
+while true do
     term.clear()
     term.setCursorPos(1,1)
-    print("Waiting on user input")
+    print("Commands:")
+    print("    Discovery --Sends discovery message to turtles")
     local value = read()
+end
+end
+
+local function handle_input(input_char)
+    if input_char == "d" then
+        send_discover()
+    else
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Commands:")
+        print("    d -- Sends a discovery message to turtles")
+    end
+end
+
+local function send_discover()
+    print("TODO")
 end
 
 -- Start the main loop which is at the top for easyer understanding
-while true do
-    main_loop()
-end
+parallel.waitForAll(
+    handle_input,
+    main_loop
+    --user_input
+)
 
 -- Get Channel Number
 print("Enter the channel of mining turtle")

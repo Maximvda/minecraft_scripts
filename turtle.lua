@@ -5,6 +5,8 @@ redet.open(modem_side)
 while true do
     local id, msg = rednet.receive()
 
+end
+
 
 
 
