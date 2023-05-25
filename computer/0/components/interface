@@ -1,0 +1,70 @@
+local display = peripheral.wrap("monitor_1")
+local buttons = {}
+
+local function Button(label, pos_x, pos_y)
+    local button = {}
+    button.label = label
+    button.pos_x = pos_x
+    button.pos_y = pos_y
+    function button.draw()
+        display.setBackgroundColor(colors.orange)
+        length = string.len(label)
+        -- for i =0,2 do
+        display.setCursorPos(
+            button.pos_x, button.pos_y
+        )
+        if (length % 2 == 0) then
+            display.write(string.rep(" ", length+2)) -- 10 spaces
+        else
+            display.write(string.rep(" ", length+2)) -- 10 spaces
+        end
+        -- end
+        display.setTextColor (colors.black)
+        display.setCursorPos(
+            button.pos_x+1, button.pos_y
+        )
+        display.write(label)
+        display.setBackgroundColor(colors.black)
+        display.setTextColor(colors.white)
+        button.x_end = button.pos_x + length+2
+    end
+
+    function button.check_touch(pos_x, pos_y)
+        if button.pos_x <= pos_x and pos_x <= button.x_end and pos_y == button.pos_y then
+            return true
+        end
+        return false
+    end
+
+    return button
+end
+
+function set_position(position)
+    display.setCursorPos(2, 2)
+    display.write("Current position: "..position)
+end
+
+function set_fuel(level)
+    display.setCursorPos(2, 3)
+    display.write("Remaining fuel: "..level)
+end
+
+function init()
+    display.setBackgroundColor(colors.black)
+    display.setTextScale(.5)
+    display.clear()
+    set_position("unknown")
+    set_fuel("unknown")
+    buttons.start = Button("Start", 17, 17)
+    buttons.start.draw()
+    buttons.stop = Button("Return", 27, 17)
+    buttons.stop.draw()
+end
+
+function check_touch(pos_x, pos_y)
+    for key, but in pairs(buttons) do
+        if but.check_touch(pos_x, pos_y) then
+            print("Button pressed"..but.label)
+        end
+    end
+end

@@ -1,0 +1,5 @@
+-- Emulate the turtle api
+
+function getFuelLevel()
+    return 100
+end

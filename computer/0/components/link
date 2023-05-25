@@ -1,0 +1,36 @@
+-- Link layer for communication between models
+
+-- Only needed in craftos-PC
+periphemu.create("left", "modem")
+
+linked_turtles = {}
+
+function init(side)
+    rednet.open(side)
+end
+
+function discovery()
+    rednet.broadcast("discovery")
+end
+
+function handle_message(id, message)
+    if message == "ready" then
+        print("Turtle registered "..id)
+        linked_turtles[id] = {}
+    end
+    if message == "Requesting link" then
+        print("Link requested from "..id)
+        rednet.send(id, "discovery")
+    end
+    if type(message) == "table" then
+        term.clear()
+        term.setCursorPos(1,1)
+
+        if message["gps"] == nil then
+            print("Position not found!")
+        else
+            print("Position: "..message["gps"])
+        end
+        print("Fuel left: "..message["fuel"])
+    end
+end
