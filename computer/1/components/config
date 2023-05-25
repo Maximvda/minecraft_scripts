@@ -1,3 +1,10 @@
 -- Configuration variables
 
 modem_side = "left"
+
+falling_blocks = {
+    sand="minecraft:sand",
+    gravel="minecraft:gravel",
+    anvil="minecraft:anvil",
+    dragon_egg="minecraft:dragon_egg"
+}

@@ -3,3 +3,7 @@
 function getFuelLevel()
     return 100
 end
+
+function inspect()
+    return true, {name="minecraft:rock"}
+end

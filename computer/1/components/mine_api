@@ -1,0 +1,82 @@
+-- Turtle class for controlled mining
+local function Miner()
+    -- Initialisation
+    local miner = {}
+    miner.idle = true
+    miner.going_back = false
+    miner.y_data = {}
+    miner.depth = 10
+    miner.pos_x = 0
+    miner.pos_z = 0
+    miner.total_block_back = 0
+
+    function miner.update_gps()
+        x,y,z = gps.locate(1)
+        if not x then
+            miner.pos_y = nil
+        else
+            miner.gps_x = x
+            miner.pos_y = y
+            miner.gps_z = z
+        end
+    end
+
+    function miner.falling_block()
+        local success, data = turtle.inspect()
+        for key, value in pairs(config.falling_blocks) do
+            if data.name == value then
+                return true
+            end
+        end
+        return false
+    end
+
+    function miner.move_home()
+        -- TODO
+    end
+
+    function miner.tick()
+        if miner.idle then
+            miner.move_home()
+            os.sleep(5)
+            return
+        end
+
+        -- Currently we are mining
+        -- TODO: Implement this shit
+    end
+
+    -- Can only start if gps is retrieved
+    function miner.start()
+        if miner.pos_y == nil then
+            miner.update_gps()
+        end
+        if miner.pos_y ~= nil then
+            miner.idle = false
+        end
+    end
+
+    -- In idle mode we should go home
+    function miner.go_home()
+        miner.idle = true
+    end
+
+
+    function miner.get_info()
+        local info = {}
+        info.fuel = turtle.getFuelLevel()
+        info.gps = gps.locate(1)
+        return info
+    end
+
+    return miner
+end
+
+function init()
+    return Miner()
+end
+
+function get_info(info)
+    info["fuel"] = turtle.getFuelLevel()
+    info["gps"] = gps.locate(1)
+end
