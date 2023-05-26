@@ -1,24 +1,29 @@
 -- Turtle class for controlled mining
+
+-- Helper variables
+local FORWARD = 1
+local RIGHT = 2
+local BACKWARD = 3
+local LEFT = 4
+
+-- Tunnel map has structure like this
+-- First index is y_depth
+-- Then 4 digits which indicate how deep the corridors are (forward, right, backward, left)
+
 local function Miner()
     -- Initialisation
     local miner = {}
     miner.idle = true
-    miner.going_back = false
-    miner.y_data = {}
+    miner.gps_pos = gps.locate()
+    miner.home = vector.new(miner.gps_pos)
+    miner.tunnel_maps = {}
+    miner.direction = FORWARD
     miner.depth = 10
-    miner.pos_x = 0
-    miner.pos_z = 0
-    miner.total_block_back = 0
 
     function miner.update_gps()
-        x,y,z = gps.locate(1)
-        if not x then
-            miner.pos_y = nil
-        else
-            miner.gps_x = x
-            miner.pos_y = y
-            miner.gps_z = z
-        end
+        miner.gps_pos = gps.locate(1)
+        local position = vector.new(miner.gps_pos)
+        miner.dist_home = position - miner.home
     end
 
     function miner.falling_block()
@@ -31,8 +36,19 @@ local function Miner()
         return false
     end
 
+    function miner.dig_down()
+        turtle.digDown()
+        turtle.down()
+        miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
+        miner.total_block_back = miner.total_block_back + 1
+    end
+
     function miner.move_home()
         -- TODO
+    end
+
+    function miner.strip_mine()
+
     end
 
     function miner.tick()
@@ -44,6 +60,15 @@ local function Miner()
 
         -- Currently we are mining
         -- TODO: Implement this shit
+        -- Check the depth of turtle
+        if (miner.pos_y > miner.depth) then
+            miner.dig_down()
+
+        else
+            miner.strip_mine()
+        end
+
+        -- Finally we need to check if we need to go back home
     end
 
     -- Can only start if gps is retrieved
