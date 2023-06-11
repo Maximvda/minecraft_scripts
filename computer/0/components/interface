@@ -6,8 +6,10 @@ local function Button(label, pos_x, pos_y)
     button.label = label
     button.pos_x = pos_x
     button.pos_y = pos_y
+    button.bg_color = colors.orange
+
     function button.draw()
-        display.setBackgroundColor(colors.orange)
+        display.setBackgroundColor(button.bg_color)
         length = string.len(label)
         -- for i =0,2 do
         display.setCursorPos(
@@ -49,16 +51,28 @@ function set_fuel(level)
     display.write("Remaining fuel: "..level)
 end
 
+function set_tank_levels(tanks)
+    for i, tank in pairs(tanks) do
+        display.setCursorPos(20, i+1)
+        display.write(tank[1] .. ": " .. tank[2] .. " ingots")
+    end
+end
+
 function init()
     display.setBackgroundColor(colors.black)
     display.setTextScale(.5)
     display.clear()
-    set_position("unknown")
-    set_fuel("unknown")
-    buttons.start = Button("Start", 17, 17)
-    buttons.start.draw()
-    buttons.stop = Button("Return", 27, 17)
-    buttons.stop.draw()
+    set_tank_levels({{"iron", 10},})
+    buttons.blocks = Button("Blocks", 2, 2)
+    buttons.blocks.draw()
+    buttons.ingots = Button("Ingots", 2, 4)
+    buttons.ingots.draw()
+    buttons.rods = Button("Rods", 2, 6)
+    buttons.rods.draw()
+    buttons.wires = Button("Wires", 2, 8)
+    buttons.wires.draw()
+    buttons.plates = Button("Plates", 2, 10)
+    buttons.plates.draw()
 end
 
 function check_touch(pos_x, pos_y)

@@ -1,0 +1,7 @@
+-- Configuration variables
+
+modem_side = "left"
+smelt_per = "tconstruct:drain_0"
+redstone_side = "top"
+number_casting_basins = 6
+broadcast_message = "Smeltery link"

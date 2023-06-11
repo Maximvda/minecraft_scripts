@@ -1,0 +1,31 @@
+-- Link layer for communication between models
+-- Only needed in craftos-PC
+periphemu.create("left", "modem")
+
+linked = nil
+
+function init(side)
+    rednet.open(side)
+    rednet.broadcast(config.broadcast_message)
+end
+
+function handle_message(id, message)
+    if message == "discovery" then
+        linked = id
+        print("Linked to terminal " ..id)
+        -- Link back
+        rednet.send(linked, "ready")
+    end
+end
+
+function request_link()
+    rednet.broadcast("Requesting link")
+end
+
+function send_data(info)
+    if linked == nil then
+        request_link()
+        return
+    end
+    rednet.send(linked, info)
+end

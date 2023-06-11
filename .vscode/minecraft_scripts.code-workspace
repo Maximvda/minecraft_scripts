@@ -6,6 +6,10 @@
 		{
 			"name": "turtle",
 			"uri": "craftos-pc://1/"
+		},
+		{
+			"name": "Computer 2",
+			"uri": "craftos-pc://3/"
 		}
 	],
 	"settings": {

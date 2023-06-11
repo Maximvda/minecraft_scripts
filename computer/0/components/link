@@ -22,6 +22,11 @@ function handle_message(id, message)
         print("Link requested from "..id)
         rednet.send(id, "discovery")
     end
+    if message == "Smeltery link" then
+        print("Smeltery is linking")
+        redenet.send(id, "discovery")
+    end
+
     if type(message) == "table" then
         term.clear()
         term.setCursorPos(1,1)

@@ -1,0 +1,69 @@
+-- Class for the smeltery
+
+-- Helper variables
+local mb_ingot = 144
+
+local function Smeltery()
+    -- Initialisation
+    local smeltery = {}
+    smeltery.periph = peripheral.wrap(config.smelt_per)
+    smeltery.fluids = {}
+    smeltery.control_timer = nil
+    -- Constants for selection
+    smeltery.INGOTS = 0
+    smeltery.BLOCKS = 1
+    smeltery.RODS = 2
+    smeltery.WIRES = 3
+    smeltery.PLATES = 4
+    smeltery.NONE = 5
+
+    function smeltery.get_info()
+        local tanks = smeltery.periph.tanks()
+        for i, tank in pairs(tanks) do
+            for item in string.gmatch(tank["name"], '([^"_"]+)') do
+                smeltery.fluids[i] = {item, tank["amount"]/mb_ingot}
+            end
+        end
+        return smeltery.fluids
+    end
+
+    function smeltery.set_output(selection)
+        smeltery.selection = selection
+        if selection == smeltery.INGOTS then
+            redstone.setBundledOutput("top", colors.gray)
+        elseif selection == smeltery.BLOCKS then
+            smeltery.control_timer = os.startTimer(1)
+            redstone.setBundledOutput("top", colors.black)
+        elseif selection == smeltery.RODS then
+            redstone.setBundledOutput("top", colors.brown)
+        elseif selection == smeltery.WIRES then
+            redstone.setBundledOutput("top", colors.red)
+        elseif selection == smeltery.PLATES then
+            redstone.setBundledOutput("top", colors.green)
+        else
+            redstone.setBundledOutput("top", 0)
+        end
+    end
+
+    function smeltery.control_tick()
+        smeltery.control_timer = os.startTimer(1)
+        smeltery.get_info()
+        fluid_amount = smeltery.fluids[1][2]
+        if smeltery.selection == smeltery.BLOCKS then
+            if fluid_amount < config.number_casting_basins*9+6 then
+                smeltery.set_output(smeltery.INGOTS)
+            end
+        end
+        if fluid_amount == 0 then
+            smeltery.set_output(smeltery.NONE)
+            -- Stop the timer
+            os.cancelTimer(smeltery.control_timer)
+        end
+    end
+    return smeltery
+end
+
+
+function init()
+    return Smeltery()
+end

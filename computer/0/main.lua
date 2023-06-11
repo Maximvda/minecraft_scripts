@@ -19,10 +19,6 @@ local function main()
     return true
 end
 
-local home = vector.new(45, 85, 20)
-local x = home.tostring()
-print(x)
-
 interface.init()
 
 link.init(config.modem_side)
