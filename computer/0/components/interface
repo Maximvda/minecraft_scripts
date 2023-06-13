@@ -1,7 +1,5 @@
 -- Class for monitor interface
 
-
-
 local function btn_callback(button)
     if (button.label == "Blocks") then
         link.send_command(link.ids.smeltery, 1)

@@ -38,10 +38,10 @@ local function clone_pc(pc)
         get("1", "mine_api", "components")
         get("1", "link", "components")
     elseif pc == "2" then
-        get("1", "main.lua", "")
-        get("1", "config", "components")
-        get("1", "link_class", "components")
-        get("1", "smeltery", "components")
+        get("2", "main.lua", "")
+        get("2", "config", "components")
+        get("2", "link_class", "components")
+        get("2", "smeltery", "components")
 
     end
 

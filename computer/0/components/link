@@ -1,7 +1,7 @@
 -- Link layer for communication between models
 
 -- Only needed in craftos-PC
-periphemu.create("left", "modem")
+--periphemu.create("left", "modem")
 
 ids = {}
 ids.smeltery = nil
@@ -18,17 +18,19 @@ function discovery()
 end
 
 function handle_message(id, message)
-    print(message)
-    if message == "Requesting link" then
+    if message == config.request_message then
         print("Link requested from "..id)
         rednet.send(id, "discovery")
         return
     end
-    if message == "Smeltery link" then
+    if message == config.smeltery_link_message then
         print("Smeltery is linked")
-        rednet.send(id, "discovery")
         ids.smeltery = id
         return
+    end
+
+    if ids.smeltery == nil then
+        discovery()
     end
 
     if fnc_callback ~= nil then
