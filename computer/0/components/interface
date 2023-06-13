@@ -16,6 +16,7 @@ local function btn_callback(button)
     elseif (button.label == "Plates") then
         link.send_command(link.ids.smeltery, 4)
         button.toggle_color()
+
     end
 end
 
@@ -25,6 +26,8 @@ function Interface()
     interface.display = peripheral.wrap(config.monitor)
     interface.buttons = {}
     interface.tanks_displayed = 0
+    interface.views = {"smeltery", "reactor"}
+    interface.views_index = 1
 
     -- Initialise the view
     interface.display.setBackgroundColor(colors.black)
@@ -35,21 +38,31 @@ function Interface()
     interface.buttons.rods = button_class.Button("Rods", 2, 6, interface.display)
     interface.buttons.wires = button_class.Button("Wires", 2, 8, interface.display)
     interface.buttons.plates = button_class.Button("Plates", 2, 10, interface.display)
+    interface.buttons.cycle_left = button_class.Button("<", 44, 18, interface.display)
+    interface.buttons.cycle_right = button_class.Button(">", 48, 18, interface.display)
 
     function interface.show_view(view)
         if view == "smeltery" then
+            interface.display.clear()
             interface.buttons.blocks.set_color(colors.orange)
             interface.buttons.ingots.set_color(colors.orange)
             interface.buttons.rods.set_color(colors.orange)
             interface.buttons.wires.set_color(colors.orange)
             interface.buttons.plates.set_color(colors.orange)
+        elseif view == "reactor" then
+            interface.display.clear()
+            interface.buttons.blocks.set_color(colors.orange)
+        elseif view == "lighting" then
+            print("TODO showing lighting")
         end
+        interface.buttons.cycle_left.set_color(colors.lightGray)
+        interface.buttons.cycle_right.set_color(colors.lightGray)
     end
 
     function interface.show_smeltery_levels(tanks)
         for i=1, interface.tanks_displayed do
             interface.display.setCursorPos(20, i+1)
-            interface.display.clearLine()
+            interface.display.write("                      ")
         end
         local max = 0
         for i, tank in pairs(tanks) do
@@ -63,6 +76,13 @@ function Interface()
     function interface.check_touch(pos_x, pos_y)
         for key, but in pairs(interface.buttons) do
             if but.check_touch(pos_x, pos_y) then
+                if but.label == ">" then
+                    interface.views_index = (interface.views_index + 1) % #interface.views
+                    return interface.show_view(interface.views[interface.views_index+1])
+                elseif but.label == "<" then
+                    interface.views_index = math.abs((interface.views_index - 1) % #interface.views)
+                    return interface.show_view(interface.views[interface.views_index+1])
+                end
                 if btn_callback ~= nil then
                     res = btn_callback(but)
                 end

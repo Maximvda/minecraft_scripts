@@ -20,7 +20,7 @@ local function main()
     end
     return true
 end
-monitor.show_view("smeltery")
+monitor.show_view("reactor")
 
 local function handle_info(id, message)
     if id == link.ids.smeltery then

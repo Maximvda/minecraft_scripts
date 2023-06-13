@@ -1,0 +1,48 @@
+-- Link layer for communication between models
+-- Only needed in craftos-PC
+--periphemu.create("left", "modem")
+
+local instance = nil
+
+function Link(side, callback)
+    local link = {}
+    link.controller = nil
+    rednet.open(side)
+    link.callback = callback
+
+    function link.handle_message(id, message)
+        if message == "discovery" then
+            link.controller = id
+            print("Linked to controller "..id)
+            rednet.send(id, config.reactor_link_message)
+        else
+            link.callback(message)
+        end
+    end
+
+    function link.request_link()
+        print("Requesting link")
+        rednet.broadcast(config.request_message)
+    end
+
+    function link.send_data(info)
+        if link.controller == nil then
+            link.request_link()
+            return
+        end
+        rednet.send(link.controller, info)
+    end
+
+    link.request_link()
+
+    return link
+end
+
+function get()
+    return instance
+end
+
+function init(side, callback)
+    instance = Link(side, callback)
+    return instance
+end

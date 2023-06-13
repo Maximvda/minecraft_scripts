@@ -44,6 +44,9 @@ function Button(label, pos_x, pos_y, display)
     end
 
     function button.check_touch(pos_x, pos_y)
+        if button.x_end == nil then
+            return false
+        end
         if button.pos_x <= pos_x and pos_x <= button.x_end and pos_y == button.pos_y then
             return true
         end

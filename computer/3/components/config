@@ -1,0 +1,6 @@
+-- Configuration variables
+
+modem_side = "right"
+reactor_per = "BigReactors-Reactor"
+reactor_link_message = "Reactor linked"
+request_message = "Requesting link"

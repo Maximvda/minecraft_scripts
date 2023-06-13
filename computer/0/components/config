@@ -1,6 +1,10 @@
 -- Configuration variables
 
+
+periphemu.create("right", "modem")
+
 modem_side = "right"
 monitor = "left"
 request_message = "Requesting link"
 smeltery_link_message = "Smeltery linked"
+reactor_link_message = "Reactor linked"

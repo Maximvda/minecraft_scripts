@@ -1,0 +1,42 @@
+-- Class for reactor
+
+local function Reactor()
+    local reactor = {}
+    reactor.periph = peripheral.wrap(config.reactor_per)
+    reactor.info = {}
+
+    function reactor.set_rod_level(level)
+        reactor.periph.setAllControlRodLevels(level)
+    end
+
+    function reactor.active(bool)
+        reactor.periph.setActive(bool)
+    end
+
+    function reactor.get_info()
+        reactor.info.fuel_consumption = reactor.periph.getFuelConsumedLastTick()
+        reactor.info.fuel_reactivity = reactor.periph.getFuelReactivity()
+        reactor.info.energy = reactor.periph.getEnergyProducedLastTick()
+        reactor.info.stored_energy = math.floor(reactor.periph.getEnergyStored()/100) -- Convert to procent
+        reactor.info.control_rod = reactor.periph.getControlRodLevel(0)
+        reactor.info.fuel_level = reactor.periph.getFuelAmount()
+        reactor.info.casing_temp = reactor.periph.getCasingTemperature()
+        reactor.info.fuel_temp = reactor.periph.getFuelTemperature()
+        reactor.info.active = reactor.periph.getActive()
+        return reactor.info
+    end
+
+    function reactor.control_tick()
+        if (reactor.info.stored_energy < 65 and ~reactor.info.active) then
+            reactor.periph.setActive(true)
+        elseif reactor.info.stored_energy > 80 and reactor.info.active then
+            reactor.periph.setActive(false)
+        end
+    end
+
+    return reactor
+end
+
+function init()
+    return Reactor()
+end
