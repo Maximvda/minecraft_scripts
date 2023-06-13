@@ -47,7 +47,7 @@ function Interface()
     end
 
     function interface.show_smeltery_levels(tanks)
-        for i=1, interface.tanks_displayed, 1 do
+        for i=1, interface.tanks_displayed do
             interface.display.setCursorPos(20, i+1)
             interface.display.write("                      ")
         end
@@ -57,7 +57,7 @@ function Interface()
             interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
             max = i
         end
-        interface.tanks_displayed = max
+        interface.tanks_displayed = max+1
     end
 
     function interface.check_touch(pos_x, pos_y)

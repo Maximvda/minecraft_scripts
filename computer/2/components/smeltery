@@ -47,6 +47,10 @@ local function Smeltery()
             redstone.setBundledOutput("top", colors.gray)
         elseif selection == smeltery.BLOCKS then
             print("Smelting blocks")
+            if smeltery.fluids[1][2] < config.number_casting_basins*9+6 then
+                smeltery.set_output(smeltery.INGOTS)
+                return
+            end
             redstone.setBundledOutput("top", colors.black)
         elseif selection == smeltery.RODS then
             print("Smelting rods")
