@@ -21,12 +21,14 @@ local function Smeltery()
     function smeltery.get_info()
         local tanks = smeltery.periph.tanks()
         for i, tank in pairs(tanks) do
-            for item in string.gmatch(tank["name"], '([^"_"]+)') do
-                smeltery.fluids[i] = {item, tank["amount"]/mb_ingot}
+            name = tank["name"]
+            for item in string.gmatch(name, '([^"_"]+)') do
+                name = item
             end
-            for item in string.gmatch(tank["name"], '([^":"]+)') do
-                smeltery.fluids[i] = {item, tank["amount"]/mb_ingot}
+            for item in string.gmatch(name, '([^":"]+)') do
+                name = item
             end
+            smeltery.fluids[i] = {name, math.floor(tank["amount"]/mb_ingot)}
         end
         return smeltery.fluids
     end
