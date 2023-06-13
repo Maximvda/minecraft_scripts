@@ -32,7 +32,19 @@ local function clone_pc(pc)
         get("0", "input", "components")
         get("0", "interface", "components")
         get("0", "link", "components")
+    elseif pc == "1" then
+        get("1", "main.lua", "")
+        get("1", "config", "components")
+        get("1", "mine_api", "components")
+        get("1", "link", "components")
+    elseif pc == "2" then
+        get("1", "main.lua", "")
+        get("1", "config", "components")
+        get("1", "link_class", "components")
+        get("1", "smeltery", "components")
+
     end
+
 end
 
 print("Which pc to clone?")

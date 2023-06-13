@@ -20,6 +20,7 @@ function Link(side, callback)
     end
 
     function link.request_link()
+        print("Requesting link")
         rednet.broadcast(config.broadcast_message)
     end
 
