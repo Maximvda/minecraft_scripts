@@ -24,6 +24,7 @@ function Interface()
     -- Initialise variables
     interface.display = peripheral.wrap(config.monitor)
     interface.buttons = {}
+    interface.tanks_displayed = 0
 
     -- Initialise the view
     interface.display.setBackgroundColor(colors.black)
@@ -46,10 +47,16 @@ function Interface()
     end
 
     function interface.show_smeltery_levels(tanks)
+        for i=1, interface.tanks_displayed, 1 do
+            interface.display.setCursorPos(20, i+1)
+            interface.display.write("                      ")
+        end
+
         for i, tank in pairs(tanks) do
             interface.display.setCursorPos(20, i+1)
             interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
         end
+        interface.tanks_displayed = i
     end
 
     function interface.check_touch(pos_x, pos_y)

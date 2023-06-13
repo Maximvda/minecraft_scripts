@@ -34,6 +34,10 @@ local function Smeltery()
     end
 
     function smeltery.set_output(selection)
+        if selection == smeltery.NONE then
+            redstone.setBundledOutput("top", 0)
+            return
+        end
         smeltery.selection = selection
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
