@@ -78,6 +78,9 @@ local function Smeltery()
             end
         end
     end
+
+    smeltery.set_output(smeltery.NONE)
+
     return smeltery
 end
 
