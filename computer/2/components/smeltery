@@ -20,6 +20,7 @@ local function Smeltery()
 
     function smeltery.get_info()
         local tanks = smeltery.periph.tanks()
+        smeltery.fluids = {}
         for i, tank in pairs(tanks) do
             name = tank["name"]
             for item in string.gmatch(name, '([^"_"]+)') do
