@@ -50,6 +50,7 @@ function Interface()
         for i=1, interface.tanks_displayed do
             interface.display.setCursorPos(20, i+1)
             interface.display.write("                      ")
+            print("Clearing linke"..i)
         end
         local max = 0
         for i, tank in pairs(tanks) do
@@ -57,7 +58,7 @@ function Interface()
             interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
             max = i
         end
-        interface.tanks_displayed = max+1
+        interface.tanks_displayed = max+2
     end
 
     function interface.check_touch(pos_x, pos_y)
