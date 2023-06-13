@@ -51,12 +51,13 @@ function Interface()
             interface.display.setCursorPos(20, i+1)
             interface.display.write("                      ")
         end
-
+        local max = 0
         for i, tank in pairs(tanks) do
             interface.display.setCursorPos(20, i+1)
             interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
+            max = i
         end
-        interface.tanks_displayed = i
+        interface.tanks_displayed = max
     end
 
     function interface.check_touch(pos_x, pos_y)
