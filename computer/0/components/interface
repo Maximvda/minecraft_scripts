@@ -1,84 +1,77 @@
-local display = peripheral.wrap("monitor_1")
-local buttons = {}
+-- Class for monitor interface
 
-local function Button(label, pos_x, pos_y)
-    local button = {}
-    button.label = label
-    button.pos_x = pos_x
-    button.pos_y = pos_y
-    button.bg_color = colors.orange
 
-    function button.draw()
-        display.setBackgroundColor(button.bg_color)
-        length = string.len(label)
-        -- for i =0,2 do
-        display.setCursorPos(
-            button.pos_x, button.pos_y
-        )
-        if (length % 2 == 0) then
-            display.write(string.rep(" ", length+2)) -- 10 spaces
-        else
-            display.write(string.rep(" ", length+2)) -- 10 spaces
-        end
-        -- end
-        display.setTextColor (colors.black)
-        display.setCursorPos(
-            button.pos_x+1, button.pos_y
-        )
-        display.write(label)
-        display.setBackgroundColor(colors.black)
-        display.setTextColor(colors.white)
-        button.x_end = button.pos_x + length+2
-    end
 
-    function button.check_touch(pos_x, pos_y)
-        if button.pos_x <= pos_x and pos_x <= button.x_end and pos_y == button.pos_y then
-            return true
-        end
-        return false
-    end
-
-    return button
-end
-
-function set_position(position)
-    display.setCursorPos(2, 2)
-    display.write("Current position: "..position)
-end
-
-function set_fuel(level)
-    display.setCursorPos(2, 3)
-    display.write("Remaining fuel: "..level)
-end
-
-function set_tank_levels(tanks)
-    for i, tank in pairs(tanks) do
-        display.setCursorPos(20, i+1)
-        display.write(tank[1] .. ": " .. tank[2] .. " ingots")
+local function btn_callback(button)
+    if (button.label == "Blocks") then
+        link.send_command(link.ids.smeltery, 1)
+        button.toggle_color()
+    elseif (button.label == "Ingots") then
+        link.send_command(link.ids.smeltery, 0)
+        button.toggle_color()
+    elseif (button.label == "Rods") then
+        link.send_command(link.ids.smeltery, 2)
+        button.toggle_color()
+    elseif (button.label == "Wires") then
+        link.send_command(link.ids.smeltery, 3)
+        button.toggle_color()
+    elseif (button.label == "Plates") then
+        link.send_command(link.ids.smeltery, 4)
+        button.toggle_color()
     end
 end
 
-function init()
-    display.setBackgroundColor(colors.black)
-    display.setTextScale(.5)
-    display.clear()
-    set_tank_levels({{"iron", 10},})
-    buttons.blocks = Button("Blocks", 2, 2)
-    buttons.blocks.draw()
-    buttons.ingots = Button("Ingots", 2, 4)
-    buttons.ingots.draw()
-    buttons.rods = Button("Rods", 2, 6)
-    buttons.rods.draw()
-    buttons.wires = Button("Wires", 2, 8)
-    buttons.wires.draw()
-    buttons.plates = Button("Plates", 2, 10)
-    buttons.plates.draw()
-end
+function Interface()
+    local interface = {}
+    -- Initialise variables
+    interface.display = peripheral.wrap(config.monitor)
+    interface.buttons = {}
 
-function check_touch(pos_x, pos_y)
-    for key, but in pairs(buttons) do
-        if but.check_touch(pos_x, pos_y) then
-            print("Button pressed"..but.label)
+    -- Initialise the view
+    interface.display.setBackgroundColor(colors.black)
+    interface.display.setTextScale(.5)
+    interface.display.clear()
+    interface.buttons.blocks = button_class.Button("Blocks", 2, 2, interface.display)
+    interface.buttons.ingots = button_class.Button("Ingots", 2, 4, interface.display)
+    interface.buttons.rods = button_class.Button("Rods", 2, 6, interface.display)
+    interface.buttons.wires = button_class.Button("Wires", 2, 8, interface.display)
+    interface.buttons.plates = button_class.Button("Plates", 2, 10, interface.display)
+
+    function interface.show_view(view)
+        if view == "smeltery" then
+            interface.buttons.blocks.set_color(colors.orange)
+            interface.buttons.ingots.set_color(colors.orange)
+            interface.buttons.rods.set_color(colors.orange)
+            interface.buttons.wires.set_color(colors.orange)
+            interface.buttons.plates.set_color(colors.orange)
         end
     end
+
+    function interface.show_smeltery_levels(tanks)
+        for i, tank in pairs(tanks) do
+            interface.display.setCursorPos(20, i+1)
+            interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
+        end
+    end
+
+    function interface.check_touch(pos_x, pos_y)
+        for key, but in pairs(interface.buttons) do
+            if but.check_touch(pos_x, pos_y) then
+                if btn_callback ~= nil then
+                    res = btn_callback(but)
+                end
+            end
+        end
+    end
+
+    function interface.set_button_color(but_name, color)
+        for i, buts in pairs(interface.buttons) do
+            if buts.label == but_name then
+                buts.set_color(color)
+                return
+            end
+        end
+    end
+
+    return interface
 end

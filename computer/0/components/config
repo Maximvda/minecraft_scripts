@@ -1,3 +1,5 @@
 -- Configuration variables
 
 modem_side = "left"
+
+monitor = "monitor_1"

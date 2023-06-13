@@ -3,9 +3,13 @@
 -- Only needed in craftos-PC
 periphemu.create("left", "modem")
 
-linked_turtles = {}
+ids = {}
+ids.smeltery = nil
 
-function init(side)
+local fnc_callback = nil
+
+function init(side, callback)
+    fnc_callback = callback
     rednet.open(side)
 end
 
@@ -14,28 +18,27 @@ function discovery()
 end
 
 function handle_message(id, message)
-    if message == "ready" then
-        print("Turtle registered "..id)
-        linked_turtles[id] = {}
-    end
+    print(message)
     if message == "Requesting link" then
         print("Link requested from "..id)
         rednet.send(id, "discovery")
+        return
     end
     if message == "Smeltery link" then
-        print("Smeltery is linking")
-        redenet.send(id, "discovery")
+        print("Smeltery is linked")
+        rednet.send(id, "discovery")
+        ids.smeltery = id
+        return
     end
 
-    if type(message) == "table" then
-        term.clear()
-        term.setCursorPos(1,1)
+    if fnc_callback ~= nil then
+        fnc_callback(id, message)
+    end
 
-        if message["gps"] == nil then
-            print("Position not found!")
-        else
-            print("Position: "..message["gps"])
-        end
-        print("Fuel left: "..message["fuel"])
+end
+
+function send_command(id, message)
+    if id ~= nil then
+        rednet.send(id, message)
     end
 end

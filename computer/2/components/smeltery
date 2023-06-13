@@ -29,16 +29,21 @@ local function Smeltery()
 
     function smeltery.set_output(selection)
         smeltery.selection = selection
+        smeltery.control_timer = os.startTimer(1)
         if selection == smeltery.INGOTS then
+            print("Smelting ingots")
             redstone.setBundledOutput("top", colors.gray)
         elseif selection == smeltery.BLOCKS then
-            smeltery.control_timer = os.startTimer(1)
+            print("Smelting blocks")
             redstone.setBundledOutput("top", colors.black)
         elseif selection == smeltery.RODS then
+            print("Smelting rods")
             redstone.setBundledOutput("top", colors.brown)
         elseif selection == smeltery.WIRES then
+            print("Smelting wires")
             redstone.setBundledOutput("top", colors.red)
         elseif selection == smeltery.PLATES then
+            print("Smelting plates")
             redstone.setBundledOutput("top", colors.green)
         else
             redstone.setBundledOutput("top", 0)
@@ -55,9 +60,11 @@ local function Smeltery()
             end
         end
         if fluid_amount == 0 then
+            print("No fluid left, cancling smelt operation")
             smeltery.set_output(smeltery.NONE)
             -- Stop the timer
             os.cancelTimer(smeltery.control_timer)
+            link_class.get().send_data("Finished")
         end
     end
     return smeltery

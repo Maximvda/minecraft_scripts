@@ -16,7 +16,7 @@ local function Miner()
     miner.idle = true
     miner.gps_pos = gps.locate()
     miner.home = vector.new(miner.gps_pos)
-    miner.tunnel_maps = {}
+    miner.tunnel_maps = {0,0,0,0}
     miner.direction = FORWARD
     miner.depth = 10
 

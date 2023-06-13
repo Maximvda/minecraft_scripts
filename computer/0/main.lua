@@ -3,10 +3,12 @@ os.loadAPI("components/input")
 os.loadAPI("components/config")
 os.loadAPI("components/link")
 os.loadAPI("components/interface")
+os.loadAPI("components/button_class")
+
+local monitor = interface.Interface()
 
 local function main()
     event = {os.pullEvent()}
-    print(event[1], event[2], event[3], event[4])
     if event[1] == "rednet_message" then
         link.handle_message(event[2], event[3])
     end
@@ -14,14 +16,24 @@ local function main()
         return false
     end
     if event[1] == "monitor_touch" then
-        interface.check_touch(event[3], event[4])
+        monitor.check_touch(event[3], event[4])
     end
     return true
 end
+monitor.show_view("smeltery")
 
-interface.init()
+local function handle_info(id, message)
+    if id == link.ids.smeltery then
+        if type(message) == "table" then
+            monitor.show_smeltery_levels(message)
+        elseif message == "Finished" then
+            monitor.show_view("smeltery")
+        end
 
-link.init(config.modem_side)
+    end
+end
+
+link.init(config.modem_side, handle_info)
 link.discovery()
 
 while true do

@@ -1,0 +1,54 @@
+-- Class for controlling buttons
+
+function Button(label, pos_x, pos_y, display)
+    local button = {}
+    button.label = label
+    button.pos_x = pos_x
+    button.pos_y = pos_y
+    button.bg_color = colors.orange
+
+    function button.draw()
+        display.setBackgroundColor(button.bg_color)
+        length = string.len(label)
+        -- for i =0,2 do
+        display.setCursorPos(
+            button.pos_x, button.pos_y
+        )
+        if (length % 2 == 0) then
+            display.write(string.rep(" ", length+2)) -- 10 spaces
+        else
+            display.write(string.rep(" ", length+2)) -- 10 spaces
+        end
+        -- end
+        display.setTextColor (colors.black)
+        display.setCursorPos(
+            button.pos_x+1, button.pos_y
+        )
+        display.write(label)
+        display.setBackgroundColor(colors.black)
+        display.setTextColor(colors.white)
+        button.x_end = button.pos_x + length+2
+    end
+
+    function button.set_color(color)
+        button.bg_color = color
+        button.draw()
+    end
+
+    function button.toggle_color()
+        if button.bg_color == colors.red then
+            button.set_color(colors.orange)
+        else
+            button.set_color(colors.red)
+        end
+    end
+
+    function button.check_touch(pos_x, pos_y)
+        if button.pos_x <= pos_x and pos_x <= button.x_end and pos_y == button.pos_y then
+            return true
+        end
+        return false
+    end
+
+    return button
+end
