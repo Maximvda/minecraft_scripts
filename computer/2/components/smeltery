@@ -9,6 +9,7 @@ local function Smeltery()
     smeltery.periph = peripheral.wrap(config.smelt_per)
     smeltery.fluids = {}
     smeltery.control_timer = nil
+    smeltery.current_item = nil
     -- Constants for selection
     smeltery.INGOTS = 0
     smeltery.BLOCKS = 1
@@ -23,6 +24,9 @@ local function Smeltery()
             for item in string.gmatch(tank["name"], '([^"_"]+)') do
                 smeltery.fluids[i] = {item, tank["amount"]/mb_ingot}
             end
+            for item in string.gmatch(tank["name"], '([^":"]+)') do
+                smeltery.fluids[i] = {item, tank["amount"]/mb_ingot}
+            end
         end
         return smeltery.fluids
     end
@@ -30,6 +34,8 @@ local function Smeltery()
     function smeltery.set_output(selection)
         smeltery.selection = selection
         smeltery.control_timer = os.startTimer(1)
+        smeltery.get_info()
+        smeltery.current_item = smeltery.fluids[1][1]
         if selection == smeltery.INGOTS then
             print("Smelting ingots")
             redstone.setBundledOutput("top", colors.gray)
@@ -54,17 +60,20 @@ local function Smeltery()
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
         fluid_amount = smeltery.fluids[1][2]
-        if smeltery.selection == smeltery.BLOCKS then
-            if fluid_amount < config.number_casting_basins*9+6 then
-                smeltery.set_output(smeltery.INGOTS)
-            end
-        end
-        if fluid_amount == 0 then
+        if fluid_amount == 0 or smeltery.fluids[1][1] ~= smeltery.current_item then
             print("No fluid left, cancling smelt operation")
             smeltery.set_output(smeltery.NONE)
             -- Stop the timer
             os.cancelTimer(smeltery.control_timer)
-            link_class.get().send_data("Finished")
+            local link = link_class.get()
+            link.send_data(smeltery.fluids)
+            link.send_data("Finished")
+            smeltery.current_item = nil
+        end
+        if smeltery.selection == smeltery.BLOCKS then
+            if fluid_amount < config.number_casting_basins*9+6 then
+                smeltery.set_output(smeltery.INGOTS)
+            end
         end
     end
     return smeltery
