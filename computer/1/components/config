@@ -15,5 +15,5 @@ ignore_blocks = {
     "stone",
     "marble",
     "worm",
-    "cobble"
+    "cobble",
 }

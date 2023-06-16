@@ -32,7 +32,7 @@ local function Miner()
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
     miner.ticks = 0
-    miner.MAX_TICKS = 10
+    miner.MAX_TICKS = 20
 
     -- Main loop which is executed
     function miner.tick()
@@ -101,11 +101,10 @@ local function Miner()
             turtle.back()
             miner.forward_pos = miner.forward_pos - 1
         elseif miner.pos_y < miner.home_y then
-            print("Going back to ".. miner.home_y)
-            print("Miner depth" .. miner.pos_y)
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
+            print("Miner going idle")
             miner.moving_home = false
             miner.idle = true
         end
@@ -128,49 +127,51 @@ local function Miner()
     function miner.strip_mine()
         -- Vein checking order is up,
         if miner.checking_vein then
-            local success, data = turtle.inspectUp()
-            if miner.check_vein(success, data) and success then
-                print("Vein up")
-                turtle.digUp()
-                turtle.up()
-                table.insert(miner.vein_path, UP)
-                return
-            end
-            local success, data = turtle.inspect()
-            if miner.check_vein(success, data) and success then
-                print("Vein forward")
-                turtle.dig()
-                turtle.forward()
-                table.insert(miner.vein_path, FORWARD)
-                return
-            end
-            turtle.turnLeft()
-            local success, data = turtle.inspect()
-            if miner.check_vein(success, data) and success then
-                print("Vein left")
-                turtle.dig()
-                turtle.forward()
-                table.insert(miner.vein_path, LEFT)
-                return
-            end
-            turtle.turnRight()
-            turtle.turnRight()
-            local success, data = turtle.inspect()
-            if miner.check_vein(success, data) and success then
-                print("Vein right")
-                turtle.dig()
-                turtle.forward()
-                table.insert(miner.vein_path, RIGHT)
-                return
-            end
-            turtle.turnLeft()
-            local success, data = turtle.inspectDown()
-            if miner.check_vein(success, data) and success then
-                print("Vein down")
-                turtle.digDOwn()
-                turtle.down()
-                table.insert(miner.vein_path, DOWN)
-                return
+            if not miner.moving_home then
+                local success, data = turtle.inspectUp()
+                if miner.check_vein(success, data) and success then
+                    print("Vein up")
+                    turtle.digUp()
+                    turtle.up()
+                    table.insert(miner.vein_path, UP)
+                    return
+                end
+                local success, data = turtle.inspect()
+                if miner.check_vein(success, data) and success then
+                    print("Vein forward")
+                    turtle.dig()
+                    turtle.forward()
+                    table.insert(miner.vein_path, FORWARD)
+                    return
+                end
+                turtle.turnLeft()
+                local success, data = turtle.inspect()
+                if miner.check_vein(success, data) and success then
+                    print("Vein left")
+                    turtle.dig()
+                    turtle.forward()
+                    table.insert(miner.vein_path, LEFT)
+                    return
+                end
+                turtle.turnRight()
+                turtle.turnRight()
+                local success, data = turtle.inspect()
+                if miner.check_vein(success, data) and success then
+                    print("Vein right")
+                    turtle.dig()
+                    turtle.forward()
+                    table.insert(miner.vein_path, RIGHT)
+                    return
+                end
+                turtle.turnLeft()
+                local success, data = turtle.inspectDown()
+                if miner.check_vein(success, data) and success then
+                    print("Vein down")
+                    turtle.digDown()
+                    turtle.down()
+                    table.insert(miner.vein_path, DOWN)
+                    return
+                end
             end
 
             -- Move out of vein
