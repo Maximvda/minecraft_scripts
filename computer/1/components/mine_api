@@ -24,6 +24,7 @@ local function Miner()
     miner.home = vector.new(miner.gps_pos)
     miner.map = {0,0,0,0}
     miner.forward_pos = 0
+    miner.total_block_back = 0
     miner.depth = 10
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map

@@ -3,6 +3,8 @@
 
 ids = {}
 ids.smeltery = nil
+ids.turtle = nil
+ids.reactor = nil
 
 local fnc_callback = nil
 
@@ -24,6 +26,16 @@ function handle_message(id, message)
     if message == config.smeltery_link_message then
         print("Smeltery is linked")
         ids.smeltery = id
+        return
+    end
+    if message == config.turtle_link_message then
+        print("Mine turtle linked")
+        ids.turtle = id
+        return
+    end
+    if message == config.reactor_link_message then
+        print("Reactor linked")
+        ids.reactor = id
         return
     end
 
