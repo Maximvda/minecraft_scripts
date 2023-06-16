@@ -8,3 +8,8 @@ falling_blocks = {
     anvil="minecraft:anvil",
     dragon_egg="minecraft:dragon_egg"
 }
+
+ignore_blocks = {
+    "stone",
+    "marble"
+}

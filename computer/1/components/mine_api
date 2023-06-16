@@ -101,14 +101,14 @@ local function Miner()
         -- Vein checking order is up,
         if miner.checking_vein then
             local success, data = turtle.inspectUp()
-            if miner.check_vein(data) then
+            if miner.check_vein(data) and success then
                 turtle.digUp()
                 turtle.up()
                 table.insert(miner.vein_path, UP)
                 return
             end
             local success, data = turtle.inspect()
-            if miner.check_vein(data) then
+            if miner.check_vein(data) and success then
                 turtle.dig()
                 turtle.forward()
                 table.insert(miner.vein_path, FORWARD)
@@ -116,7 +116,7 @@ local function Miner()
             end
             turtle.turnLeft()
             local success, data = turtle.inspect()
-            if miner.check_vein(data) then
+            if miner.check_vein(data) and success then
                 turtle.dig()
                 turtle.forward()
                 table.insert(miner.vein_path, LEFT)
@@ -125,7 +125,7 @@ local function Miner()
             turtle.turnRight()
             turtle.turnRight()
             local success, data = turtle.inspect()
-            if miner.check_vein(data) then
+            if miner.check_vein(data) and success then
                 turtle.dig()
                 turtle.forward()
                 table.insert(miner.vein_path, RIGHT)
@@ -133,7 +133,7 @@ local function Miner()
             end
             turtle.turnLeft()
             local success, data = turtle.inspectDown()
-            if miner.check_vein(data) then
+            if miner.check_vein(data) and success then
                 turtle.digDOwn()
                 turtle.down()
                 table.insert(miner.vein_path, DOWN)
@@ -167,7 +167,12 @@ local function Miner()
     end
 
     function miner.check_vein(data)
-        return false
+        for i, name in config.ignore_blocks do
+            if sting.find(data.name, name) then
+                return false
+            end
+        end
+        return true
     end
 
     function miner.move_tunnel_end()

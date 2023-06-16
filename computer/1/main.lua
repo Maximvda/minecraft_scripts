@@ -34,7 +34,7 @@ local function turtle_loop()
     end
 end
 
-print(miner.falling_block())
+print(miner.check_vein())
 
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
