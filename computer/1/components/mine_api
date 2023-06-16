@@ -27,12 +27,12 @@ local function Miner()
     miner.fuel = turtle.getFuelLevel()
     miner.forward_pos = 0
     miner.total_block_back = 0
-    miner.depth = 10
+    miner.depth = 35
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
     miner.ticks = 0
-    miner.MAX_TICKS = 20
+    miner.MAX_TICKS = 40
 
     -- Main loop which is executed
     function miner.tick()
@@ -179,21 +179,21 @@ local function Miner()
                 local action = miner.vein_path[#miner.vein_path]
                 if action == FORWARD then
                     print("Return forward")
-                    miner.back()
+                    turtle.back()
                 elseif action == LEFT then
                     print("Return LEFT")
-                    miner.turnRight()
-                    miner.back()
+                    turtle.turnRight()
+                    turtle.back()
                 elseif action == RIGHT then
                     print("Return RIGHT")
-                    miner.turnLeft()
-                    miner.back()
+                    turtle.turnLeft()
+                    turtle.back()
                 elseif action == DOWN then
                     print("Return DOWN")
-                    miner.up()
+                    turtle.up()
                 elseif action == UP then
                     print("Return UP")
-                    miner.down()
+                    turtle.down()
                 end
                 table.remove(miner.vein_path)
             else
