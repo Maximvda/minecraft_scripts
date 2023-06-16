@@ -40,6 +40,8 @@ local function turtle_loop()
     end
 end
 
+miner.start()
+
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
     turtle_loop,
