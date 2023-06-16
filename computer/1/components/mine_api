@@ -23,6 +23,8 @@ local function Miner()
     miner.gps_pos = {gps.locate()}
     miner.home = vector.new(miner.gps_pos)
     miner.map = {0,0,0,0}
+    miner.fuel_limit = turtle.getFuelLimit()
+    info.fuel = turtle.getFuelLevel()
     miner.forward_pos = 0
     miner.total_block_back = 0
     miner.depth = 10
@@ -56,7 +58,7 @@ local function Miner()
 
         if miner.find_tunnel_end then
             -- Go to position of corridor
-            turtle.move_tunnel_end()
+            miner.move_tunnel_end()
         else
             miner.strip_mine()
         end
@@ -68,7 +70,7 @@ local function Miner()
 
     function miner.update_gps()
         miner.gps_pos = {gps.locate(1)}
-        if miner.gps_pos == nil then
+        if miner.gps_pos[1] == nil then
             print("Failed to get gps position")
             return
         end
@@ -248,7 +250,20 @@ local function Miner()
     end
 
     function miner.check_fuel()
-        print("TODO: ")
+        if turtle.getItemCount(1) > 2 then
+            if miner.fuel < miner.total_block_back + 400 then
+                turtle.refuel(1)
+            end
+        end
+        if miner.fuel < miner.total_block_back + 100 then
+            print("No fuel left, going home")
+            miner.go_home()
+        end
+        -- Check for full inventory
+        if turtle.getItemCount(16) ~= 0 then
+            print("No inventory left, going home")
+            miner.go_home()
+        end
     end
 
     ---------------------------------------------
@@ -275,11 +290,13 @@ local function Miner()
     -- INFO FUNCTION --
     function miner.get_info()
         local info = {}
-        info.fuel = turtle.getFuelLevel()
+        miner.fuel = turtle.getFuelLevel()
+        info.fuel = miner.fuel
         miner.tunnel_maps[miner.depth] = miner.map
         info.maps = miner.tunnel_maps
         miner.update_gps()
         info.gps = miner.gps_pos
+        miner.fuel_limit = turtle.getFuelLimit()
         if miner.gps_pos ~= nil then
             miner.pos_y = miner.gps_pos[2]
         end
