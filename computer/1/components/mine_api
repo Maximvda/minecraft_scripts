@@ -24,7 +24,7 @@ local function Miner()
     miner.home = vector.new(miner.gps_pos)
     miner.map = {0,0,0,0}
     miner.fuel_limit = turtle.getFuelLimit()
-    info.fuel = turtle.getFuelLevel()
+    miner.fuel = turtle.getFuelLevel()
     miner.forward_pos = 0
     miner.total_block_back = 0
     miner.depth = 10
@@ -54,9 +54,7 @@ local function Miner()
         -- Check the depth of turtle
         if (miner.pos_y > miner.depth) then
             miner.dig_down()
-        end
-
-        if miner.find_tunnel_end then
+        elseif miner.find_tunnel_end then
             -- Go to position of corridor
             miner.move_tunnel_end()
         else
@@ -118,7 +116,7 @@ local function Miner()
             turtle.dig()
             os.sleep(1)
         end
-        miner.forward()
+        turtle.forward()
         miner.total_block_back = miner.total_block_back + 1
         miner.map[miner.direction] = miner.map[miner.direction] + 1
         miner.checking_vein = true
