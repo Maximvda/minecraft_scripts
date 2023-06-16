@@ -100,11 +100,11 @@ local function Miner()
         elseif miner.forward_pos > 0 then
             turtle.back()
             miner.forward_pos = miner.forward_pos - 1
-        elseif miner.depth < miner.home_y then
+        elseif miner.pos_y < miner.home_y then
             print("Going back to ".. miner.home_y)
-            print("Miner depth" .. miner.depth)
+            print("Miner depth" .. miner.pos_y)
             turtle.up()
-            miner.depth = miner.depth + 1
+            miner.pos_y = miner.pos_y + 1
         else
             miner.moving_home = false
             miner.idle = true
