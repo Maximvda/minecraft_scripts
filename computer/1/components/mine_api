@@ -202,7 +202,7 @@ local function Miner()
     end
 
     function miner.check_vein(success, data)
-        if ~success then
+        if not success then
             return false
         end
         for i, name in pairs(config.ignore_blocks) do
