@@ -2,7 +2,7 @@
 os.loadAPI("components/link")
 os.loadAPI("components/config")
 os.loadAPI("components/mine_api")
-os.loadAPI("components/turtle")
+--os.loadAPI("components/turtle")
 
 -- Initialisation
 miner = mine_api.init()

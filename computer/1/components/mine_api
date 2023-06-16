@@ -167,8 +167,8 @@ local function Miner()
     end
 
     function miner.check_vein(data)
-        for i, name in config.ignore_blocks do
-            if sting.find(data.name, name) then
+        for i, name in pairs(config.ignore_blocks) do
+            if string.find(data.name, name) then
                 return false
             end
         end

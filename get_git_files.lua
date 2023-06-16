@@ -1,3 +1,9 @@
+--dow = http.get("https://raw.githubusercontent.com/Maximvda/minecraft_scripts/main/get_git_files.lua")
+--f = fs.open("clone.lua", "w")
+--f.write(dow.readAll())
+--f.close()
+--dow.close()
+
 local function get(pc, script_name, folder)
     if folder == "" then
         file_name = pc.."/"..script_name

@@ -1,6 +1,6 @@
 -- Link layer for communication between models
 -- Only needed in craftos-PC
-periphemu.create("left", "modem")
+--periphemu.create("left", "modem")
 
 linked = nil
 
