@@ -98,10 +98,10 @@ local function Miner()
         if miner.checking_vein then
             miner.strip_mine()
         elseif miner.forward_pos > 0 then
-            miner.back()
+            turtle.back()
             miner.forward_pos = miner.forward_pos - 1
         elseif miner.depth < miner.home_y then
-            miner.up()
+            turtle.up()
             miner.depth = miner.depth + 1
         else
             miner.moving_home = false
