@@ -20,7 +20,7 @@ local function Miner()
     miner.find_tunnel_end = false
     miner.checking_vein = false
     miner.vein_path = {}
-    miner.gps_pos = gps.locate()
+    miner.gps_pos = {gps.locate()}
     miner.home = vector.new(miner.gps_pos)
     miner.map = {0,0,0,0}
     miner.forward_pos = 0
@@ -66,7 +66,7 @@ local function Miner()
     end
 
     function miner.update_gps()
-        miner.gps_pos = gps.locate(1)
+        miner.gps_pos = {gps.locate(1)}
         if miner.gps_pos == nil then
             print("Failed to get gps position")
             return
