@@ -255,17 +255,16 @@ local function Miner()
     -- Functions which can be called by remote --
     -- Can only start if gps is retrieved
     function miner.start()
-        if miner.pos_y == nil then
+        while miner.pos_y == nil do
             miner.update_gps()
             miner.home = vector.new(miner.gps_pos)
             miner.home_y = miner.pos_y
+            print("Found gps position starting miner")
         end
-        if miner.pos_y ~= nil then
-            miner.idle = false
-            miner.find_tunnel_end = true
-            miner.vein_path = {}
-            miner.checking_vein = false
-        end
+        miner.idle = false
+        miner.find_tunnel_end = true
+        miner.vein_path = {}
+        miner.checking_vein = false
     end
 
     function miner.go_home()

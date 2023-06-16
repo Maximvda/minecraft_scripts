@@ -1,7 +1,5 @@
 -- Configuration variables
-
-
-periphemu.create("right", "modem")
+--periphemu.create("right", "modem")
 
 modem_side = "right"
 monitor = "left"
