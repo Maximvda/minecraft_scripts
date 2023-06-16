@@ -1,6 +1,8 @@
 -- Configuration variables
 
 modem_side = "left"
+turtle_link_message = "Turtle linked"
+request_message = "Requesting link"
 
 falling_blocks = {
     sand="minecraft:sand",
@@ -11,5 +13,7 @@ falling_blocks = {
 
 ignore_blocks = {
     "stone",
-    "marble"
+    "marble",
+    "worm",
+    "cobble"
 }

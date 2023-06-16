@@ -2,29 +2,47 @@
 -- Only needed in craftos-PC
 --periphemu.create("left", "modem")
 
-linked = nil
+local instance = nil
 
-function init(side)
+function Link(side, callback)
+    local link = {}
+    link.controller = nil
     rednet.open(side)
-end
+    link.callback = callback
 
-function handle_message(id, message)
-    if message == "discovery" then
-        linked = id
-        print("Linked to terminal " ..id)
-        -- Link back
-        rednet.send(linked, "ready")
+    function link.handle_message(id, message)
+        if message == "discovery" then
+            link.controller = id
+            print("Linked to controller "..id)
+            rednet.send(id, config.turtle_link_message)
+        else
+            link.callback(message)
+        end
     end
-end
 
-function request_link()
-    rednet.broadcast("Requesting link")
-end
-
-function send_data(info)
-    if linked == nil then
-        request_link()
-        return
+    function link.request_link()
+        print("Requesting link")
+        rednet.broadcast(config.request_message)
     end
-    rednet.send(linked, info)
+
+    function link.send_data(info)
+        if link.controller == nil then
+            link.request_link()
+            return
+        end
+        rednet.send(link.controller, info)
+    end
+
+    link.request_link()
+
+    return link
+end
+
+function get()
+    return instance
+end
+
+function init(side, callback)
+    instance = Link(side, callback)
+    return instance
 end

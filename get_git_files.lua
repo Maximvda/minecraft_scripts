@@ -32,19 +32,19 @@ end --close the function
 
 local function clone_pc(pc)
     if pc == "0" then
-        get("0", "main.lua", "")
+        get("0", "startup.lua", "")
         get("0", "button_class", "components")
         get("0", "config", "components")
         get("0", "input", "components")
         get("0", "interface", "components")
         get("0", "link", "components")
     elseif pc == "1" then
-        get("1", "main.lua", "")
+        get("1", "startup.lua", "")
         get("1", "config", "components")
         get("1", "mine_api", "components")
         get("1", "link", "components")
     elseif pc == "2" then
-        get("2", "main.lua", "")
+        get("2", "startup.lua", "")
         get("2", "config", "components")
         get("2", "link_class", "components")
         get("2", "smeltery", "components")
