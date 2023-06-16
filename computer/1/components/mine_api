@@ -5,6 +5,8 @@ local FORWARD = 1
 local RIGHT = 2
 local BACKWARD = 3
 local LEFT = 4
+local UP = 5
+local DOWN = 6
 
 -- Tunnel map has structure like this
 -- First index is y_depth
@@ -14,11 +16,47 @@ local function Miner()
     -- Initialisation
     local miner = {}
     miner.idle = true
+    miner.moving_home = false
+    miner.find_tunnel_end = false
+    miner.checking_vein = false
+    miner.vein_path = {}
     miner.gps_pos = gps.locate()
     miner.home = vector.new(miner.gps_pos)
-    miner.tunnel_maps = {0,0,0,0}
-    miner.direction = FORWARD
+    miner.map = {0,0,0,0}
+    miner.forward_pos = 0
     miner.depth = 10
+    miner.tunnel_maps = {}
+    miner.tunnel_maps[miner.depth] = miner.map
+    miner.direction = nil
+
+    -- Main loop which is executed
+    function miner.tick()
+        -- Being idle
+        if miner.idle then
+            os.sleep(5)
+            return
+        end
+        -- Going back home
+        if miner.moving_home then
+            miner.move_home()
+            return
+        end
+
+        -- Check the depth of turtle
+        if (miner.pos_y > miner.depth) then
+            miner.dig_down()
+        end
+
+        if miner.find_tunnel_end then
+            -- Go to position of corridor
+            turtle.move_tunnel_end()
+        else
+            miner.strip_mine()
+        end
+
+        -- Finally we need to check if we need to go back home
+
+    end
 
     function miner.update_gps()
         miner.gps_pos = gps.locate(1)
@@ -47,28 +85,120 @@ local function Miner()
         -- TODO
     end
 
-    function miner.strip_mine()
-
+    function miner.move_forwards()
+        -- Get rid of falling blocks in front of miner
+        while (miner.falling_block()) do
+            turtle.dig()
+            os.sleep(1)
+        end
+        miner.forward()
+        miner.total_block_back = miner.total_block_back + 1
+        miner.checking_vein = true
     end
 
-    function miner.tick()
-        if miner.idle then
-            miner.move_home()
-            os.sleep(5)
-            return
-        end
 
-        -- Currently we are mining
-        -- TODO: Implement this shit
-        -- Check the depth of turtle
-        if (miner.pos_y > miner.depth) then
-            miner.dig_down()
+    function miner.strip_mine()
+        -- Vein checking order is up,
+        if miner.checking_vein then
+            local success, data = turtle.inspectUp()
+            if miner.check_vein(data) then
+                turtle.digUp()
+                turtle.up()
+                table.insert(miner.vein_path, UP)
+                return
+            end
+            local success, data = turtle.inspect()
+            if miner.check_vein(data) then
+                turtle.dig()
+                turtle.forward()
+                table.insert(miner.vein_path, FORWARD)
+                return
+            end
+            turtle.turnLeft()
+            local success, data = turtle.inspect()
+            if miner.check_vein(data) then
+                turtle.dig()
+                turtle.forward()
+                table.insert(miner.vein_path, LEFT)
+                return
+            end
+            turtle.turnRight()
+            turtle.turnRight()
+            local success, data = turtle.inspect()
+            if miner.check_vein(data) then
+                turtle.dig()
+                turtle.forward()
+                table.insert(miner.vein_path, RIGHT)
+                return
+            end
+            turtle.turnLeft()
+            local success, data = turtle.inspectDown()
+            if miner.check_vein(data) then
+                turtle.digDOwn()
+                turtle.down()
+                table.insert(miner.vein_path, DOWN)
+                return
+            end
+
+            -- Move out of vein
+            if #miner.vein_path > 0 then
+                local action = miner.vein_path[#miner.vein_path]
+                if action == FORWARD then
+                    miner.back()
+                elseif action == LEFT then
+                    miner.turnRight()
+                    miner.back()
+                elseif action == RIGHT then
+                    miner.turnLeft()
+                    miner.back()
+                elseif action == DOWN then
+                    miner.up()
+                elseif action == UP then
+                    miner.down()
+                end
+                table.remove(miner.vein_path)
+            else
+                miner.checking_vein = false
+            end
 
         else
-            miner.strip_mine()
+            miner.move_forwards()
         end
+    end
 
-        -- Finally we need to check if we need to go back home
+    function miner.check_vein(data)
+        return false
+    end
+
+    function miner.move_tunnel_end()
+        -- Find direction to move in
+        if miner.direction == nil then
+            miner.find_direction()
+        end
+        -- Move till tunnel end
+        if miner.forward_pos < miner.map[miner.direction] then
+            turtle.forward()
+            miner.forward_pos = miner.forward_pos + 1
+            miner.total_block_back = miner.total_block_back + 1
+        else
+            miner.find_tunnel_end = false
+        end
+    end
+
+    function miner.find_direction()
+        local min = nil
+        local dir = 1
+        -- Find shortest direction to go in
+        for i, item in pairs(miner.map) do
+            if min == nil then
+                min = item
+            end
+            if item < min then
+                min = item
+                dir = i
+            end
+        end
+        miner.direction = dir
     end
 
     -- Can only start if gps is retrieved
@@ -78,19 +208,22 @@ local function Miner()
         end
         if miner.pos_y ~= nil then
             miner.idle = false
+            miner.find_tunnel_end = true
+            miner.vein_path = {}
+            miner.checking_vein = false
         end
     end
 
-    -- In idle mode we should go home
     function miner.go_home()
-        miner.idle = true
+        miner.moving_home = true
     end
 
 
     function miner.get_info()
         local info = {}
         info.fuel = turtle.getFuelLevel()
-        info.gps = gps.locate(1)
+        miner.update_gps()
+        info.gps = miner.gps_pos
         return info
     end
 
@@ -99,9 +232,4 @@ end
 
 function init()
     return Miner()
-end
-
-function get_info(info)
-    info["fuel"] = turtle.getFuelLevel()
-    info["gps"] = gps.locate(1)
 end

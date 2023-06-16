@@ -43,6 +43,10 @@ local function Smeltery()
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
         smeltery.current_item = smeltery.fluids[1][1]
+        if smeltery.current_item == nil then
+            smeltery.finish()
+            return
+        end
         if selection == smeltery.INGOTS then
             print("Smelting ingots")
             redstone.setBundledOutput("top", colors.gray)
@@ -67,18 +71,24 @@ local function Smeltery()
         end
     end
 
+    function smeltery.finish()
+        smeltery.set_output(smeltery.NONE)
+        os.cancelTimer(smeltery.control_timer)
+        local link = link_class.get()
+        link.send_data("Finished")
+    end
+
     function smeltery.control_tick()
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
+        if smeltery.fluids[1] == nil then
+            smeltery.finish()
+            return
+        end
         fluid_amount = smeltery.fluids[1][2]
         if fluid_amount == 0 or smeltery.fluids[1][1] ~= smeltery.current_item then
             print("No fluid left, cancling smelt operation")
-            smeltery.set_output(smeltery.NONE)
-            -- Stop the timer
-            os.cancelTimer(smeltery.control_timer)
-            local link = link_class.get()
-            link.send_data(smeltery.fluids)
-            link.send_data("Finished")
+            smeltery.finish()
             smeltery.current_item = nil
         end
         if smeltery.selection == smeltery.BLOCKS then

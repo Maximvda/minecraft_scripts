@@ -28,6 +28,7 @@ function Interface()
     interface.tanks_displayed = 0
     interface.views = {"smeltery", "reactor"}
     interface.views_index = 1
+    interface.reactor_data = nil
 
     -- Initialise the view
     interface.display.setBackgroundColor(colors.black)
@@ -38,6 +39,7 @@ function Interface()
     interface.buttons.rods = button_class.Button("Rods", 2, 6, interface.display)
     interface.buttons.wires = button_class.Button("Wires", 2, 8, interface.display)
     interface.buttons.plates = button_class.Button("Plates", 2, 10, interface.display)
+    interface.buttons.react_power = button_class.Button("On", 20, 2, interface.display)
     interface.buttons.cycle_left = button_class.Button("<", 44, 18, interface.display)
     interface.buttons.cycle_right = button_class.Button(">", 48, 18, interface.display)
 
@@ -51,7 +53,10 @@ function Interface()
             interface.buttons.plates.set_color(colors.orange)
         elseif view == "reactor" then
             interface.display.clear()
-            interface.buttons.blocks.set_color(colors.orange)
+            interface.set_title("Reactor")
+            if interface.reactor_data ~= nil then
+                interface.update_reactor_stats(interface.reactor_data)
+            end
         elseif view == "lighting" then
             print("TODO showing lighting")
         end
@@ -71,6 +76,39 @@ function Interface()
             max = i
         end
         interface.tanks_displayed = max+1
+    end
+
+    function interface.update_reactor_stats(reactor)
+        interface.reactor_data = reactor
+        interface.display.setCursorPos(2, 3)
+        interface.display.write("Energy: "..reactor.energy)
+        interface.display.setCursorPos(2, 4)
+        interface.display.write("Stored: "..reactor.stored_energy)
+        interface.display.setCursorPos(2, 5)
+        interface.display.write("Fuel level: "..reactor.fuel_level)
+        interface.display.setCursorPos(2, 6)
+        interface.display.write("Fuel consumption: "..reactor.fuel_consumption)
+        interface.display.setCursorPos(2, 7)
+        interface.display.write("Fuel reactivity: "..reactor.fuel_reactivity)
+        interface.display.setCursorPos(2, 8)
+        interface.display.write("Controlrod level: "..reactor.control_rod)
+        interface.display.setCursorPos(2, 9)
+        interface.display.write("Fuel temperature: "..reactor.fuel_temp)
+        interface.display.setCursorPos(2, 10)
+        interface.display.write("Case temperature: "..reactor.casing_temp)
+        if reactor.active then
+            interface.buttons.react_power.label = "On"
+            interface.buttons.react_power.bg_color = colors.green
+        else
+            interface.buttons.react_power.label = "Off"
+            interface.buttons.react_power.bg_color = colors.orange
+        end
+        interface.buttons.react_power.draw()
+    end
+
+    function interface.set_title(title)
+        interface.display.setCursorPos(1,1)
+        interface.display.write(title)
     end
 
     function interface.check_touch(pos_x, pos_y)

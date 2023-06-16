@@ -36,6 +36,21 @@ end
 link.init(config.modem_side, handle_info)
 link.discovery()
 
+info = {}
+info.fuel_consumption = 100
+info.fuel_reactivity = 50
+info.energy = 50
+info.stored_energy = 50
+info.fuel_level = 50
+info.fuel_consumption = 50
+info.fuel_reactivity = 50
+info.control_rod = 50
+info.fuel_temp = 50
+info.casing_temp = 50
+info.active = false
+
+monitor.update_reactor_stats(info)
+
 while true do
     if not main() then
         return
