@@ -101,6 +101,7 @@ local function Miner()
             turtle.back()
             miner.forward_pos = miner.forward_pos - 1
         elseif miner.depth < miner.home_y then
+            print("Going back to ".. miner.home_y)
             turtle.up()
             miner.depth = miner.depth + 1
         else
