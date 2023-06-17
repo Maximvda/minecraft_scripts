@@ -31,15 +31,9 @@ local function Miner()
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
-    miner.ticks = 0
-    miner.MAX_TICKS = 100
 
     -- Main loop which is executed
     function miner.tick()
-        miner.ticks = miner.ticks + 1
-        if miner.ticks > miner.MAX_TICKS then
-            miner.move_home()
-        end
         -- Being idle
         if miner.idle then
             os.sleep(5)
@@ -102,7 +96,6 @@ local function Miner()
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
-            print("Miner going idle")
             miner.moving_home = false
             miner.idle = true
         end
@@ -265,7 +258,6 @@ local function Miner()
         while miner.pos_y == nil do
             miner.update_gps()
         end
-        miner.ticks = 0
         miner.home = vector.new(miner.gps_pos)
         miner.home_y = miner.pos_y
         miner.idle = false
