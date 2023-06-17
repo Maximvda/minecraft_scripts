@@ -20,8 +20,8 @@ local function Miner()
     miner.find_tunnel_end = false
     miner.checking_vein = false
     miner.vein_path = {}
-    miner.gps_pos = {gps.locate()}
-    miner.home = vector.new(miner.gps_pos)
+    miner.gps_pos = nil
+    miner.home = nil
     miner.map = {0,0,0,0}
     miner.fuel_limit = turtle.getFuelLimit()
     miner.fuel = turtle.getFuelLevel()
@@ -32,7 +32,7 @@ local function Miner()
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
     miner.ticks = 0
-    miner.MAX_TICKS = 40
+    miner.MAX_TICKS = 50
 
     -- Main loop which is executed
     function miner.tick()
@@ -74,7 +74,11 @@ local function Miner()
         end
         miner.pos_y = miner.gps_pos[2]
         local position = vector.new(miner.gps_pos)
-        miner.dist_home = position - miner.home
+        if miner.home ~= nil then
+            miner.dist_home = position - miner.home
+        else
+            miner.dist_home = 0
+        end
     end
 
     function miner.falling_block()
@@ -265,10 +269,9 @@ local function Miner()
     function miner.start()
         while miner.pos_y == nil do
             miner.update_gps()
-            miner.home = vector.new(miner.gps_pos)
-            miner.home_y = miner.pos_y
-            print("Found gps position starting miner")
         end
+        miner.home = vector.new(miner.gps_pos)
+        miner.home_y = miner.pos_y
         miner.idle = false
         miner.find_tunnel_end = true
         miner.vein_path = {}
