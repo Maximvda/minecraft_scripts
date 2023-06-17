@@ -1,27 +1,32 @@
 -- Class for monitor interface
 
-local function btn_callback(button)
-    if (button.label == "Blocks") then
-        link.send_command(link.ids.smeltery, 1)
-        button.toggle_color()
-    elseif (button.label == "Ingots") then
-        link.send_command(link.ids.smeltery, 0)
-        button.toggle_color()
-    elseif (button.label == "Rods") then
-        link.send_command(link.ids.smeltery, 2)
-        button.toggle_color()
-    elseif (button.label == "Wires") then
-        link.send_command(link.ids.smeltery, 3)
-        button.toggle_color()
-    elseif (button.label == "Plates") then
-        link.send_command(link.ids.smeltery, 4)
-        button.toggle_color()
-    elseif (button.label == "Start") then
-        link.send_command(link.ids.turtle, "Start")
-        button.set_color(colors.green)
-    elseif (button.label == "Go home") then
-        link.send_command(link.ids.turtle, "Go home")
-        button.set_color(colors.green)
+local function btn_callback(button, view)
+    if view == "smeltery" then
+        if (button.label == "Blocks") then
+            link.send_command(link.ids.smeltery, 1)
+            button.toggle_color()
+        elseif (button.label == "Ingots") then
+            link.send_command(link.ids.smeltery, 0)
+            button.toggle_color()
+        elseif (button.label == "Rods") then
+            link.send_command(link.ids.smeltery, 2)
+            button.toggle_color()
+        elseif (button.label == "Wires") then
+            link.send_command(link.ids.smeltery, 3)
+            button.toggle_color()
+        elseif (button.label == "Plates") then
+            link.send_command(link.ids.smeltery, 4)
+            button.toggle_color()
+        end
+    end
+    if view == "turtle" then
+        elseif (button.label == "Start") then
+            link.send_command(link.ids.turtle, "Start")
+            button.set_color(colors.green)
+        elseif (button.label == "Go home") then
+            link.send_command(link.ids.turtle, "Go home")
+            button.set_color(colors.green)
+        end
     end
 end
 
@@ -215,7 +220,7 @@ function Interface()
                     return interface.show_view(interface.views[interface.views_index+1])
                 end
                 if btn_callback ~= nil then
-                    res = btn_callback(but)
+                    res = btn_callback(but, interface.view)
                 end
             end
         end
