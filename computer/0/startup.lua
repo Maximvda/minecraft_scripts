@@ -40,32 +40,6 @@ end
 link.init(config.modem_side, handle_info)
 link.discovery()
 
---info = {}
---info.fuel_consumption = 100
---info.fuel_reactivity = 50
---info.energy = 50
---info.stored_energy = 50
---info.fuel_level = 50
---info.fuel_consumption = 50
---info.fuel_reactivity = 50
---info.control_rod = 50
---info.fuel_temp = 50
---info.casing_temp = 50
---info.active = false
---
---monitor.update_reactor_stats(info)
-
-info = {}
-info.fuel = 100
-info.map = {4, 10, 7, 7}
-info.dist_home = 200
-info.gps = {3,4,5}
-info.idle = false
-info.find_tunnel_end = false
-info.checking_vein = false
-info.moving_home = false
-
-monitor.update_miner_stats(info)
 
 while true do
     if not main() then

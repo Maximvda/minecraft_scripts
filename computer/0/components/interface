@@ -33,6 +33,7 @@ function Interface()
     interface.tanks_displayed = 0
     interface.views = {"smeltery", "reactor", "lighting", "turtle"}
     interface.views_index = 1
+    interface.smelter_data = nil
     interface.reactor_data = nil
     interface.miner_data = nil
 
@@ -62,6 +63,7 @@ function Interface()
             interface.buttons.rods.set_color(colors.orange)
             interface.buttons.wires.set_color(colors.orange)
             interface.buttons.plates.set_color(colors.orange)
+            interface.show_smeltery_levels(interface.smelter_data)
         elseif view == "reactor" then
             display.clear()
             interface.set_title("Reactor")
@@ -83,6 +85,10 @@ function Interface()
     end
 
     function interface.show_smeltery_levels(tanks)
+        interface.smelter_data = tanks
+        if view ~= "smeltery" then
+            return
+        end
         for i=1, interface.tanks_displayed do
             display.setCursorPos(20, i+1)
             display.write("                      ")
@@ -97,6 +103,9 @@ function Interface()
     end
 
     function interface.update_reactor_stats(reactor)
+        if view ~= "reactor" then
+            return
+        end
         interface.reactor_data = reactor
         display.setCursorPos(2, 3)
         display.write("Energy: "..reactor.energy)
@@ -126,6 +135,9 @@ function Interface()
 
     function interface.update_miner_stats(miner)
         interface.miner_data = miner
+        if view ~= "turtle" then
+            return
+        end
         if miner.idle or miner.moving_home then
             interface.buttons.go_home.set_color(colors.green)
             interface.buttons.start_mining.set_color(colors.orange)
