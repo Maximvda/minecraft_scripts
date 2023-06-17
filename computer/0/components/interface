@@ -20,7 +20,7 @@ local function btn_callback(button, view)
         end
     end
     if view == "turtle" then
-        elseif (button.label == "Start") then
+        if (button.label == "Start") then
             link.send_command(link.ids.turtle, "Start")
             button.set_color(colors.green)
         elseif (button.label == "Go home") then
@@ -209,6 +209,7 @@ function Interface()
         display.write(title)
     end
 
+    -- SHOULD OPTIMISE THIS TO ONLY CHECK BUTTONS THAT ARE IN CORRECT VIEW
     function interface.check_touch(pos_x, pos_y)
         for key, but in pairs(interface.buttons) do
             if but.check_touch(pos_x, pos_y) then
