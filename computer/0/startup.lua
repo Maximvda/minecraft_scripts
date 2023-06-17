@@ -60,6 +60,10 @@ info.fuel = 100
 info.map = {4, 10, 7, 7}
 info.dist_home = 200
 info.gps = {3,4,5}
+info.idle = false
+info.find_tunnel_end = false
+info.checking_vein = false
+info.moving_home = false
 
 monitor.update_miner_stats(info)
 

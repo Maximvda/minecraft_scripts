@@ -298,6 +298,9 @@ local function Miner()
         if miner.gps_pos ~= nil then
             miner.pos_y = miner.gps_pos[2]
         end
+        info.idle = miner.idle
+        info.find_tunnel_end = miner.find_tunnel_end
+        info.moving_home = miner.moving_home
         return info
     end
 

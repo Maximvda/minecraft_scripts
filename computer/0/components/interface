@@ -117,11 +117,30 @@ function Interface()
     function interface.update_miner_stats(miner)
         interface.miner_data = miner
         display.setCursorPos(2, 4)
-        display.write("Fuel level "..miner.fuel.." blocks.")
-        display.setCursorPos(2, 5)
-        display.write("Distance home "..miner.dist_home)
+        if miner.idle then
+            display.setTextColor(colors.blue)
+            display.write("Idle")
+        elseif miner.find_tunnel_end then
+            display.setTextColor(colors.yellow)
+            display.write("Finding tunnel end")
+        elseif miner.checking_vein then
+            display.setTextColor(colors.red)
+            display.write("Mining vein")
+        elseif miner.moving_home then
+            display.setTextColor(colors.green)
+            display.write("Going home")
+        else
+            display.setTextColor(colors.orange)
+            display.write("Mining")
+        end
+        display.setTextColor(colors.white)
+
         display.setCursorPos(2, 6)
-        display.write("Gps "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
+        display.write("Fuel level: "..miner.fuel.." blocks.")
+        display.setCursorPos(2, 7)
+        display.write("Distance home: "..miner.dist_home)
+        display.setCursorPos(2, 8)
+        display.write("Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
         local max = math.max(unpack(miner.map))
         local scale = max/7
         display.setCursorPos(42, 2)
@@ -142,7 +161,7 @@ function Interface()
                 display.write(" ")
             end
         end
-        display.setBackgroundColor(colors.white)
+        display.setBackgroundColor(colors.black)
     end
 
     function interface.set_title(title)
