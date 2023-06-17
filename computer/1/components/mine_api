@@ -33,13 +33,13 @@ local function Miner()
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
     miner.ticks = 0
-    miner.MAX_TICKS = 50
+    miner.MAX_TICKS = 100
 
     -- Main loop which is executed
     function miner.tick()
         miner.ticks = miner.ticks + 1
         if miner.ticks > miner.MAX_TICKS then
-            miner.go_home()
+            miner.move_home()
         end
         -- Being idle
         if miner.idle then
@@ -103,7 +103,7 @@ local function Miner()
         elseif miner.forward_pos > 0 then
             turtle.back()
             miner.forward_pos = miner.forward_pos - 1
-        elseif miner.pos_y < miner.home_y-1 then
+        elseif miner.pos_y < miner.home_y then
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
@@ -122,6 +122,7 @@ local function Miner()
             os.sleep(1)
         end
         turtle.forward()
+        miner.forward_pos = miner.forward_pos + 1
         miner.total_block_back = miner.total_block_back + 1
         miner.map[miner.direction] = miner.map[miner.direction] + 1
         miner.checking_vein = true
