@@ -148,6 +148,7 @@ function Interface()
             interface.buttons.start_mining.set_color(colors.green)
         end
         display.setCursorPos(2, 4)
+        display.clearLine()
         if miner.idle then
             display.setTextColor(colors.blue)
             display.write("Idle")

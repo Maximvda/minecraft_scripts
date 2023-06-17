@@ -22,6 +22,7 @@ local function Miner()
     miner.vein_path = {}
     miner.gps_pos = nil
     miner.home = nil
+    miner.dist_home = nil
     miner.map = {0,0,0,0}
     miner.fuel_limit = turtle.getFuelLimit()
     miner.fuel = turtle.getFuelLevel()
@@ -102,7 +103,7 @@ local function Miner()
         elseif miner.forward_pos > 0 then
             turtle.back()
             miner.forward_pos = miner.forward_pos - 1
-        elseif miner.pos_y < miner.home_y then
+        elseif miner.pos_y < miner.home_y-1 then
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
