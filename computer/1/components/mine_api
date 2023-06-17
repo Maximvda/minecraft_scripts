@@ -113,6 +113,7 @@ local function Miner()
 
     function miner.move_forwards()
         -- Get rid of falling blocks in front of miner
+        turtle.dig()
         while (miner.falling_block()) do
             turtle.dig()
             os.sleep(1)
@@ -129,16 +130,14 @@ local function Miner()
         if miner.checking_vein then
             if not miner.moving_home then
                 local success, data = turtle.inspectUp()
-                if miner.check_vein(success, data) and success then
-                    print("Vein up")
+                if miner.check_vein(success, data) then
                     turtle.digUp()
                     turtle.up()
                     table.insert(miner.vein_path, UP)
                     return
                 end
                 local success, data = turtle.inspect()
-                if miner.check_vein(success, data) and success then
-                    print("Vein forward")
+                if miner.check_vein(success, data) then
                     turtle.dig()
                     turtle.forward()
                     table.insert(miner.vein_path, FORWARD)
@@ -146,8 +145,7 @@ local function Miner()
                 end
                 turtle.turnLeft()
                 local success, data = turtle.inspect()
-                if miner.check_vein(success, data) and success then
-                    print("Vein left")
+                if miner.check_vein(success, data) then
                     turtle.dig()
                     turtle.forward()
                     table.insert(miner.vein_path, LEFT)
@@ -156,8 +154,7 @@ local function Miner()
                 turtle.turnRight()
                 turtle.turnRight()
                 local success, data = turtle.inspect()
-                if miner.check_vein(success, data) and success then
-                    print("Vein right")
+                if miner.check_vein(success, data) then
                     turtle.dig()
                     turtle.forward()
                     table.insert(miner.vein_path, RIGHT)
@@ -165,8 +162,7 @@ local function Miner()
                 end
                 turtle.turnLeft()
                 local success, data = turtle.inspectDown()
-                if miner.check_vein(success, data) and success then
-                    print("Vein down")
+                if miner.check_vein(success, data) then
                     turtle.digDown()
                     turtle.down()
                     table.insert(miner.vein_path, DOWN)
@@ -176,23 +172,19 @@ local function Miner()
 
             -- Move out of vein
             if #miner.vein_path > 0 then
+                print("Vein path length: " .. #miner.vein_path)
                 local action = miner.vein_path[#miner.vein_path]
                 if action == FORWARD then
-                    print("Return forward")
                     turtle.back()
                 elseif action == LEFT then
-                    print("Return LEFT")
+                    turtle.back()
                     turtle.turnRight()
-                    turtle.back()
                 elseif action == RIGHT then
-                    print("Return RIGHT")
-                    turtle.turnLeft()
                     turtle.back()
+                    turtle.turnLeft()
                 elseif action == DOWN then
-                    print("Return DOWN")
                     turtle.up()
                 elseif action == UP then
-                    print("Return UP")
                     turtle.down()
                 end
                 table.remove(miner.vein_path)
@@ -287,6 +279,10 @@ local function Miner()
         miner.moving_home = true
     end
 
+    function miner.set_depth(depth)
+        miner.depth = depth
+    end
+
     -------------------
     -- INFO FUNCTION --
     function miner.get_info()
@@ -294,8 +290,9 @@ local function Miner()
         miner.fuel = turtle.getFuelLevel()
         info.fuel = miner.fuel
         miner.tunnel_maps[miner.depth] = miner.map
-        info.maps = miner.tunnel_maps
+        info.map = miner.map
         miner.update_gps()
+        info.dist_home = miner.dist_home
         info.gps = miner.gps_pos
         miner.fuel_limit = turtle.getFuelLimit()
         if miner.gps_pos ~= nil then

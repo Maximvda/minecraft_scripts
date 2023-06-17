@@ -8,12 +8,20 @@ os.loadAPI("components/mine_api")
 miner = mine_api.init()
 
 local function callback_message(message)
-    print(message)
+    if message == "Start" then
+        miner.start()
+    elseif  message == "Go home" then
+        miner.go_home()
+    elseif type(message) == table then
+        if message[1] == "Set depth" then
+            miner.set_depth(message[2])
+        end
+    end
 end
 
 
 local link = link_class.init(config.modem_side, callback_message)
-update_timer = os.startTimer(5)
+update_timer = os.startTimer(10)
 
 
 local function event_loop()
@@ -28,7 +36,7 @@ local function event_loop()
 
         if event[1] == "timer" and event[2] == update_timer then
             info = miner.get_info(info)
-            update_timer = os.startTimer(5)
+            update_timer = os.startTimer(10)
             link.send_data(info)
         end
     end
@@ -39,8 +47,6 @@ local function turtle_loop()
         miner.tick()
     end
 end
-
-miner.start()
 
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(

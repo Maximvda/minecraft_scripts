@@ -23,25 +23,26 @@ end
 function Interface()
     local interface = {}
     -- Initialise variables
-    interface.display = peripheral.wrap(config.monitor)
+    local display = peripheral.wrap(config.monitor)
     interface.buttons = {}
     interface.tanks_displayed = 0
-    interface.views = {"smeltery", "reactor"}
+    interface.views = {"smeltery", "reactor", "lighting", "turtle"}
     interface.views_index = 1
     interface.reactor_data = nil
+    interface.miner_data = nil
 
     -- Initialise the view
-    interface.display.setBackgroundColor(colors.black)
-    interface.display.setTextScale(.5)
-    interface.display.clear()
-    interface.buttons.blocks = button_class.Button("Blocks", 2, 2, interface.display)
-    interface.buttons.ingots = button_class.Button("Ingots", 2, 4, interface.display)
-    interface.buttons.rods = button_class.Button("Rods", 2, 6, interface.display)
-    interface.buttons.wires = button_class.Button("Wires", 2, 8, interface.display)
-    interface.buttons.plates = button_class.Button("Plates", 2, 10, interface.display)
-    interface.buttons.react_power = button_class.Button("On", 20, 2, interface.display)
-    interface.buttons.cycle_left = button_class.Button("<", 44, 18, interface.display)
-    interface.buttons.cycle_right = button_class.Button(">", 48, 18, interface.display)
+    display.setBackgroundColor(colors.black)
+    display.setTextScale(.5)
+    display.clear()
+    interface.buttons.blocks = button_class.Button("Blocks", 2, 2, display)
+    interface.buttons.ingots = button_class.Button("Ingots", 2, 4, display)
+    interface.buttons.rods = button_class.Button("Rods", 2, 6, display)
+    interface.buttons.wires = button_class.Button("Wires", 2, 8, display)
+    interface.buttons.plates = button_class.Button("Plates", 2, 10, display)
+    interface.buttons.react_power = button_class.Button("On", 20, 2, display)
+    interface.buttons.cycle_left = button_class.Button("<", 44, 18, display)
+    interface.buttons.cycle_right = button_class.Button(">", 48, 18, display)
 
     function interface.show_view(view)
         if view == "smeltery" then
@@ -52,13 +53,20 @@ function Interface()
             interface.buttons.wires.set_color(colors.orange)
             interface.buttons.plates.set_color(colors.orange)
         elseif view == "reactor" then
-            interface.display.clear()
+            display.clear()
             interface.set_title("Reactor")
             if interface.reactor_data ~= nil then
                 interface.update_reactor_stats(interface.reactor_data)
             end
         elseif view == "lighting" then
-            print("TODO showing lighting")
+            display.clear()
+            interface.set_title("Lighting menu")
+        elseif view == "turtle" then
+            display.clear()
+            interface.set_title("Mining turtle")
+            if interface.miner_data ~= nil then
+                interface.update_miner_stats(interface.miner_data)
+            end
         end
         interface.buttons.cycle_left.set_color(colors.lightGray)
         interface.buttons.cycle_right.set_color(colors.lightGray)
@@ -66,13 +74,13 @@ function Interface()
 
     function interface.show_smeltery_levels(tanks)
         for i=1, interface.tanks_displayed do
-            interface.display.setCursorPos(20, i+1)
-            interface.display.write("                      ")
+            display.setCursorPos(20, i+1)
+            display.write("                      ")
         end
         local max = 0
         for i, tank in pairs(tanks) do
-            interface.display.setCursorPos(20, i+1)
-            interface.display.write(tank[1] .. ": " .. tank[2] .. " ingots")
+            display.setCursorPos(20, i+1)
+            display.write(tank[1] .. ": " .. tank[2] .. " ingots")
             max = i
         end
         interface.tanks_displayed = max+1
@@ -80,22 +88,22 @@ function Interface()
 
     function interface.update_reactor_stats(reactor)
         interface.reactor_data = reactor
-        interface.display.setCursorPos(2, 3)
-        interface.display.write("Energy: "..reactor.energy)
-        interface.display.setCursorPos(2, 4)
-        interface.display.write("Stored: "..reactor.stored_energy)
-        interface.display.setCursorPos(2, 5)
-        interface.display.write("Fuel level: "..reactor.fuel_level)
-        interface.display.setCursorPos(2, 6)
-        interface.display.write("Fuel consumption: "..reactor.fuel_consumption)
-        interface.display.setCursorPos(2, 7)
-        interface.display.write("Fuel reactivity: "..reactor.fuel_reactivity)
-        interface.display.setCursorPos(2, 8)
-        interface.display.write("Controlrod level: "..reactor.control_rod)
-        interface.display.setCursorPos(2, 9)
-        interface.display.write("Fuel temperature: "..reactor.fuel_temp)
-        interface.display.setCursorPos(2, 10)
-        interface.display.write("Case temperature: "..reactor.casing_temp)
+        display.setCursorPos(2, 3)
+        display.write("Energy: "..reactor.energy)
+        display.setCursorPos(2, 4)
+        display.write("Stored: "..reactor.stored_energy)
+        display.setCursorPos(2, 5)
+        display.write("Fuel level: "..reactor.fuel_level)
+        display.setCursorPos(2, 6)
+        display.write("Fuel consumption: "..reactor.fuel_consumption)
+        display.setCursorPos(2, 7)
+        display.write("Fuel reactivity: "..reactor.fuel_reactivity)
+        display.setCursorPos(2, 8)
+        display.write("Controlrod level: "..reactor.control_rod)
+        display.setCursorPos(2, 9)
+        display.write("Fuel temperature: "..reactor.fuel_temp)
+        display.setCursorPos(2, 10)
+        display.write("Case temperature: "..reactor.casing_temp)
         if reactor.active then
             interface.buttons.react_power.label = "On"
             interface.buttons.react_power.bg_color = colors.green
@@ -106,9 +114,40 @@ function Interface()
         interface.buttons.react_power.draw()
     end
 
+    function interface.update_miner_stats(miner)
+        interface.miner_data = miner
+        display.setCursorPos(2, 4)
+        display.write("Fuel level "..miner.fuel.." blocks.")
+        display.setCursorPos(2, 5)
+        display.write("Distance home "..miner.dist_home)
+        display.setCursorPos(2, 6)
+        display.write("Gps "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
+        local max = math.max(unpack(miner.map))
+        local scale = max/7
+        display.setCursorPos(42, 2)
+        display.write("Scale "..scale)
+        display.setBackgroundColor(colors.brown)
+        for i, data in pairs(miner.map) do
+            data = math.floor(data/scale)
+            for j=1, data do
+                if i == 1 then
+                    display.setCursorPos(40, 9-j)
+                elseif i == 2 then
+                    display.setCursorPos(40+j, 9)
+                elseif i == 3 then
+                    display.setCursorPos(40, 9+j)
+                elseif i == 4 then
+                    display.setCursorPos(40-j, 9)
+                end
+                display.write(" ")
+            end
+        end
+        display.setBackgroundColor(colors.white)
+    end
+
     function interface.set_title(title)
-        interface.display.setCursorPos(1,1)
-        interface.display.write(title)
+        display.setCursorPos(1,1)
+        display.write(title)
     end
 
     function interface.check_touch(pos_x, pos_y)
