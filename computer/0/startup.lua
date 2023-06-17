@@ -33,7 +33,7 @@ local function handle_info(id, message)
     end
 
     if id == link.ids.turtle then
-        print(message)
+        monitor.update_miner_stats(message)
     end
 end
 

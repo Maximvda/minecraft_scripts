@@ -31,6 +31,7 @@ function Interface()
     local display = peripheral.wrap(config.monitor)
     interface.buttons = {}
     interface.tanks_displayed = 0
+    interface.view = "smeltery"
     interface.views = {"smeltery", "reactor", "lighting", "turtle"}
     interface.views_index = 1
     interface.smelter_data = nil
@@ -56,6 +57,7 @@ function Interface()
     interface.buttons.cycle_right = button_class.Button(">", 48, 18, display)
 
     function interface.show_view(view)
+        interface.view = view
         if view == "smeltery" then
             display.clear()
             interface.buttons.blocks.set_color(colors.orange)
@@ -86,7 +88,7 @@ function Interface()
 
     function interface.show_smeltery_levels(tanks)
         interface.smelter_data = tanks
-        if view ~= "smeltery" then
+        if interface.view ~= "smeltery" then
             return
         end
         for i=1, interface.tanks_displayed do
@@ -103,7 +105,7 @@ function Interface()
     end
 
     function interface.update_reactor_stats(reactor)
-        if view ~= "reactor" then
+        if interface.view ~= "reactor" then
             return
         end
         interface.reactor_data = reactor
@@ -135,7 +137,7 @@ function Interface()
 
     function interface.update_miner_stats(miner)
         interface.miner_data = miner
-        if view ~= "turtle" then
+        if interface.view ~= "turtle" then
             return
         end
         if miner.idle or miner.moving_home then
