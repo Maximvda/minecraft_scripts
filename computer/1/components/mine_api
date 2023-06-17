@@ -269,6 +269,7 @@ local function Miner()
         while miner.pos_y == nil do
             miner.update_gps()
         end
+        miner.ticks = 0
         miner.home = vector.new(miner.gps_pos)
         miner.home_y = miner.pos_y
         miner.idle = false
