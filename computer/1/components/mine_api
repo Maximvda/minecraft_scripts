@@ -305,6 +305,7 @@ local function Miner()
         info.idle = miner.idle
         info.find_tunnel_end = miner.find_tunnel_end
         info.moving_home = miner.moving_home
+        info.checking_vein = miner.checking_vein
         return info
     end
 

@@ -28,9 +28,7 @@ local function event_loop()
                 info = smelter.get_info()
                 update_timer = os.startTimer(10)
                 link.send_data(info)
-                print("Update timer")
             elseif event[2] == smelter.control_timer then
-                print("Control timer")
                 smelter.control_tick()
             end
         end
