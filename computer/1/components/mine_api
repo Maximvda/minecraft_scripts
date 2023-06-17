@@ -22,7 +22,6 @@ local function Miner()
     miner.vein_path = {}
     miner.gps_pos = nil
     miner.home = nil
-    miner.dist_home = nil
     miner.map = {0,0,0,0}
     miner.fuel_limit = turtle.getFuelLimit()
     miner.fuel = turtle.getFuelLevel()
@@ -74,10 +73,6 @@ local function Miner()
             return
         end
         miner.pos_y = miner.gps_pos[2]
-        local position = vector.new(miner.gps_pos)
-        if miner.home ~= nil then
-            miner.dist_home = position - miner.home
-        end
     end
 
     function miner.falling_block()
@@ -277,6 +272,7 @@ local function Miner()
         miner.find_tunnel_end = true
         miner.vein_path = {}
         miner.checking_vein = false
+        miner.direction = nil
     end
 
     function miner.go_home()
@@ -296,7 +292,6 @@ local function Miner()
         miner.tunnel_maps[miner.depth] = miner.map
         info.map = miner.map
         miner.update_gps()
-        info.dist_home = miner.dist_home
         info.gps = miner.gps_pos
         miner.fuel_limit = turtle.getFuelLimit()
         if miner.gps_pos ~= nil then
@@ -306,6 +301,7 @@ local function Miner()
         info.find_tunnel_end = miner.find_tunnel_end
         info.moving_home = miner.moving_home
         info.checking_vein = miner.checking_vein
+        info.total_block_back = miner.total_block_back
         return info
     end
 
