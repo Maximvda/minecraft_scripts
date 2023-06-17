@@ -16,5 +16,5 @@ ignore_blocks = {
     "marble",
     "worm",
     "cobble",
-    "dirt,
+    "dirt",
 }
