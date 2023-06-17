@@ -76,8 +76,6 @@ local function Miner()
         local position = vector.new(miner.gps_pos)
         if miner.home ~= nil then
             miner.dist_home = position - miner.home
-        else
-            miner.dist_home = 0
         end
     end
 
