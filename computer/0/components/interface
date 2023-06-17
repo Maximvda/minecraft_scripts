@@ -16,7 +16,12 @@ local function btn_callback(button)
     elseif (button.label == "Plates") then
         link.send_command(link.ids.smeltery, 4)
         button.toggle_color()
-
+    elseif (button.label == "Start") then
+        link.send_command(link.ids.turtle, "Start")
+        button.set_color(colors.green)
+    elseif (button.label == "Go home") then
+        link.send_command(link.ids.turtle, "Go home")
+        button.set_color(colors.green)
     end
 end
 
@@ -40,7 +45,12 @@ function Interface()
     interface.buttons.rods = button_class.Button("Rods", 2, 6, display)
     interface.buttons.wires = button_class.Button("Wires", 2, 8, display)
     interface.buttons.plates = button_class.Button("Plates", 2, 10, display)
+    -- Reactor buttons
     interface.buttons.react_power = button_class.Button("On", 20, 2, display)
+    -- Miner buttons
+    interface.buttons.start_mining = button_class.Button("Start", 5, 10, display)
+    interface.buttons.go_home = button_class.Button("Go home", 15, 10, display)
+    -- Cycle buttons
     interface.buttons.cycle_left = button_class.Button("<", 44, 18, display)
     interface.buttons.cycle_right = button_class.Button(">", 48, 18, display)
 
@@ -116,10 +126,18 @@ function Interface()
 
     function interface.update_miner_stats(miner)
         interface.miner_data = miner
+        if miner.idle or miner.moving_home then
+            interface.buttons.go_home.set_color(colors.green)
+            interface.buttons.start_mining.set_color(colors.orange)
+        else
+            interface.buttons.go_home.set_color(colors.orange)
+            interface.buttons.start_mining.set_color(colors.green)
+        end
         display.setCursorPos(2, 4)
         if miner.idle then
             display.setTextColor(colors.blue)
             display.write("Idle")
+            interface.buttons.go_home.set_color(colors.orange)
         elseif miner.find_tunnel_end then
             display.setTextColor(colors.yellow)
             display.write("Finding tunnel end")
