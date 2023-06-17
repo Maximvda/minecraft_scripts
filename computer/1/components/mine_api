@@ -27,7 +27,7 @@ local function Miner()
     miner.fuel = turtle.getFuelLevel()
     miner.forward_pos = 0
     miner.total_block_back = 0
-    miner.depth = 35
+    miner.depth = 25
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map
     miner.direction = nil
