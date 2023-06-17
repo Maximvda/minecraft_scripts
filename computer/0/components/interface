@@ -56,7 +56,7 @@ function Interface()
 
     function interface.show_view(view)
         if view == "smeltery" then
-            interface.display.clear()
+            display.clear()
             interface.buttons.blocks.set_color(colors.orange)
             interface.buttons.ingots.set_color(colors.orange)
             interface.buttons.rods.set_color(colors.orange)
