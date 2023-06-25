@@ -143,19 +143,25 @@ local function Miner()
             end
         else
             miner.move_forwards()
-            miner.find_veins(FORWARD)
         end
     end
 
     function miner.mine_vein()
-        local length = #miner.vein_table[#miner.vein_path]
-        if length > 0 then
-            local action = miner.vein_table[#miner.vein_path][length]
-            table.remove(miner.vein_table[#miner.vein_path])
-            miner.find_veins(action)
-        else
-            table.remove(miner.vein_table)
+        -- Haven't searched veins at this depth if table is still nil
+        if miner.vein_table[#miner.vein_path] == nil then
+            if miner.find_veins(FORWARD) then -- So first find veins
+                return -- If found we return and continue checks
+            end
+            -- No vein found so we move out of vein
             miner.move_out_vein()
+        else -- We already searched at this depth so continue search
+            local action = miner.vein_table[#miner.vein_path]
+            if miner.find_veins(action) then
+                return
+            else -- No new veins found so delete last element of vein table
+                table.remove(miner.vein_table) -- Delete the table entry which held no veins
+                miner.move_out_vein() -- Move out of vein with one step
+            end
         end
     end
 
@@ -172,8 +178,11 @@ local function Miner()
         elseif action == UP then
             miner.up()
         end
+        if miner.vein_table[#miner.vein_path] == nil then
+            miner.vein_table[#miner.vein_path] = {}
+        end
+        miner.vein_table[#miner.vein_path] = action
         table.insert(miner.vein_path, action)
-        table.insert(miner.vein_table[#miner.vein_path], action)
     end
 
     function miner.move_out_vein()
@@ -205,32 +214,33 @@ local function Miner()
             if i == 1 then
                 if miner.check_vein(turtle.inspect) then
                     miner.vein_action(FORWARD)
-                    return
+                    return true
                 end
             elseif i == 2 then
                 if miner.check_vein(turtle.inspectUp) then
                     miner.vein_action(UP)
-                    return
+                    return true
                 end
             elseif i == 3 then
                 if miner.check_vein(turtle.inspectDown) then
                     miner.vein_action(DOWN)
-                    return
+                    return true
                 end
             elseif i == 4 then
                 turtle.turnLeft()
                 if miner.check_vein(turtle.inspect) then
                     miner.vein_action(LEFT)
-                    return
+                    return true
                 end
             elseif i == 5 then
                 turtle.turnRight()
                 if miner.check_vein(turtle.inspectUp) then
                     miner.vein_action(RIGHT)
-                    return
+                    return true
                 end
             end
         end
+        return false
     end
 
     function miner.check_vein(inspect_fnc)
