@@ -2,11 +2,11 @@
 
 -- Helper variables
 local FORWARD = 1
-local RIGHT = 2
-local BACKWARD = 3
+local UP = 2
+local DOWN = 3
 local LEFT = 4
-local UP = 5
-local DOWN = 6
+local RIGHT = 5
+local BACKWARD = 6
 
 -- Tunnel map has structure like this
 -- First index is y_depth
@@ -143,7 +143,7 @@ local function Miner()
             end
         else
             miner.move_forwards()
-            miner.find_veins()
+            miner.find_veins(FORWARD)
         end
     end
 
@@ -151,27 +151,29 @@ local function Miner()
         local length = #miner.vein_table[#miner.vein_path]
         if length > 0 then
             local action = miner.vein_table[#miner.vein_path][length]
-            if action == FORWARD then
-                miner.forward()
-            elseif action == LEFT then
-                turtle.turnLeft()
-                miner.forward()
-            elseif action == RIGHT then
-                turtle.turnRight()
-                miner.forward()
-            elseif action == DOWN then
-                turtle.digDown()
-                turtle.down()
-            elseif action == UP then
-                miner.up()
-            end
             table.remove(miner.vein_table[#miner.vein_path])
-            table.insert(miner.vein_path, action)
-            miner.find_veins()
+            miner.find_veins(action)
         else
             table.remove(miner.vein_table)
             miner.move_out_vein()
         end
+    end
+
+    function miner.vein_action(action)
+        if action == FORWARD then
+            miner.forward()
+        elseif action == LEFT then
+            miner.forward()
+        elseif action == RIGHT then
+            miner.forward()
+        elseif action == DOWN then
+            turtle.digDown()
+            turtle.down()
+        elseif action == UP then
+            miner.up()
+        end
+        table.insert(miner.vein_path, action)
+        table.insert(miner.vein_table[#miner.vein_path], action)
     end
 
     function miner.move_out_vein()
@@ -198,26 +200,37 @@ local function Miner()
         end
     end
 
-    function miner.find_veins()
-        miner.vein_table[#miner.vein_path] = {}
-        if miner.check_vein(turtle.inspectUp) then
-            table.insert(miner.vein_table[#miner.vein_path], UP)
+    function miner.find_veins(check_from)
+        for i=check_from,5 do
+            if i == 1 then
+                if miner.check_vein(turtle.inspect) then
+                    miner.vein_action(FORWARD)
+                    return
+                end
+            elseif i == 2 then
+                if miner.check_vein(turtle.inspectUp) then
+                    miner.vein_action(UP)
+                    return
+                end
+            elseif i == 3 then
+                if miner.check_vein(turtle.inspectDown) then
+                    miner.vein_action(DOWN)
+                    return
+                end
+            elseif i == 4 then
+                turtle.turnLeft()
+                if miner.check_vein(turtle.inspect) then
+                    miner.vein_action(LEFT)
+                    return
+                end
+            elseif i == 5 then
+                turtle.turnRight()
+                if miner.check_vein(turtle.inspectUp) then
+                    miner.vein_action(RIGHT)
+                    return
+                end
+            end
         end
-        if miner.check_vein(turtle.inspectDown) then
-            table.insert(miner.vein_table[#miner.vein_path], DOWN)
-        end
-        if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[#miner.vein_path], FORWARD)
-        end
-        turtle.turnLeft()
-        if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[#miner.vein_path], LEFT)
-        end
-        miner.full_turn()
-        if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[#miner.vein_path], RIGHT)
-        end
-        turtle.turnLeft()
     end
 
     function miner.check_vein(inspect_fnc)
