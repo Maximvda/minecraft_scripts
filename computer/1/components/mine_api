@@ -232,12 +232,14 @@ local function Miner()
                     miner.vein_action(LEFT)
                     return true
                 end
+                turtle.turnRight()
             elseif i == 5 then
                 turtle.turnRight()
                 if miner.check_vein(turtle.inspectUp) then
                     miner.vein_action(RIGHT)
                     return true
                 end
+                turtle.turnLeft()
             end
         end
         return false
