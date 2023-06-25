@@ -21,7 +21,6 @@ local function Miner()
     miner.checking_vein = false
     miner.vein_path = {}
     miner.vein_table = {}
-    miner.vein_depth = 0
     miner.gps_pos = nil
     miner.home = nil
     miner.map = {0,0,0,0}
@@ -149,7 +148,7 @@ local function Miner()
 
     function miner.mine_vein()
         miner.find_veins()
-        local length = miner.vein_table[#miner.vein_path][#miner.vein_table[#miner.vein_path]]
+        local length = #miner.vein_table[#miner.vein_path]
         if length > 0 then
             local action = miner.vein_table[#miner.vein_path][length]
             if action == FORWARD then
@@ -199,24 +198,25 @@ local function Miner()
     end
 
     function miner.find_veins()
-        miner.vein_table[miner.vein_depth] = {}
+        miner.vein_table[#miner.vein_path] = {}
         if miner.check_vein(turtle.inspectUp) then
-            table.insert(miner.vein_table[miner.vein_depth], UP)
+            table.insert(miner.vein_table[#miner.vein_path], UP)
         end
         if miner.check_vein(turtle.inspectDown) then
-            table.insert(miner.vein_table[miner.vein_depth], DOWN)
+            table.insert(miner.vein_table[#miner.vein_path], DOWN)
         end
         if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[miner.vein_depth], FORWARD)
+            table.insert(miner.vein_table[#miner.vein_path], FORWARD)
         end
         turtle.turnLeft()
         if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[miner.vein_depth], LEFT)
+            table.insert(miner.vein_table[#miner.vein_path], LEFT)
         end
         miner.full_turn()
         if miner.check_vein(turtle.inspect) then
-            table.insert(miner.vein_table[miner.vein_depth], RIGHT)
+            table.insert(miner.vein_table[#miner.vein_path], RIGHT)
         end
+        turtle.turnLeft()
     end
 
     function miner.check_vein(inspect_fnc)
