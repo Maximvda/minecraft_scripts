@@ -210,6 +210,7 @@ local function Miner()
     end
 
     function miner.find_veins(check_from)
+        print("Vein check from ".. check_from)
         for i=check_from,5 do
             if i == 1 then
                 if miner.check_vein(turtle.inspect) then
@@ -235,7 +236,7 @@ local function Miner()
                 turtle.turnRight()
             elseif i == 5 then
                 turtle.turnRight()
-                if miner.check_vein(turtle.inspectUp) then
+                if miner.check_vein(turtle.inspect) then
                     miner.vein_action(RIGHT)
                     return true
                 end
