@@ -24,7 +24,7 @@ local function Miner()
     -- Vein checking variables
     miner.direction = nil
     miner.vein_path = {}
-    miner.vein_action = nil
+    miner.last_vein_check = nil
     miner.forward_pos = 0
     miner.total_block_back = 0
     miner.depth = 32
@@ -133,19 +133,14 @@ local function Miner()
         logger.log("Vein tick: "..miner.vein_tick)
         miner.vein_tick = miner.vein_tick + 1
         logger.log_table("Path", miner.vein_path)
-        -- We have new vein
-        if miner.vein_action == nil then
-            if miner.find_veins(FORWARD) then
-                return -- If found we return and continue checks
-            end
-            -- No vein found so moving back
-            miner.move_out_vein()
-        else
-            if miner.find_veins(miner.vein_action+1) then
-                return
-            end
-            miner.move_out_vein()
+        if miner.last_vein_check == nil then -- We have new vein
+            miner.last_vein_check = 0
         end
+        if miner.find_veins(miner.last_vein_check+1) then
+            return -- If found we return and continue checks
+        end
+        -- No vein found so moving back
+        miner.move_out_vein()
     end
 
     function miner.vein_action(action)
@@ -161,7 +156,7 @@ local function Miner()
         elseif action == UP then
             miner.up()
         end
-        miner.vein_action = nil
+        miner.last_vein_check = nil
         table.insert(miner.vein_path, action)
     end
 
@@ -178,12 +173,12 @@ local function Miner()
                 turtle.back()
                 turtle.turnLeft()
             elseif action == DOWN then
-                turtle.up()
+                miner.up()
             elseif action == UP then
                 turtle.down()
             end
             table.remove(miner.vein_path)
-            miner.vein_action = action
+            miner.last_vein_check = action
         else
             miner.checking_vein = false
         end
