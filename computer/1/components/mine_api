@@ -312,7 +312,7 @@ local function Miner()
         miner.vein_path = {}
         miner.checking_vein = false
         miner.direction = nil
-        miner.vein_action = nil
+        miner.last_vein_check = nil
     end
 
     function miner.go_home()
