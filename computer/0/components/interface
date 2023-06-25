@@ -175,11 +175,11 @@ function Interface()
 
         display.setCursorPos(2, 6)
         display.write("Fuel level: "..miner.fuel.." blocks.")
-        display.setCursorPos(2, 7)
+        display.setCursorPos(2, 8)
         if miner.total_block_back ~= nil then
             display.write("Distance home: "..miner.total_block_back)
         end
-        display.setCursorPos(2, 8)
+        display.setCursorPos(2, 10)
         display.write("Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z      ")
         local max = math.max(unpack(miner.map))
         local scale = max/7

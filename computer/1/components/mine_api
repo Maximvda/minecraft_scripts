@@ -230,6 +230,9 @@ local function Miner()
                 return false
             end
         end
+        if string.find(data.name, "coal") then
+            turtle.refuel(1)
+        end
         return true
     end
 
