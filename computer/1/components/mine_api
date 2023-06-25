@@ -20,6 +20,8 @@ local function Miner()
     miner.find_tunnel_end = false
     miner.checking_vein = false
     miner.vein_path = {}
+    miner.vein_table = {}
+    miner.vein_depth = 0
     miner.gps_pos = nil
     miner.home = nil
     miner.map = {0,0,0,0}
@@ -56,7 +58,7 @@ local function Miner()
         end
 
         -- Finally we need to check if we need to go back home
-        miner.check_fuel()
+        miner.check_go_back()
 
     end
 
@@ -69,8 +71,8 @@ local function Miner()
         miner.pos_y = miner.gps_pos[2]
     end
 
-    function miner.falling_block()
-        local success, data = turtle.inspect()
+    function miner.falling_block(inspect_fnc)
+        local success, data = inspect_fnc()
         for key, value in pairs(config.falling_blocks) do
             if data.name == value then
                 return true
@@ -104,93 +106,121 @@ local function Miner()
     end
 
     function miner.move_forwards()
-        -- Get rid of falling blocks in front of miner
-        turtle.dig()
-        while (miner.falling_block()) do
-            turtle.dig()
-            os.sleep(1)
-        end
-        turtle.forward()
+        miner.forward()
         miner.forward_pos = miner.forward_pos + 1
         miner.total_block_back = miner.total_block_back + 1
         miner.map[miner.direction] = miner.map[miner.direction] + 1
         miner.checking_vein = true
     end
 
+    function miner.forward()
+        -- Get rid of falling blocks in front of miner
+        turtle.dig()
+        while (miner.falling_block(turtle.inspect)) do
+            turtle.dig()
+            os.sleep(1)
+        end
+        turtle.forward()
+    end
+
+    function miner.up()
+        -- Get rid of falling blocks in front of miner
+        turtle.digUp()
+        while (miner.falling_block(turtle.inspectUp)) do
+            turtle.digUp()
+            os.sleep(1)
+        end
+        turtle.up()
+    end
+
 
     function miner.strip_mine()
         -- Vein checking order is up,
         if miner.checking_vein then
-            if not miner.moving_home then
-                local success, data = turtle.inspectUp()
-                if miner.check_vein(success, data) then
-                    turtle.digUp()
-                    turtle.up()
-                    table.insert(miner.vein_path, UP)
-                    return
-                end
-                local success, data = turtle.inspect()
-                if miner.check_vein(success, data) then
-                    turtle.dig()
-                    turtle.forward()
-                    table.insert(miner.vein_path, FORWARD)
-                    return
-                end
-                turtle.turnLeft()
-                local success, data = turtle.inspect()
-                if miner.check_vein(success, data) then
-                    turtle.dig()
-                    turtle.forward()
-                    table.insert(miner.vein_path, LEFT)
-                    return
-                end
-                turtle.turnRight()
-                turtle.turnRight()
-                local success, data = turtle.inspect()
-                if miner.check_vein(success, data) then
-                    turtle.dig()
-                    turtle.forward()
-                    table.insert(miner.vein_path, RIGHT)
-                    return
-                end
-                turtle.turnLeft()
-                local success, data = turtle.inspectDown()
-                if miner.check_vein(success, data) then
-                    turtle.digDown()
-                    turtle.down()
-                    table.insert(miner.vein_path, DOWN)
-                    return
-                end
-            end
-
-            -- Move out of vein
-            if #miner.vein_path > 0 then
-                print("Vein path length: " .. #miner.vein_path)
-                local action = miner.vein_path[#miner.vein_path]
-                if action == FORWARD then
-                    turtle.back()
-                elseif action == LEFT then
-                    turtle.back()
-                    turtle.turnRight()
-                elseif action == RIGHT then
-                    turtle.back()
-                    turtle.turnLeft()
-                elseif action == DOWN then
-                    turtle.up()
-                elseif action == UP then
-                    turtle.down()
-                end
-                table.remove(miner.vein_path)
+            if miner.moving_home then
+                miner.move_out_vein()
             else
-                miner.checking_vein = false
+                miner.mine_vein()
             end
-
         else
             miner.move_forwards()
         end
     end
 
-    function miner.check_vein(success, data)
+    function miner.mine_vein()
+        miner.find_veins()
+        local length = miner.vein_table[#miner.vein_path][#miner.vein_table[#miner.vein_path]]
+        if length > 0 then
+            local action = miner.vein_table[#miner.vein_path][length]
+            if action == FORWARD then
+                miner.forward()
+            elseif action == LEFT then
+                turtle.turnLeft()
+                miner.forward()
+            elseif action == RIGHT then
+                turtle.turnRight()
+                miner.forward()
+            elseif action == DOWN then
+                turtle.digDown()
+                turtle.down()
+            elseif action == UP then
+                miner.up()
+            end
+            table.remove(miner.vein_table[#miner.vein_path])
+            table.insert(miner.vein_path, action)
+        else
+            table.remove(miner.vein_table)
+            miner.move_out_vein()
+        end
+    end
+
+    function miner.move_out_vein()
+        -- Move out of vein
+        if #miner.vein_path > 0 then
+            print("Vein path length: " .. #miner.vein_path)
+            local action = miner.vein_path[#miner.vein_path]
+            if action == FORWARD then
+                turtle.back()
+            elseif action == LEFT then
+                turtle.back()
+                turtle.turnRight()
+            elseif action == RIGHT then
+                turtle.back()
+                turtle.turnLeft()
+            elseif action == DOWN then
+                turtle.up()
+            elseif action == UP then
+                turtle.down()
+            end
+            table.remove(miner.vein_path)
+        else
+            miner.checking_vein = false
+        end
+    end
+
+    function miner.find_veins()
+        miner.vein_table[miner.vein_depth] = {}
+        if miner.check_vein(turtle.inspectUp) then
+            table.insert(miner.vein_table[miner.vein_depth], UP)
+        end
+        if miner.check_vein(turtle.inspectDown) then
+            table.insert(miner.vein_table[miner.vein_depth], DOWN)
+        end
+        if miner.check_vein(turtle.inspect) then
+            table.insert(miner.vein_table[miner.vein_depth], FORWARD)
+        end
+        turtle.turnLeft()
+        if miner.check_vein(turtle.inspect) then
+            table.insert(miner.vein_table[miner.vein_depth], LEFT)
+        end
+        miner.full_turn()
+        if miner.check_vein(turtle.inspect) then
+            table.insert(miner.vein_table[miner.vein_depth], RIGHT)
+        end
+    end
+
+    function miner.check_vein(inspect_fnc)
+        local success, data = inspect_fnc()
         if not success then
             return false
         end
@@ -235,7 +265,7 @@ local function Miner()
         print("Going in direction: " .. dir)
     end
 
-    function miner.check_fuel()
+    function miner.check_go_back()
         if turtle.getItemCount(1) > 2 then
             if miner.fuel < miner.total_block_back + 400 then
                 turtle.refuel(1)
@@ -254,12 +284,16 @@ local function Miner()
 
     function miner.empty_items()
         -- Don't drop coal in inventory 0
-        turtle.turnLeft()
-        turtle.turnLeft()
+        miner.full_turn()
         for i=2,16 do
             turtle.select(i)
             turtle.drop(64)
         end
+        turtle.select(1)
+        miner.full_turn()
+    end
+
+    function miner.full_turn()
         turtle.turnLeft()
         turtle.turnLeft()
     end
