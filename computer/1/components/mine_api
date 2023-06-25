@@ -96,6 +96,7 @@ local function Miner()
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
+            miner.empty_items()
             miner.moving_home = false
             miner.idle = true
         end
@@ -249,6 +250,18 @@ local function Miner()
             print("No inventory left, going home")
             miner.go_home()
         end
+    end
+
+    function miner.empty_items()
+        -- Don't drop coal in inventory 0
+        turtle.turnLeft()
+        turtle.turnLeft()
+        for i=2,16 do
+            turtle.select(i)
+            turtle.drop(64)
+        end
+        turtle.turnLeft()
+        turtle.turnLeft()
     end
 
     ---------------------------------------------
