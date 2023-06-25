@@ -97,21 +97,21 @@ local function Miner()
 
     function miner.forward()
         -- Get rid of falling blocks in front of miner
-        turtle.dig()
         while (miner.falling_block(turtle.inspect)) do
             turtle.dig()
             os.sleep(1)
         end
+        turtle.dig()
         turtle.forward()
     end
 
     function miner.up()
         -- Get rid of falling blocks in front of miner
-        turtle.digUp()
         while (miner.falling_block(turtle.inspectUp)) do
             turtle.digUp()
             os.sleep(1)
         end
+        turtle.digUp()
         turtle.up()
     end
 
