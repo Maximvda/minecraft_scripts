@@ -27,7 +27,7 @@ local function Miner()
     miner.vein_action = nil
     miner.forward_pos = 0
     miner.total_block_back = 0
-    miner.depth = 30
+    miner.depth = 32
 
     -- Information
     miner.gps_pos = nil
