@@ -143,11 +143,11 @@ local function Miner()
             end
         else
             miner.move_forwards()
+            miner.find_veins()
         end
     end
 
     function miner.mine_vein()
-        miner.find_veins()
         local length = #miner.vein_table[#miner.vein_path]
         if length > 0 then
             local action = miner.vein_table[#miner.vein_path][length]
@@ -167,6 +167,7 @@ local function Miner()
             end
             table.remove(miner.vein_table[#miner.vein_path])
             table.insert(miner.vein_path, action)
+            miner.find_veins()
         else
             table.remove(miner.vein_table)
             miner.move_out_vein()
