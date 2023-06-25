@@ -15,23 +15,27 @@ local BACKWARD = 6
 local function Miner()
     -- Initialisation
     local miner = {}
+    -- Control variables
     miner.idle = true
     miner.moving_home = false
     miner.find_tunnel_end = false
     miner.checking_vein = false
+
+    -- Vein checking variables
+    miner.direction = nil
     miner.vein_path = {}
     miner.vein_table = {}
+    miner.forward_pos = 0
+    miner.total_block_back = 0
+    miner.depth = 30
+
+    -- Information
     miner.gps_pos = nil
-    miner.home = nil
     miner.map = {0,0,0,0}
     miner.fuel_limit = turtle.getFuelLimit()
     miner.fuel = turtle.getFuelLevel()
-    miner.forward_pos = 0
-    miner.total_block_back = 0
-    miner.depth = 25
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map
-    miner.direction = nil
 
     -- Main loop which is executed
     function miner.tick()
@@ -55,36 +59,8 @@ local function Miner()
         else
             miner.strip_mine()
         end
-
         -- Finally we need to check if we need to go back home
         miner.check_go_back()
-
-    end
-
-    function miner.update_gps()
-        miner.gps_pos = {gps.locate(1)}
-        if miner.gps_pos[1] == nil then
-            print("Failed to get gps position")
-            return
-        end
-        miner.pos_y = miner.gps_pos[2]
-    end
-
-    function miner.falling_block(inspect_fnc)
-        local success, data = inspect_fnc()
-        for key, value in pairs(config.falling_blocks) do
-            if data.name == value then
-                return true
-            end
-        end
-        return false
-    end
-
-    function miner.dig_down()
-        turtle.digDown()
-        turtle.down()
-        miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
-        miner.total_block_back = miner.total_block_back + 1
     end
 
     function miner.move_home()
@@ -102,6 +78,13 @@ local function Miner()
             miner.idle = true
         end
         miner.total_block_back = miner.total_block_back - 1
+    end
+
+    function miner.dig_down()
+        turtle.digDown()
+        turtle.down()
+        miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
+        miner.total_block_back = miner.total_block_back + 1
     end
 
     function miner.move_forwards()
@@ -132,7 +115,6 @@ local function Miner()
         turtle.up()
     end
 
-
     function miner.strip_mine()
         -- Vein checking order is up,
         if miner.checking_vein then
@@ -146,7 +128,11 @@ local function Miner()
         end
     end
 
+    miner.vein_tick = 0
     function miner.mine_vein()
+        miner.vein_tick = miner.vein_tick + 1
+        logger.log_table("Path", miner.vein_path)
+        logger.log_table("Veins", miner.vein_table)
         -- Haven't searched veins at this depth if table is still nil
         if miner.vein_table[#miner.vein_path] == nil then
             if miner.find_veins(FORWARD) then -- So first find veins
@@ -188,7 +174,6 @@ local function Miner()
     function miner.move_out_vein()
         -- Move out of vein
         if #miner.vein_path > 0 then
-            print("Vein path length: " .. #miner.vein_path)
             local action = miner.vein_path[#miner.vein_path]
             if action == FORWARD then
                 turtle.back()
@@ -210,7 +195,6 @@ local function Miner()
     end
 
     function miner.find_veins(check_from)
-        print("Vein check from ".. check_from)
         for i=check_from,5 do
             if i == 1 then
                 if miner.check_vein(turtle.inspect) then
@@ -314,7 +298,7 @@ local function Miner()
         miner.full_turn()
         for i=2,16 do
             turtle.select(i)
-            turtle.drop(64)
+            --turtle.drop(64)
         end
         turtle.select(1)
         miner.full_turn()
@@ -332,7 +316,6 @@ local function Miner()
         while miner.pos_y == nil do
             miner.update_gps()
         end
-        miner.home = vector.new(miner.gps_pos)
         miner.home_y = miner.pos_y
         miner.idle = false
         miner.find_tunnel_end = true
@@ -369,6 +352,25 @@ local function Miner()
         info.checking_vein = miner.checking_vein
         info.total_block_back = miner.total_block_back
         return info
+    end
+
+    function miner.update_gps()
+        miner.gps_pos = {gps.locate(1)}
+        if miner.gps_pos[1] == nil then
+            print("Failed to get gps position")
+            return
+        end
+        miner.pos_y = miner.gps_pos[2]
+    end
+
+    function miner.falling_block(inspect_fnc)
+        local success, data = inspect_fnc()
+        for key, value in pairs(config.falling_blocks) do
+            if data.name == value then
+                return true
+            end
+        end
+        return false
     end
 
     return miner
