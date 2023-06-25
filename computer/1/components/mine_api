@@ -130,6 +130,7 @@ local function Miner()
 
     miner.vein_tick = 0
     function miner.mine_vein()
+        logger.log("Vein tick: "..miner.vein_tick)
         miner.vein_tick = miner.vein_tick + 1
         logger.log_table("Path", miner.vein_path)
         logger.log_table("Veins", miner.vein_table)

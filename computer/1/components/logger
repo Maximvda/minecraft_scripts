@@ -1,15 +1,23 @@
 local logfile = "/logfile.txt"
 
 local logfile = fs.open("/logfile.txt", "w")
+logfile.write("Log started")
 logfile.close()
 
 function log(str)
     local logfile = fs.open("/logfile.txt", "a")
+    str = str .. "\n"
     logfile.write(str)
     logfile.close()
 end
 
 function log_table(str, table)
-    str = str .. table.concat(table,", ")
+    if table == nil then
+        log(str)
+    else
+        for i, value in pairs(table) do
+            str = str .. "{"..i..","..value.."}, "
+        end
+    end
     log(str)
 end
