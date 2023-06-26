@@ -1,0 +1,18 @@
+-- Chunky class for following mining turtle
+
+-- Helper variables
+local FORWARD = 1
+local UP = 2
+local DOWN = 3
+local LEFT = 4
+local RIGHT = 5
+local BACKWARD = 6
+
+local function Chunky()
+    local chunky = {}
+    return chunky
+end
+
+function init()
+    return Chunky()
+end

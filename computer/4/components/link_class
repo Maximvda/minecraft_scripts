@@ -1,0 +1,52 @@
+-- Link layer for communication between models
+-- Only needed in craftos-PC
+--periphemu.create("left", "modem")
+
+local instance = nil
+
+function Link(side, callback)
+    local link = {}
+    link.turtle = nil
+    rednet.open(side)
+    link.callback = callback
+
+    function link.handle_message(id, message)
+        if message == config.turtle_link_message then
+            print("Mine turtle linked")
+            link.turtle = id
+            return
+        end
+        if message == config.request_chunky then
+            link.request_link()
+            return
+        end
+
+        link.callback(message)
+    end
+
+    function link.request_link()
+        print("Requesting link")
+        rednet.broadcast(config.request_message)
+    end
+
+    function link.send_data(info)
+        if link.turtle == nil then
+            link.request_link()
+            return
+        end
+        rednet.send(link.turtle, info)
+    end
+
+    link.request_link()
+
+    return link
+end
+
+function get()
+    return instance
+end
+
+function init(side, callback)
+    instance = Link(side, callback)
+    return instance
+end

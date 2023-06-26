@@ -39,7 +39,7 @@ function handle_message(id, message)
         return
     end
 
-    if ids.smeltery == nil then
+    if ids.smeltery == nil or ids.turtle == nil then
         discovery()
     end
 

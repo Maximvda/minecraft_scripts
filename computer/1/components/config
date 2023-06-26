@@ -3,6 +3,7 @@
 modem_side = "left"
 turtle_link_message = "Turtle linked"
 request_message = "Requesting link"
+request_chunky = "Turtle for chunky"
 
 falling_blocks = {
     sand="minecraft:sand",

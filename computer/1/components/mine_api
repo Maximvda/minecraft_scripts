@@ -68,8 +68,11 @@ local function Miner()
             miner.strip_mine()
         elseif miner.forward_pos > 0 then
             turtle.back()
+            link.get().chunky_command(BACKWARD)
             miner.forward_pos = miner.forward_pos - 1
         elseif miner.pos_y < miner.home_y then
+            link.get().chunky_command(UP)
+            os.sleep(1)
             turtle.up()
             miner.pos_y = miner.pos_y + 1
         else
@@ -83,12 +86,15 @@ local function Miner()
     function miner.dig_down()
         turtle.digDown()
         turtle.down()
+        link.get().chunky_command(DOWN)
         miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
         miner.total_block_back = miner.total_block_back + 1
     end
 
     function miner.move_forwards()
         miner.forward()
+        miner.dig_up()
+        link.get().chunky_command(FORWARD)
         miner.forward_pos = miner.forward_pos + 1
         miner.total_block_back = miner.total_block_back + 1
         miner.map[miner.direction] = miner.map[miner.direction] + 1
@@ -105,13 +111,17 @@ local function Miner()
         turtle.forward()
     end
 
-    function miner.up()
+    function miner.dig_up()
         -- Get rid of falling blocks in front of miner
         while (miner.falling_block(turtle.inspectUp)) do
             turtle.digUp()
             os.sleep(1)
         end
         turtle.digUp()
+    end
+
+    function miner.up()
+        miner.dig_up()
         turtle.up()
     end
 
@@ -130,9 +140,9 @@ local function Miner()
 
     miner.vein_tick = 0
     function miner.mine_vein()
-        logger.log("Vein tick: "..miner.vein_tick)
+        --logger.log("Vein tick: "..miner.vein_tick)
         miner.vein_tick = miner.vein_tick + 1
-        logger.log_table("Path", miner.vein_path)
+        --logger.log_table("Path", miner.vein_path)
         if miner.last_vein_check == nil then -- We have new vein
             miner.last_vein_check = 0
         end
@@ -244,6 +254,7 @@ local function Miner()
         -- Move till tunnel end
         if miner.forward_pos < miner.map[miner.direction] then
             turtle.forward()
+            link.get().chunky_command(FORWARD)
             miner.forward_pos = miner.forward_pos + 1
             miner.total_block_back = miner.total_block_back + 1
         else
@@ -266,6 +277,18 @@ local function Miner()
             end
         end
         miner.direction = dir
+        if miner.direction == 2 then
+            turtle.turnLeft()
+            link.get().chunky_command(LEFT)
+        elseif miner.direction == 3 then
+            miner.full_turn()
+            link.get().chunky_command(LEFT)
+            os.sleep(1)
+            link.get().chunky_command(LEFT)
+        elseif miner.direction == 4 then
+            turtle.turnRight()
+            link.get().chunky_command(RIGHT)
+        end
         print("Going in direction: " .. dir)
     end
 

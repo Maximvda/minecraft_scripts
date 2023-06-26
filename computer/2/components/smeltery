@@ -23,9 +23,6 @@ local function Smeltery()
         smeltery.fluids = {}
         for i, tank in pairs(tanks) do
             name = tank["name"]
-            for item in string.gmatch(name, '([^"_"]+)') do
-                name = item
-            end
             for item in string.gmatch(name, '([^":"]+)') do
                 name = item
             end
