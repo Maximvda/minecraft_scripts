@@ -6,6 +6,7 @@ function Interface(display)
     interface.view = "smeltery"
     interface.view_instance = nil
     interface.view_names = {"smeltery", "reactor", "lighting", "turtle"}
+    interface.views = {}
     interface.views.turtle = turtles.Get()
     interface.views.reactor = reactor.Get()
     interface.views.smeltery = smeltery.Get()
@@ -57,11 +58,11 @@ function Interface(display)
         for key, but in pairs(buttons) do
             if but.check_touch(pos_x, pos_y) then
                 if but.label == ">" then
-                    interface.views_index = (interface.views_index + 1) % #interface.views
-                    return interface.show_view(interface.views[interface.views_index+1])
+                    interface.views_index = (interface.views_index + 1) % #interface.view_names
+                    return interface.show_view(interface.view_names[interface.views_index+1])
                 elseif but.label == "<" then
-                    interface.views_index = math.abs((interface.views_index - 1) % #interface.views)
-                    return interface.show_view(interface.views[interface.views_index+1])
+                    interface.views_index = math.abs((interface.views_index - 1) % #interface.view_names)
+                    return interface.show_view(interface.view_names[interface.views_index+1])
                 end
             end
         end
