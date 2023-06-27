@@ -63,6 +63,14 @@ local function Reactor(display)
         reactor.render_stats()
     end
 
+    function reactor.check_buttons(pos_x, pos_y)
+        for key, but in pairs(buttons) do
+            if but.check_touch(pos_x, pos_y) then
+                reactor.btn_cb(but)
+            end
+        end
+    end
+
     return reactor
 end
 

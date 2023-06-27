@@ -66,12 +66,8 @@ function Interface(display)
                 end
             end
         end
-        if interface.views_instance ~= nil then
-            for key, but in interface.view_instance do
-                if but.check_touch(pos_x, pos_y) then
-                    interface.view_instance.btn_cb(button)
-                end
-            end
+        if interface.view_instance ~= nil then
+            interface.view_instance.check_buttons(pos_x, pos_y)
         end
     end
 

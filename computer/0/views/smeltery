@@ -84,6 +84,14 @@ local function Smeltery(display)
         end
     end
 
+    function smeltery.check_buttons(pos_x, pos_y)
+        for key, but in pairs(buttons) do
+            if but.check_touch(pos_x, pos_y) then
+                smeltery.btn_cb(but)
+            end
+        end
+    end
+
     return smeltery
 end
 
