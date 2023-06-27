@@ -35,6 +35,10 @@ local function handle_info(id, message)
     if id == link.ids.turtle then
         monitor.update_miner_stats(message)
     end
+
+    if id == link.ids.chunky then
+        monitor.update_chunky_stats(message)
+    end
 end
 
 link.init(config.modem_side, handle_info)

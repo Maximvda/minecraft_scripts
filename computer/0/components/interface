@@ -42,6 +42,7 @@ function Interface()
     interface.smelter_data = nil
     interface.reactor_data = nil
     interface.miner_data = nil
+    interface.chunky_data = nil
 
     -- Initialise the view
     display.setBackgroundColor(colors.black)
@@ -138,6 +139,18 @@ function Interface()
             interface.buttons.react_power.bg_color = colors.orange
         end
         interface.buttons.react_power.draw()
+    end
+
+    function interface.update_chunky_stats(chunky)
+        interface.chunky_data = chunky
+        if interface.view ~= "turtle" then
+            return
+        end
+        if chunky.gps ~= nil then
+            display.setCursorPos(2, 12)
+            display.write("Gps: "..chunky.gps[1].."x "..chunky.gps[2].."y "..chunky.gps[3].."z      ")
+        end
+
     end
 
     function interface.update_miner_stats(miner)

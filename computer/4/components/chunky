@@ -10,6 +10,42 @@ local BACKWARD = 6
 
 local function Chunky()
     local chunky = {}
+    chunky.gps_pos = nil
+
+    function chunky.handle_command(command)
+        if command == FORWARD then
+            turtle.forward()
+        elseif command == DOWN then
+            turtle.down()
+        elseif command == UP then
+            turtle.up()
+        elseif command == LEFT then
+            turtle.turnLeft()
+        elseif command == RIGHT then
+            turtle.turnRight()
+        elseif command == BACKWARD then
+            turtle.back()
+        end
+    end
+
+    -------------------
+    -- INFO FUNCTION --
+    function chunky.get_info()
+        local info = {}
+        info.fuel = turtle.getFuelLevel()
+        chunky.update_gps()
+        info.gps = chunky.gps_pos
+        return info
+    end
+
+    function chunky.update_gps()
+        chunky.gps_pos = {gps.locate(1)}
+        if chunky.gps_pos[1] == nil then
+            print("Failed to get gps position")
+            return
+        end
+    end
+
     return chunky
 end
 

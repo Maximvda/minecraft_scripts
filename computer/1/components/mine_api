@@ -32,7 +32,6 @@ local function Miner()
     -- Information
     miner.gps_pos = nil
     miner.map = {0,0,0,0}
-    miner.fuel_limit = turtle.getFuelLimit()
     miner.fuel = turtle.getFuelLevel()
     miner.tunnel_maps = {}
     miner.tunnel_maps[miner.depth] = miner.map
@@ -359,7 +358,6 @@ local function Miner()
         info.map = miner.map
         miner.update_gps()
         info.gps = miner.gps_pos
-        miner.fuel_limit = turtle.getFuelLimit()
         if miner.gps_pos ~= nil then
             miner.pos_y = miner.gps_pos[2]
         end

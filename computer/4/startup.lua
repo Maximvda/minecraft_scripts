@@ -6,20 +6,16 @@ os.loadAPI("components/chunky")
 -- Initialisation
 chunky = chunky.init()
 
-local function callback_message(message)
-    if message == "Start" then
-        miner.start()
-    elseif  message == "Go home" then
-        miner.go_home()
-    elseif type(message) == table then
-        if message[1] == "Set depth" then
-            miner.set_depth(message[2])
-        end
+local function callback_message(id, message)
+    local instance = link.get()
+    if instance.turtle == id then
+        chunky.handle_command(message)
     end
 end
 
 
 local link = link_class.init(config.modem_side, callback_message)
+local update_timer = os.startTimer(10)
 
 local function event_loop()
     while true do
@@ -29,6 +25,12 @@ local function event_loop()
         end
         if event[1] == "key" and event[2] == 57 then
             return
+        end
+
+        if event[1] == "timer" and event[2] == update_timer then
+            info = chunky.get_info(info)
+            update_timer = os.startTimer(10)
+            link.send_data(info)
         end
     end
 end

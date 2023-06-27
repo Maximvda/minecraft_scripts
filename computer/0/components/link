@@ -5,6 +5,7 @@ ids = {}
 ids.smeltery = nil
 ids.turtle = nil
 ids.reactor = nil
+ids.chunky = nil
 
 local fnc_callback = nil
 
@@ -38,8 +39,13 @@ function handle_message(id, message)
         ids.reactor = id
         return
     end
+    if message == config.chunky_link_message then
+        print("Chunky linked")
+        ids.chunky = id
+        return
+    end
 
-    if ids.smeltery == nil or ids.turtle == nil then
+    if ids.smeltery == nil or ids.turtle == nil or ids.chunky == nil then
         discovery()
     end
 
