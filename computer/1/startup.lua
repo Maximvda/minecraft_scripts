@@ -8,15 +8,20 @@ os.loadAPI("components/mine_api")
 -- Initialisation
 miner = mine_api.init()
 
-local function callback_message(message)
-    if message == "Start" then
-        miner.start()
-    elseif  message == "Go home" then
-        miner.go_home()
-    elseif type(message) == table then
-        if message[1] == "Set depth" then
-            miner.set_depth(message[2])
+local function callback_message(id, message)
+    local link_ins = link_class.get()
+    if id == link_ins.controller then
+        if message == "Start" then
+            miner.start()
+        elseif  message == "Go home" then
+            miner.go_home()
+        elseif type(message) == table then
+            if message[1] == "Set depth" then
+                miner.set_depth(message[2])
+            end
         end
+    elseif id == link_ins.chunky then
+        miner.buffer_chunky_commands(message)
     end
 end
 

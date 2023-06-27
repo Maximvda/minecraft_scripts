@@ -34,7 +34,7 @@ end
 local function chunky_loop()
     while true do
         chunky.tick()
-        os.sleep(1)
+        os.sleep(0.1)
     end
 end
 

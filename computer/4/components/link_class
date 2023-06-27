@@ -45,6 +45,14 @@ function Link(side, callback)
         rednet.send(link.controller, info)
     end
 
+    function link.send_command(command)
+        if link.turtle == nil then
+            link.request_link()
+            return
+        end
+        rednet.send(link.turtle, command)
+    end
+
     link.request_link()
 
     return link

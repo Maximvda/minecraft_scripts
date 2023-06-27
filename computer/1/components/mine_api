@@ -25,6 +25,8 @@ local function Miner()
     miner.direction = nil
     miner.vein_path = {}
     miner.last_vein_check = nil
+    miner.command_list = {}
+    miner.current_command = nil
     miner.forward_pos = 0
     miner.total_block_back = 0
     miner.depth = 32
@@ -92,8 +94,6 @@ local function Miner()
 
     function miner.move_forwards()
         miner.forward()
-        miner.dig_up()
-        link_class.get().chunky_command(FORWARD)
         miner.forward_pos = miner.forward_pos + 1
         miner.total_block_back = miner.total_block_back + 1
         miner.map[miner.direction] = miner.map[miner.direction] + 1
@@ -132,16 +132,15 @@ local function Miner()
             else
                 miner.mine_vein()
             end
+        -- When commands available from chunky first execute them
+        elseif #miner.command_list > 0 then
+            miner.handle_command(table.remove(miner.command_list, 1))
         else
             miner.move_forwards()
         end
     end
 
-    miner.vein_tick = 0
     function miner.mine_vein()
-        --logger.log("Vein tick: "..miner.vein_tick)
-        miner.vein_tick = miner.vein_tick + 1
-        --logger.log_table("Path", miner.vein_path)
         if miner.last_vein_check == nil then -- We have new vein
             miner.last_vein_check = 0
         end
@@ -190,6 +189,15 @@ local function Miner()
             miner.last_vein_check = action
         else
             miner.checking_vein = false
+            miner.last_vein_check = nil
+            -- It was normal vein mining
+            if miner.current_command == nil then
+                miner.dig_up()
+                link_class.get().chunky_command(FORWARD)
+            else
+                miner.finish_chunky_command()
+            end
+
         end
     end
 
@@ -243,6 +251,44 @@ local function Miner()
             turtle.refuel(1)
         end
         return true
+    end
+
+    function miner.buffer_chunky_commands(command)
+        table.insert(miner.command_list, command)
+    end
+
+    function miner.handle_command(command)
+        if command == UP then
+            turtle.back()
+            turtle.back()
+            miner.up()
+            miner.up()
+        elseif command == LEFT then
+            turtle.back()
+            turtle.turnLeft()
+        elseif command == LEFT then
+            turtle.back()
+            turtle.turnRight()
+        end
+        miner.current_command = command
+        miner.checking_vein = true
+        miner.last_vein_check = nil
+    end
+
+    function miner.finish_chunky_command()
+        if miner.current_command == UP then
+            turtle.down()
+            turtle.down()
+            turtle.forward()
+            turtle.forward()
+        elseif miner.current_command == LEFT then
+            turtle.back()
+            turtle.turnRight()
+        elseif miner.current_command == RIGHT then
+            turtle.back()
+            turtle.turnLeft()
+        end
+        miner.current_command = nil
     end
 
     function miner.move_tunnel_end()

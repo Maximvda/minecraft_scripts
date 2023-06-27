@@ -20,5 +20,6 @@ ignore_blocks = {
     "dirt",
     "concrete",
     "asphalt",
-    "basalt"
+    "basalt",
+    "turtle"
 }

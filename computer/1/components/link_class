@@ -21,7 +21,7 @@ function Link(side, callback)
             print("Chunky linked "..id)
             rednet.send(id, config.turtle_link_message)
         else
-            link.callback(message)
+            link.callback(id, message)
         end
     end
 
