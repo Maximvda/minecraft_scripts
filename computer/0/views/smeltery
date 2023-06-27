@@ -1,0 +1,98 @@
+-- Class for turtle view
+local instance = nil
+
+local function Smeltery(display)
+    local smeltery = {}
+    -- Default variables
+    smeltery.render_allowed = false
+    smeltery.levels = nil
+
+    -- Initialise buttons
+    local buttons = {}
+    buttons.blocks = button_class.Button("Blocks", 2, 2, display)
+    buttons.ingots = button_class.Button("Ingots", 2, 4, display)
+    buttons.rods = button_class.Button("Rods", 2, 6, display)
+    buttons.wires = button_class.Button("Wires", 2, 8, display)
+    buttons.plates = button_class.Button("Plates", 2, 10, display)
+
+    function smeltery.btn_cb(button)
+        if (button.label == "Blocks") then
+            link.send_command(link.ids.smeltery, 1)
+            button.toggle_color()
+        elseif (button.label == "Ingots") then
+            link.send_command(link.ids.smeltery, 0)
+            button.toggle_color()
+        elseif (button.label == "Rods") then
+            link.send_command(link.ids.smeltery, 2)
+            button.toggle_color()
+        elseif (button.label == "Wires") then
+            link.send_command(link.ids.smeltery, 3)
+            button.toggle_color()
+        elseif (button.label == "Plates") then
+            link.send_command(link.ids.smeltery, 4)
+            button.toggle_color()
+        end
+    end
+
+    function smeltery.render()
+        smeltery.render_allowed = true
+        smeltery.render_buttons()
+        smeltery.render_levels()
+    end
+
+    function smeltery.render_buttons()
+        if ~smeltery.render_allowed then
+            return
+        end
+        buttons.blocks.set_color(colors.orange)
+        buttons.ingots.set_color(colors.orange)
+        buttons.rods.set_color(colors.orange)
+        buttons.wires.set_color(colors.orange)
+        buttons.plates.set_color(colors.orange)
+    end
+
+    function smeltery.render_levels()
+        if ~smeltery.render_allowed or smeltery.levels == nil then
+            return
+        end
+        for i, tank in pairs(smeltery.levels) do
+            smeltery.write_line(20, i+1, tank[1] .. ": " .. tank[2] .. " ingots")
+        end
+        smeltery.render_buttons()
+    end
+
+    function smeltery.write_line(pos_x, pos_y, str, color)
+        if color ~= nil then
+            display.setTextColor(color)
+        end
+        display.setCursorPos(2, 4)
+        display.clearLine()
+        display.write(str)
+        display.setTextColor(colors.white)
+    end
+
+    function smeltery.set_render_allowed(bool)
+        smeltery.render_allowed = bool
+    end
+
+    function smeltery.handle_message(message)
+        if type(message) == "table" then
+            smeltery.levels = message
+            smeltery.render_levels()
+        elseif message == "Finished" then
+            smeltery.render_buttons()
+        end
+    end
+
+    return smeltery
+end
+
+function Init(display)
+    instance = Smeltery(display)
+    return instance
+end
+
+function Get()
+    return instance
+end
+

@@ -38,6 +38,9 @@ local function clone_pc(pc)
         get("0", "input", "components")
         get("0", "interface", "components")
         get("0", "link", "components")
+        get("0", "turtles", "views")
+        get("0", "reactor", "views")
+        get("0", "smeltery", "views")
     elseif pc == "1" then
         get("1", "startup.lua", "")
         get("1", "config", "components")
@@ -50,10 +53,10 @@ local function clone_pc(pc)
         get("2", "link_class", "components")
         get("2", "smeltery", "components")
     elseif pc == "4" then
-        get("2", "startup.lua", "")
-        get("2", "config", "components")
-        get("2", "link_class", "components")
-        get("2", "chunky", "components")
+        get("4", "startup.lua", "")
+        get("4", "config", "components")
+        get("4", "link_class", "components")
+        get("4", "chunky", "components")
     end
 
 end

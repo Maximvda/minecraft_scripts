@@ -5,7 +5,16 @@ os.loadAPI("components/link")
 os.loadAPI("components/interface")
 os.loadAPI("components/button_class")
 
-local monitor = interface.Interface()
+os.loadAPI("views/turtles")
+os.loadAPI("views/smeltery")
+os.loadAPI("views/reactor")
+
+local display = peripheral.wrap(config.monitor)
+local monitor = interface.Interface(display)
+
+local turtle_view = turtles.Init(display)
+local smelter_view = smeltery.Init(display)
+local reactor_view = reactor.Init(display)
 
 local function main()
     event = {os.pullEvent()}
@@ -24,20 +33,13 @@ monitor.show_view("reactor")
 
 local function handle_info(id, message)
     if id == link.ids.smeltery then
-        if type(message) == "table" then
-            monitor.show_smeltery_levels(message)
-        elseif message == "Finished" then
-            monitor.show_view("smeltery")
-        end
-
-    end
-
-    if id == link.ids.turtle then
-        monitor.update_miner_stats(message)
-    end
-
-    if id == link.ids.chunky then
-        monitor.update_chunky_stats(message)
+        smelter_view.handle_message(message)
+    elseif id == link.ids.turtle then
+        turtle_view.set_miner_data(message)
+    elseif id == link.ids.chunky then
+        turtle_view.set_chunky_data(message)
+    elseif id == link.ids.reactor then
+        reactor_view.set_data(message)
     end
 end
 

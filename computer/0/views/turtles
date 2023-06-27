@@ -1,0 +1,119 @@
+-- Class for turtle view
+local instance = nil
+
+local function Turtles(display)
+    local turtles = {}
+    -- Default variables
+    turtles.chunky = nil
+    turtles.miner = nil
+    turtles.render_allowed = false
+
+    -- Initialise buttons
+    local buttons = {}
+    buttons.start_mining = button_class.Button("Start", 5, 10, display)
+    buttons.go_home = button_class.Button("Go home", 15, 10, display)
+
+    function reactor.btn_cb(button)
+
+    end
+
+    function turtles.render()
+        turtles.render_allowed = true
+        turtles.chunky_render()
+        turtles.miner_render()
+    end
+
+    function turtles.chunky_render()
+        if ~turtles.render_allowed or turtles.chunky == nil then
+            return
+        end
+        local chunky = turtles.chunky
+        turtles.write_line(2, 12, "Chunky gps: "..chunky.gps[1].."x "..chunky.gps[2].."y "..chunky.gps[3].."z")
+
+    end
+
+    function turtles.write_line(pos_x, pos_y, str, color)
+        if color ~= nil then
+            display.setTextColor(color)
+        end
+        display.setCursorPos(2, 4)
+        display.clearLine()
+        display.write(str)
+        display.setTextColor(colors.white)
+    end
+
+    function turtles.miner_render()
+        if ~turtles.render_allowed or turtles.miner == nil then
+            return
+        end
+        local miner = turtles.miner
+        if miner.idle then
+            buttons.go_home.set_color(colors.orange)
+            buttons.start_mining.set_color(colors.orange)
+            turtles.write_line(2,4,"Idle", colors.blue)
+        elseif miner.find_tunnel_end then
+            turtles.write_line(2,4, "Finding tunnel end", colors.yellow)
+        elseif miner.checking_vein then
+            turtles.write_line(2,4, "Mining vein", colors.red)
+        elseif miner.moving_home then
+            turtles.write_line(2,4, "Going home", colors.green)
+        else
+            turtles.write_line(2,4, "Mining", colors.orange)
+        end
+
+        turtles.write_line(2, 6, "Fuel level: "..miner.fuel.." blocks.")
+        turtles.write_line(2, 8, "Distance home: "..miner.total_block_back)
+        turtles.write_line(2, 10, "Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
+
+        draw_map(miner.map)
+    end
+
+    function draw_map(map)
+        local max = math.max(unpack(map))
+        local scale = max/7
+        display.setCursorPos(42, 2)
+        display.write("Scale "..scale)
+        display.setBackgroundColor(colors.brown)
+        for i, data in pairs(map) do
+            data = math.floor(data/scale)
+            for j=1, data do
+                if i == 1 then
+                    display.setCursorPos(40, 9-j)
+                elseif i == 2 then
+                    display.setCursorPos(40+j, 9)
+                elseif i == 3 then
+                    display.setCursorPos(40, 9+j)
+                elseif i == 4 then
+                    display.setCursorPos(40-j, 9)
+                end
+                display.write(" ")
+            end
+        end
+        display.setBackgroundColor(colors.black)
+    end
+
+    function turtles.set_render_allowed(bool)
+        turtles.render_allowed = bool
+    end
+
+    function turtles.set_chunky_data(info)
+        turtles.chunky = info
+        turtles.chunky_render()
+    end
+    function turtles.set_miner_data(info)
+        turtles.miner = info
+        turtles.miner_render()
+    end
+
+    return turtles
+end
+
+function Init(display)
+    instance = Turtles(display)
+    return instance
+end
+
+function Get()
+    return instance
+end
+

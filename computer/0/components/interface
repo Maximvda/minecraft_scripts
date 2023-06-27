@@ -1,220 +1,50 @@
 -- Class for monitor interface
-
-local function btn_callback(button, view)
-    if view == "smeltery" then
-        if (button.label == "Blocks") then
-            link.send_command(link.ids.smeltery, 1)
-            button.toggle_color()
-        elseif (button.label == "Ingots") then
-            link.send_command(link.ids.smeltery, 0)
-            button.toggle_color()
-        elseif (button.label == "Rods") then
-            link.send_command(link.ids.smeltery, 2)
-            button.toggle_color()
-        elseif (button.label == "Wires") then
-            link.send_command(link.ids.smeltery, 3)
-            button.toggle_color()
-        elseif (button.label == "Plates") then
-            link.send_command(link.ids.smeltery, 4)
-            button.toggle_color()
-        end
-    end
-    if view == "turtle" then
-        if (button.label == "Start") then
-            link.send_command(link.ids.turtle, "Start")
-            button.set_color(colors.green)
-        elseif (button.label == "Go home") then
-            link.send_command(link.ids.turtle, "Go home")
-            button.set_color(colors.green)
-        end
-    end
-end
-
-function Interface()
+function Interface(display)
     local interface = {}
     -- Initialise variables
-    local display = peripheral.wrap(config.monitor)
     interface.buttons = {}
-    interface.tanks_displayed = 0
     interface.view = "smeltery"
-    interface.views = {"smeltery", "reactor", "lighting", "turtle"}
+    interface.view_instance = nil
+    interface.view_names = {"smeltery", "reactor", "lighting", "turtle"}
+    interface.views.turtle = turtles.Get()
+    interface.views.reactor = reactor.Get()
+    interface.views.smeltery = smeltery.Get()
     interface.views_index = 1
-    interface.smelter_data = nil
     interface.reactor_data = nil
-    interface.miner_data = nil
-    interface.chunky_data = nil
 
     -- Initialise the view
     display.setBackgroundColor(colors.black)
     display.setTextScale(.5)
     display.clear()
-    interface.buttons.blocks = button_class.Button("Blocks", 2, 2, display)
-    interface.buttons.ingots = button_class.Button("Ingots", 2, 4, display)
-    interface.buttons.rods = button_class.Button("Rods", 2, 6, display)
-    interface.buttons.wires = button_class.Button("Wires", 2, 8, display)
-    interface.buttons.plates = button_class.Button("Plates", 2, 10, display)
-    -- Reactor buttons
-    interface.buttons.react_power = button_class.Button("On", 20, 2, display)
-    -- Miner buttons
-    interface.buttons.start_mining = button_class.Button("Start", 5, 10, display)
-    interface.buttons.go_home = button_class.Button("Go home", 15, 10, display)
     -- Cycle buttons
-    interface.buttons.cycle_left = button_class.Button("<", 44, 18, display)
-    interface.buttons.cycle_right = button_class.Button(">", 48, 18, display)
+    local buttons = {}
+    buttons.cycle_left = button_class.Button("<", 44, 18, display)
+    buttons.cycle_right = button_class.Button(">", 48, 18, display)
 
     function interface.show_view(view)
         interface.view = view
+        for i, view_instance in pairs(interface.views) do
+            view_instance.set_render_allowed(false)
+        end
+        display.clear()
         if view == "smeltery" then
-            display.clear()
-            interface.buttons.blocks.set_color(colors.orange)
-            interface.buttons.ingots.set_color(colors.orange)
-            interface.buttons.rods.set_color(colors.orange)
-            interface.buttons.wires.set_color(colors.orange)
-            interface.buttons.plates.set_color(colors.orange)
-            interface.show_smeltery_levels(interface.smelter_data)
+            interface.set_title("Smeltery")
+            interface.views.smeltery.render()
+            interface.view_instance = interface.views.smeltery
         elseif view == "reactor" then
-            display.clear()
             interface.set_title("Reactor")
-            if interface.reactor_data ~= nil then
-                interface.update_reactor_stats(interface.reactor_data)
-            end
+            interface.views.reactor.render()
+            interface.view_instance = interface.views.reactor
         elseif view == "lighting" then
-            display.clear()
             interface.set_title("Lighting menu")
+            interface.view_instance = nil
         elseif view == "turtle" then
-            display.clear()
             interface.set_title("Mining turtle")
-            if interface.miner_data ~= nil then
-                interface.update_miner_stats(interface.miner_data)
-            end
+            interface.views.turtle.render()
+            interface.view_instance = interface.views.turtle
         end
-        interface.buttons.cycle_left.set_color(colors.lightGray)
-        interface.buttons.cycle_right.set_color(colors.lightGray)
-    end
-
-    function interface.show_smeltery_levels(tanks)
-        interface.smelter_data = tanks
-        if interface.view ~= "smeltery" or tanks == nil then
-            return
-        end
-        for i=1, interface.tanks_displayed do
-            display.setCursorPos(20, i+1)
-            display.write("                      ")
-        end
-        local max = 0
-        for i, tank in pairs(tanks) do
-            display.setCursorPos(20, i+1)
-            display.write(tank[1] .. ": " .. tank[2] .. " ingots")
-            max = i
-        end
-        interface.tanks_displayed = max+1
-    end
-
-    function interface.update_reactor_stats(reactor)
-        if interface.view ~= "reactor" then
-            return
-        end
-        interface.reactor_data = reactor
-        display.setCursorPos(2, 3)
-        display.write("Energy: "..reactor.energy)
-        display.setCursorPos(2, 4)
-        display.write("Stored: "..reactor.stored_energy)
-        display.setCursorPos(2, 5)
-        display.write("Fuel level: "..reactor.fuel_level)
-        display.setCursorPos(2, 6)
-        display.write("Fuel consumption: "..reactor.fuel_consumption)
-        display.setCursorPos(2, 7)
-        display.write("Fuel reactivity: "..reactor.fuel_reactivity)
-        display.setCursorPos(2, 8)
-        display.write("Controlrod level: "..reactor.control_rod)
-        display.setCursorPos(2, 9)
-        display.write("Fuel temperature: "..reactor.fuel_temp)
-        display.setCursorPos(2, 10)
-        display.write("Case temperature: "..reactor.casing_temp)
-        if reactor.active then
-            interface.buttons.react_power.label = "On"
-            interface.buttons.react_power.bg_color = colors.green
-        else
-            interface.buttons.react_power.label = "Off"
-            interface.buttons.react_power.bg_color = colors.orange
-        end
-        interface.buttons.react_power.draw()
-    end
-
-    function interface.update_chunky_stats(chunky)
-        interface.chunky_data = chunky
-        if interface.view ~= "turtle" then
-            return
-        end
-        if chunky.gps ~= nil then
-            display.setCursorPos(2, 12)
-            display.write("Gps: "..chunky.gps[1].."x "..chunky.gps[2].."y "..chunky.gps[3].."z      ")
-        end
-
-    end
-
-    function interface.update_miner_stats(miner)
-        interface.miner_data = miner
-        if interface.view ~= "turtle" then
-            return
-        end
-        if miner.idle or miner.moving_home then
-            interface.buttons.go_home.set_color(colors.green)
-            interface.buttons.start_mining.set_color(colors.orange)
-        else
-            interface.buttons.go_home.set_color(colors.orange)
-            interface.buttons.start_mining.set_color(colors.green)
-        end
-        display.setCursorPos(2, 4)
-        display.clearLine()
-        if miner.idle then
-            display.setTextColor(colors.blue)
-            display.write("Idle")
-            interface.buttons.go_home.set_color(colors.orange)
-        elseif miner.find_tunnel_end then
-            display.setTextColor(colors.yellow)
-            display.write("Finding tunnel end")
-        elseif miner.checking_vein then
-            display.setTextColor(colors.red)
-            display.write("Mining vein")
-        elseif miner.moving_home then
-            display.setTextColor(colors.green)
-            display.write("Going home")
-        else
-            display.setTextColor(colors.orange)
-            display.write("Mining")
-        end
-        display.setTextColor(colors.white)
-
-        display.setCursorPos(2, 6)
-        display.write("Fuel level: "..miner.fuel.." blocks.")
-        display.setCursorPos(2, 8)
-        if miner.total_block_back ~= nil then
-            display.write("Distance home: "..miner.total_block_back)
-        end
-        display.setCursorPos(2, 10)
-        display.write("Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z      ")
-        local max = math.max(unpack(miner.map))
-        local scale = max/7
-        display.setCursorPos(42, 2)
-        display.write("Scale "..scale)
-        display.setBackgroundColor(colors.brown)
-        for i, data in pairs(miner.map) do
-            data = math.floor(data/scale)
-            for j=1, data do
-                if i == 1 then
-                    display.setCursorPos(40, 9-j)
-                elseif i == 2 then
-                    display.setCursorPos(40+j, 9)
-                elseif i == 3 then
-                    display.setCursorPos(40, 9+j)
-                elseif i == 4 then
-                    display.setCursorPos(40-j, 9)
-                end
-                display.write(" ")
-            end
-        end
-        display.setBackgroundColor(colors.black)
+        buttons.cycle_left.set_color(colors.lightGray)
+        buttons.cycle_right.set_color(colors.lightGray)
     end
 
     function interface.set_title(title)
@@ -224,7 +54,7 @@ function Interface()
 
     -- SHOULD OPTIMISE THIS TO ONLY CHECK BUTTONS THAT ARE IN CORRECT VIEW
     function interface.check_touch(pos_x, pos_y)
-        for key, but in pairs(interface.buttons) do
+        for key, but in pairs(buttons) do
             if but.check_touch(pos_x, pos_y) then
                 if but.label == ">" then
                     interface.views_index = (interface.views_index + 1) % #interface.views
@@ -233,8 +63,12 @@ function Interface()
                     interface.views_index = math.abs((interface.views_index - 1) % #interface.views)
                     return interface.show_view(interface.views[interface.views_index+1])
                 end
-                if btn_callback ~= nil then
-                    res = btn_callback(but, interface.view)
+            end
+        end
+        if interface.views_instance ~= nil then
+            for key, but in interface.view_instance do
+                if but.check_touch(pos_x, pos_y) then
+                    interface.view_instance.btn_cb(button)
                 end
             end
         end

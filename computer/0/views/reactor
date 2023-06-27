@@ -1,0 +1,77 @@
+-- Class for turtle view
+local instance = nil
+
+local function Reactor(display)
+    local reactor = {}
+    -- Default variables
+    reactor.render_allowed = false
+    reactor.data = nil
+
+    -- Initialise buttons
+    local buttons = {}
+    buttons.react_power = button_class.Button("On", 20, 2, display)
+
+    function reactor.btn_cb(button)
+
+    end
+
+    function reactor.render()
+        reactor.render_allowed = true
+        reactor.render_stats()
+    end
+
+    function reactor.render_stats()
+        if ~reactor.render_allowed or reactor.data == nil then
+            return
+        end
+        local data = reactor.data
+        reactor.write_line(2, 3, "Energy: "..data.energy)
+        reactor.write_line(2, 4, "Stored: "..data.stored_energy)
+
+        reactor.write_line(2, 5, "Fuel level: "..reactor.fuel_level)
+        reactor.write_line(2, 6, "Fuel consumption: "..reactor.fuel_consumption)
+        reactor.write_line(2, 7, "Fuel reactivity: "..reactor.fuel_reactivity)
+        reactor.write_line(2, 8, "Controlrod level: "..reactor.control_rod)
+        reactor.write_line(2, 9, "Fuel temperature: "..reactor.fuel_temp)
+        reactor.write_line(2, 10, "Case temperature: "..reactor.casing_temp)
+        if data.active then
+            buttons.react_power.label = "On"
+            buttons.react_power.bg_color = colors.green
+        else
+            buttons.react_power.label = "Off"
+            buttons.react_power.bg_color = colors.orange
+        end
+        buttons.react_power.draw()
+    end
+
+    function reactor.write_line(pos_x, pos_y, str, color)
+        if color ~= nil then
+            display.setTextColor(color)
+        end
+        display.setCursorPos(2, 4)
+        display.clearLine()
+        display.write(str)
+        display.setTextColor(colors.white)
+    end
+
+    function reactor.set_render_allowed(bool)
+        reactor.render_allowed = bool
+    end
+
+    function reactor.set_data(data)
+        reactor.data = data
+        reactor.render_stats()
+    end
+
+    return reactor
+end
+
+function Init(display)
+    instance = Reactor(display)
+    return instance
+end
+
+function Get()
+    return instance
+end
+
