@@ -39,7 +39,7 @@ local function Smeltery()
         smeltery.selection = selection
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
-        if #smeltery.fluids == 0 then
+        if #smeltery.fluids ~= 0 then
             smeltery.current_item = smeltery.fluids[1][1]
         end
         if smeltery.current_item == nil then

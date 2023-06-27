@@ -65,7 +65,7 @@ local function Smeltery(display)
         if color ~= nil then
             display.setTextColor(color)
         end
-        display.setCursorPos(2, 4)
+        display.setCursorPos(pos_x, pos_y)
         display.clearLine()
         display.write(str)
         display.setTextColor(colors.white)

@@ -7,7 +7,7 @@ os.loadAPI("components/chunky")
 chunky = chunky.init()
 
 local function callback_message(id, message)
-    local instance = link.get()
+    local instance = link_class.get()
     if instance.turtle == id then
         chunky.handle_command(message)
     end
