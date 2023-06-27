@@ -11,20 +11,38 @@ local BACKWARD = 6
 local function Chunky()
     local chunky = {}
     chunky.gps_pos = nil
+    chunky.total_block_back = 0
 
     function chunky.handle_command(command)
         if command == FORWARD then
+            chunky.total_block_back = chunky.total_block_back + 1
             turtle.forward()
         elseif command == DOWN then
+            chunky.total_block_back = chunky.total_block_back + 1
             turtle.down()
         elseif command == UP then
+            chunky.total_block_back = chunky.total_block_back - 1
             turtle.up()
         elseif command == LEFT then
             turtle.turnLeft()
         elseif command == RIGHT then
             turtle.turnRight()
         elseif command == BACKWARD then
+            chunky.total_block_back = chunky.total_block_back - 1
             turtle.back()
+        end
+        if chunky.fuel < chunky.total_block_back + 400 then
+            chunky.refuel()
+        end
+    end
+
+    function chunky.refuel()
+        for i=1,16 do
+            if turtle.getItemCount(i) > 0 then
+                turtle.select(i)
+                turtle.refuel(1)
+                return
+            end
         end
     end
 
@@ -32,7 +50,8 @@ local function Chunky()
     -- INFO FUNCTION --
     function chunky.get_info()
         local info = {}
-        info.fuel = turtle.getFuelLevel()
+        chunky.fuel = turtle.getFuelLevel()
+        info.fuel = chunky.fuel
         chunky.update_gps()
         info.gps = chunky.gps_pos
         return info
