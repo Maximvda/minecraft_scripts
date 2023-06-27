@@ -10,8 +10,8 @@ local function Turtles(display)
 
     -- Initialise buttons
     local buttons = {}
-    buttons.start_mining = button_class.Button("Start", 5, 10, display)
-    buttons.go_home = button_class.Button("Go home", 15, 10, display)
+    buttons.start_mining = button_class.Button("Start", 5, 16, display)
+    buttons.go_home = button_class.Button("Go home", 15, 16, display)
 
     function turtles.btn_cb(button)
         if (button.label == "Start") then
