@@ -14,7 +14,6 @@ local function Chunky()
     chunky.total_block_back = 0
     chunky.fuel = turtle.getFuelLevel()
     chunky.command_list = {}
-    local link = link_class.get()
 
     function chunky.handle_command(command)
         table.insert(chunky.command_list, command)
@@ -60,6 +59,7 @@ local function Chunky()
     end
 
     function chunky.find_veins()
+        local link = link_class.get()
         if chunky.check_vein(turtle.inspectUp) then
             link.send_command(UP)
         end
