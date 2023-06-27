@@ -13,8 +13,14 @@ local function Turtles(display)
     buttons.start_mining = button_class.Button("Start", 5, 10, display)
     buttons.go_home = button_class.Button("Go home", 15, 10, display)
 
-    function reactor.btn_cb(button)
-
+    function turtles.btn_cb(button)
+        if (button.label == "Start") then
+            link.send_command(link.ids.turtle, "Start")
+            button.set_color(colors.green)
+        elseif (button.label == "Go home") then
+            link.send_command(link.ids.turtle, "Go home")
+            button.set_color(colors.green)
+        end
     end
 
     function turtles.render()
@@ -24,7 +30,7 @@ local function Turtles(display)
     end
 
     function turtles.chunky_render()
-        if ~turtles.render_allowed or turtles.chunky == nil then
+        if not turtles.render_allowed or turtles.chunky == nil then
             return
         end
         local chunky = turtles.chunky
@@ -43,7 +49,7 @@ local function Turtles(display)
     end
 
     function turtles.miner_render()
-        if ~turtles.render_allowed or turtles.miner == nil then
+        if not turtles.render_allowed or turtles.miner == nil then
             return
         end
         local miner = turtles.miner

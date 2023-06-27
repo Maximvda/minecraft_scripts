@@ -21,7 +21,7 @@ local function Reactor(display)
     end
 
     function reactor.render_stats()
-        if ~reactor.render_allowed or reactor.data == nil then
+        if not reactor.render_allowed or reactor.data == nil then
             return
         end
         local data = reactor.data

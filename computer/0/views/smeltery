@@ -41,7 +41,7 @@ local function Smeltery(display)
     end
 
     function smeltery.render_buttons()
-        if ~smeltery.render_allowed then
+        if not smeltery.render_allowed then
             return
         end
         buttons.blocks.set_color(colors.orange)
@@ -52,7 +52,7 @@ local function Smeltery(display)
     end
 
     function smeltery.render_levels()
-        if ~smeltery.render_allowed or smeltery.levels == nil then
+        if not smeltery.render_allowed or smeltery.levels == nil then
             return
         end
         for i, tank in pairs(smeltery.levels) do
