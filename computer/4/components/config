@@ -6,3 +6,15 @@ request_chunky = "Turtle for chunky"
 request_message = "Chunky for link"
 turtle_link_message = "Turtle linked"
 chunky_link_message = "Chunky linked"
+
+ignore_blocks = {
+    "stone",
+    "marble",
+    "worm",
+    "cobble",
+    "dirt",
+    "concrete",
+    "asphalt",
+    "basalt",
+    "turtle"
+}
