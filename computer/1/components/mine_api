@@ -258,17 +258,21 @@ local function Miner()
     end
 
     function miner.handle_command(command)
-        if command == UP then
+        print("Command position ".. command[2] .. "own pos" .. miner.forward_pos)
+        if command[1] == UP then
             turtle.back()
             turtle.back()
             miner.up()
             miner.up()
-        elseif command == LEFT then
+            miner.forward()
+        elseif command[1] == LEFT then
             turtle.back()
             turtle.turnLeft()
-        elseif command == LEFT then
+            miner.forward()
+        elseif command[1] == LEFT then
             turtle.back()
             turtle.turnRight()
+            miner.forward()
         end
         miner.current_command = command
         miner.checking_vein = true
