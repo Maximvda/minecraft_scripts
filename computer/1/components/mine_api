@@ -328,9 +328,13 @@ local function Miner()
     -- Functions which can be called by remote --
     -- Can only start if gps is retrieved
     function miner.start()
-        while miner.pos_y == nil do
+        if not miner.idle then
+            return
+        end
+        while miner.gps_pos == nil do
             miner.update_gps()
         end
+        miner.pos_y = miner.gps_pos[2]
         miner.home_y = miner.pos_y
         miner.idle = false
         miner.find_tunnel_end = true
@@ -358,9 +362,6 @@ local function Miner()
         info.map = miner.map
         miner.update_gps()
         info.gps = miner.gps_pos
-        if miner.gps_pos ~= nil then
-            miner.pos_y = miner.gps_pos[2]
-        end
         info.idle = miner.idle
         info.find_tunnel_end = miner.find_tunnel_end
         info.moving_home = miner.moving_home
@@ -375,7 +376,6 @@ local function Miner()
             print("Failed to get gps position")
             return
         end
-        miner.pos_y = miner.gps_pos[2]
     end
 
     function miner.falling_block(inspect_fnc)
