@@ -6,13 +6,9 @@ os.loadAPI("components/chunky")
 -- Initialisation
 chunky = chunky.init()
 
-local function callback_message(id, message)
-    local instance = link_class.get()
-    if instance.turtle == id then
-        chunky.handle_command(message)
-    end
+local function callback_message(message)
+    chunky.handle_command(message)
 end
-
 
 local link = link_class.init(config.modem_side, callback_message)
 local update_timer = os.startTimer(10)
@@ -35,7 +31,15 @@ local function event_loop()
     end
 end
 
+local function chunky_loop()
+    while true do
+        chunky.tick()
+        os.sleep(1)
+    end
+end
+
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
-    event_loop
+    event_loop,
+    chunky_loop
 )

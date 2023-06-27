@@ -74,8 +74,9 @@ local function Turtles(display)
         else
             turtles.write_line(2,4, "Mining", colors.orange)
         end
-
-        turtles.write_line(2, 6, "Fuel level: "..miner.fuel.." blocks.")
+        if miner.fuel ~= nil then
+            turtles.write_line(2, 6, "Fuel level: "..miner.fuel.." blocks.")
+        end
         turtles.write_line(2, 8, "Distance home: "..miner.total_block_back)
         turtles.write_line(2, 10, "Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
 

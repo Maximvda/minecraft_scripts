@@ -12,8 +12,18 @@ local function Chunky()
     local chunky = {}
     chunky.gps_pos = nil
     chunky.total_block_back = 0
+    chunky.command_list = {}
 
     function chunky.handle_command(command)
+        table.insert(chunky.command_list, command)
+    end
+
+    function chunky.tick()
+        if #chunky.command_list == 0 then
+            return
+        end
+        local command = table.remove(chunky.command_list, 1)
+
         if command == FORWARD then
             chunky.total_block_back = chunky.total_block_back + 1
             turtle.forward()

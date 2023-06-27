@@ -27,8 +27,9 @@ function Link(side, callback)
             link.request_link()
             return
         end
-
-        link.callback(id, message)
+        if id == link.turtle then
+            link.callback(message)
+        end
     end
 
     function link.request_link()
