@@ -60,16 +60,16 @@ local function Chunky()
     end
 
     function chunky.find_veins()
-        if miner.check_vein(turtle.inspectUp) then
+        if chunky.check_vein(turtle.inspectUp) then
             link.send_command(UP)
         end
         turtle.turnLeft()
-        if miner.check_vein(turtle.inspect) then
+        if chunky.check_vein(turtle.inspect) then
             link.send_command(LEFT)
         end
         turtle.turnRight()
         turtle.turnRight()
-        if miner.check_vein(turtle.inspect) then
+        if chunky.check_vein(turtle.inspect) then
             link.send_command(RIGHT)
         end
         turtle.turnLeft()
