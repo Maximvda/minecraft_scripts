@@ -267,10 +267,12 @@ local function Miner()
             miner.forward()
         elseif command[1] == LEFT then
             turtle.back()
+            miner.up()
             turtle.turnLeft()
             miner.forward()
         elseif command[1] == LEFT then
             turtle.back()
+            miner.up()
             turtle.turnRight()
             miner.forward()
         end
@@ -287,9 +289,11 @@ local function Miner()
             turtle.forward()
         elseif miner.current_command == LEFT then
             turtle.back()
+            turtle.down()
             turtle.turnRight()
         elseif miner.current_command == RIGHT then
             turtle.back()
+            turtle.down()
             turtle.turnLeft()
         end
         miner.current_command = nil
