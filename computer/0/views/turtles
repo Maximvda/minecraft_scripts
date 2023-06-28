@@ -42,7 +42,9 @@ local function Turtles(display)
             return
         end
         local chunky = turtles.chunky
-        turtles.write_line(2, 12, "Chunky gps: "..chunky.gps[1].."x "..chunky.gps[2].."y "..chunky.gps[3].."z")
+        if chunky.gps ~= nil then
+            turtles.write_line(2, 12, "Chunky gps: "..chunky.gps[1].."x "..chunky.gps[2].."y "..chunky.gps[3].."z")
+        end
 
     end
 
@@ -77,12 +79,15 @@ local function Turtles(display)
         if miner.fuel ~= nil then
             turtles.write_line(2, 6, "Fuel level: "..miner.fuel.." blocks.")
         end
-        turtles.write_line(2, 8, "Distance home: "..miner.total_block_back)
+        if turtles.total_block_back ~= nil then
+            turtles.write_line(2, 8, "Distance home: "..miner.total_block_back)
+        end
         if miner.gps ~= nil then
             turtles.write_line(2, 10, "Gps: "..miner.gps[1].."x "..miner.gps[2].."y "..miner.gps[3].."z")
         end
-
-        draw_map(miner.map)
+        if miner.map ~= nil then
+            draw_map(miner.map)
+        end
     end
 
     function draw_map(map)

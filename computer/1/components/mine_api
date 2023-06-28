@@ -85,7 +85,7 @@ local function Miner()
     end
 
     function miner.dig_down()
-        miner.move(turtle.digDown)
+        turtle.digDown()
         miner.move(turtle.down)
         link_class.get().chunky_command(DOWN)
         miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
@@ -106,7 +106,7 @@ local function Miner()
             turtle.dig()
             os.sleep(1)
         end
-        miner.move(turtle.dig)
+        turtle.dig()
         miner.move(turtle.forward)
     end
 
@@ -116,7 +116,7 @@ local function Miner()
             turtle.digUp()
             os.sleep(1)
         end
-        miner.move(turtle.digUp)
+        turtle.digUp()
     end
 
     function miner.up()
@@ -159,7 +159,7 @@ local function Miner()
         elseif action == RIGHT then
             miner.forward()
         elseif action == DOWN then
-            miner.move(turtle.digDown)
+            turtle.digDown()
             miner.move(turtle.down)
         elseif action == UP then
             miner.up()
@@ -444,7 +444,7 @@ local function Miner()
 
     -- Basic functions which check output of miner response
     function miner.move(move_fnc)
-        while not move_fnc do
+        while not move_fnc() do
             print(debug.traceback())
         end
     end
