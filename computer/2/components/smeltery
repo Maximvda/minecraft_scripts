@@ -39,8 +39,10 @@ local function Smeltery()
         smeltery.selection = selection
         smeltery.control_timer = os.startTimer(1)
         smeltery.get_info()
-        if #smeltery.fluids ~= 0 then
-            smeltery.current_item = smeltery.fluids[1][1]
+        smeltery.current_item = nil
+        for i, tank in pairs(smeltery.fluids) do
+            smeltery.current_item = tank[1]
+            break
         end
         if smeltery.current_item == nil then
             smeltery.finish()
