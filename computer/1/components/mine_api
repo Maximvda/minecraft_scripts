@@ -276,7 +276,7 @@ local function Miner()
             miner.move(turtle.turnRight)
             miner.forward()
         end
-        miner.current_command = command
+        miner.current_command = command[1]
         miner.checking_vein = true
         miner.last_vein_check = nil
     end
