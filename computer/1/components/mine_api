@@ -29,7 +29,7 @@ local function Miner()
     miner.current_command = nil
     miner.forward_pos = 0
     miner.total_block_back = 0
-    miner.depth = 32
+    miner.depth = 29
     miner.chunky_distance = 0
 
     -- Information
@@ -297,7 +297,7 @@ local function Miner()
             miner.move(turtle.down)
             miner.move(turtle.turnLeft)
         end
-        for i=1,miner.chunky_distance do
+        for i=1,miner.chunky_distance+1 do
             miner.forward()
         end
         miner.checking_vein = true
