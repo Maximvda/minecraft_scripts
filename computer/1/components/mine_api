@@ -283,19 +283,23 @@ local function Miner()
 
     function miner.finish_chunky_command()
         if miner.current_command == UP then
+            miner.move(turtle.back)
             miner.move(turtle.down)
             miner.move(turtle.down)
-            miner.move(turtle.forward)
-            miner.move(turtle.forward)
+            miner.forward()
+            miner.forward()
         elseif miner.current_command == LEFT then
             miner.move(turtle.back)
             miner.move(turtle.down)
             miner.move(turtle.turnRight)
+            miner.forward()
         elseif miner.current_command == RIGHT then
             miner.move(turtle.back)
             miner.move(turtle.down)
             miner.move(turtle.turnLeft)
+            miner.forward()
         end
+        miner.checking_vein = true
         miner.current_command = nil
     end
 
