@@ -10,6 +10,7 @@ os.loadAPI("views/smeltery")
 os.loadAPI("views/reactor")
 
 local display = peripheral.wrap(config.monitor)
+
 local turtle_view = turtles.Init(display)
 local smelter_view = smeltery.Init(display)
 local reactor_view = reactor.Init(display)
