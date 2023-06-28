@@ -68,13 +68,13 @@ local function Miner()
         if miner.checking_vein then
             miner.strip_mine()
         elseif miner.forward_pos > 0 then
-            turtle.back()
+            miner.move(turtle.back)
             link_class.get().chunky_command(BACKWARD)
             miner.forward_pos = miner.forward_pos - 1
         elseif miner.pos_y < miner.home_y then
             link_class.get().chunky_command(UP)
             os.sleep(1)
-            turtle.up()
+            miner.move(turtle.up)
             miner.pos_y = miner.pos_y + 1
         else
             miner.empty_items()
@@ -85,8 +85,8 @@ local function Miner()
     end
 
     function miner.dig_down()
-        turtle.digDown()
-        turtle.down()
+        miner.move(turtle.digDown)
+        miner.move(turtle.down)
         link_class.get().chunky_command(DOWN)
         miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
         miner.total_block_back = miner.total_block_back + 1
@@ -106,8 +106,8 @@ local function Miner()
             turtle.dig()
             os.sleep(1)
         end
-        turtle.dig()
-        turtle.forward()
+        miner.move(turtle.dig)
+        miner.move(turtle.forward)
     end
 
     function miner.dig_up()
@@ -116,12 +116,12 @@ local function Miner()
             turtle.digUp()
             os.sleep(1)
         end
-        turtle.digUp()
+        miner.move(turtle.digUp)
     end
 
     function miner.up()
         miner.dig_up()
-        turtle.up()
+        miner.move(turtle.up)
     end
 
     function miner.strip_mine()
@@ -159,8 +159,8 @@ local function Miner()
         elseif action == RIGHT then
             miner.forward()
         elseif action == DOWN then
-            turtle.digDown()
-            turtle.down()
+            miner.move(turtle.digDown)
+            miner.move(turtle.down)
         elseif action == UP then
             miner.up()
         end
@@ -173,17 +173,17 @@ local function Miner()
         if #miner.vein_path > 0 then
             local action = miner.vein_path[#miner.vein_path]
             if action == FORWARD then
-                turtle.back()
+                miner.move(turtle.back)
             elseif action == LEFT then
-                turtle.back()
-                turtle.turnRight()
+                miner.move(turtle.back)
+                miner.move(turtle.turnRight)
             elseif action == RIGHT then
-                turtle.back()
-                turtle.turnLeft()
+                miner.move(turtle.back)
+                miner.move(turtle.turnLeft)
             elseif action == DOWN then
                 miner.up()
             elseif action == UP then
-                turtle.down()
+                miner.move(turtle.down)
             end
             table.remove(miner.vein_path)
             miner.last_vein_check = action
@@ -219,19 +219,19 @@ local function Miner()
                     return true
                 end
             elseif i == 4 then
-                turtle.turnLeft()
+                miner.move(turtle.turnLeft)
                 if miner.check_vein(turtle.inspect) then
                     miner.vein_action(LEFT)
                     return true
                 end
-                turtle.turnRight()
+                miner.move(turtle.turnRight)
             elseif i == 5 then
-                turtle.turnRight()
+                miner.move(turtle.turnRight)
                 if miner.check_vein(turtle.inspect) then
                     miner.vein_action(RIGHT)
                     return true
                 end
-                turtle.turnLeft()
+                miner.move(turtle.turnLeft)
             end
         end
         return false
@@ -260,20 +260,20 @@ local function Miner()
     function miner.handle_command(command)
         print("Command position ".. command[2] .. "own pos" .. miner.forward_pos)
         if command[1] == UP then
-            turtle.back()
-            turtle.back()
+            miner.move(turtle.back)
+            miner.move(turtle.back)
             miner.up()
             miner.up()
             miner.forward()
         elseif command[1] == LEFT then
-            turtle.back()
+            miner.move(turtle.back)
             miner.up()
-            turtle.turnLeft()
+            miner.move(turtle.turnLeft)
             miner.forward()
         elseif command[1] == LEFT then
-            turtle.back()
+            miner.move(turtle.back)
             miner.up()
-            turtle.turnRight()
+            miner.move(turtle.turnRight)
             miner.forward()
         end
         miner.current_command = command
@@ -283,18 +283,18 @@ local function Miner()
 
     function miner.finish_chunky_command()
         if miner.current_command == UP then
-            turtle.down()
-            turtle.down()
-            turtle.forward()
-            turtle.forward()
+            miner.move(turtle.down)
+            miner.move(turtle.down)
+            miner.move(turtle.forward)
+            miner.move(turtle.forward)
         elseif miner.current_command == LEFT then
-            turtle.back()
-            turtle.down()
-            turtle.turnRight()
+            miner.move(turtle.back)
+            miner.move(turtle.down)
+            miner.move(turtle.turnRight)
         elseif miner.current_command == RIGHT then
-            turtle.back()
-            turtle.down()
-            turtle.turnLeft()
+            miner.move(turtle.back)
+            miner.move(turtle.down)
+            miner.move(turtle.turnLeft)
         end
         miner.current_command = nil
     end
@@ -306,7 +306,7 @@ local function Miner()
         end
         -- Move till tunnel end
         if miner.forward_pos < miner.map[miner.direction] then
-            turtle.forward()
+            miner.move(turtle.forward)
             link_class.get().chunky_command(FORWARD)
             miner.forward_pos = miner.forward_pos + 1
             miner.total_block_back = miner.total_block_back + 1
@@ -331,7 +331,7 @@ local function Miner()
         end
         miner.direction = dir
         if miner.direction == 2 then
-            turtle.turnLeft()
+            miner.move(turtle.turnLeft)
             link_class.get().chunky_command(LEFT)
         elseif miner.direction == 3 then
             miner.full_turn()
@@ -339,7 +339,7 @@ local function Miner()
             os.sleep(1)
             link_class.get().chunky_command(LEFT)
         elseif miner.direction == 4 then
-            turtle.turnRight()
+            miner.move(turtle.turnRight)
             link_class.get().chunky_command(RIGHT)
         end
         print("Going in direction: " .. dir)
@@ -374,8 +374,8 @@ local function Miner()
     end
 
     function miner.full_turn()
-        turtle.turnLeft()
-        turtle.turnLeft()
+        miner.move(turtle.turnLeft)
+        miner.move(turtle.turnLeft)
     end
 
     ---------------------------------------------
@@ -440,6 +440,13 @@ local function Miner()
             end
         end
         return false
+    end
+
+    -- Basic functions which check output of miner response
+    function miner.move(move_fnc)
+        while not move_fnc do
+            print(debug.traceback())
+        end
     end
 
     return miner
