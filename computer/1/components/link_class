@@ -36,6 +36,7 @@ function Link(side, callback)
             return
         end
         if link.chunky == nil then
+            print("Broadcast to chunky")
             rednet.broadcast(config.request_chunky)
             return
         end

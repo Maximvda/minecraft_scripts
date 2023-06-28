@@ -30,6 +30,7 @@ local function Miner()
     miner.forward_pos = 0
     miner.total_block_back = 0
     miner.depth = 32
+    miner.chunky_distance = 0
 
     -- Information
     miner.gps_pos = nil
@@ -258,20 +259,20 @@ local function Miner()
     end
 
     function miner.handle_command(command)
-        print("Command position ".. command[2] .. "own pos" .. miner.forward_pos)
+        print("Command position: ".. command[2] .. "   own pos: " .. miner.forward_pos)
+        miner.chunky_distance = math.abs(miner.forward_pos-command[2])
+        for i=1,miner.chunky_distance do
+            miner.move(turtle.back)
+        end
         if command[1] == UP then
-            miner.move(turtle.back)
-            miner.move(turtle.back)
             miner.up()
             miner.up()
             miner.forward()
         elseif command[1] == LEFT then
-            miner.move(turtle.back)
             miner.up()
             miner.move(turtle.turnLeft)
             miner.forward()
-        elseif command[1] == LEFT then
-            miner.move(turtle.back)
+        elseif command[1] == RIGHT then
             miner.up()
             miner.move(turtle.turnRight)
             miner.forward()
@@ -287,16 +288,16 @@ local function Miner()
             miner.move(turtle.down)
             miner.move(turtle.down)
             miner.forward()
-            miner.forward()
         elseif miner.current_command == LEFT then
             miner.move(turtle.back)
             miner.move(turtle.down)
             miner.move(turtle.turnRight)
-            miner.forward()
         elseif miner.current_command == RIGHT then
             miner.move(turtle.back)
             miner.move(turtle.down)
             miner.move(turtle.turnLeft)
+        end
+        for i=1,miner.chunky_distance do
             miner.forward()
         end
         miner.checking_vein = true
