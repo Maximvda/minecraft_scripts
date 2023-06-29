@@ -106,7 +106,10 @@ local function Crunchy()
     function crunchy.strip_mine()
         -- Vein checking order is up,
         if crunchy.checking_vein then
-            mine.mine_vein()
+            if crunchy.check_vein() then
+                mine.mine_vein()
+            end
+            crunchy.checking_vein = false
             mine.dig_falling(turtle.digUp, turtle.inspectUp)
             link_class.get().chunky_command(FORWARD)
         -- When commands available from chunky first execute them
@@ -115,6 +118,26 @@ local function Crunchy()
         else
             crunchy.move_forwards()
         end
+    end
+
+    function crunchy.check_vein()
+        if mine.is_treasure(turtle.inspectUp) then
+            return true
+        end
+        if mine.is_treasure(turtle.inspectDown) then
+            return true
+        end
+        turtle.turnLeft()
+        if mine.is_treasure(turtle.inspect) then
+            turtle.turnRight()
+            return true
+        end
+        crunchy.full_turn()
+        if mine.is_treasure(turtle.inspect) then
+            turtle.turnLeft()
+            return true
+        end
+        return false
     end
 
     function crunchy.buffer_chunky_commands(command)

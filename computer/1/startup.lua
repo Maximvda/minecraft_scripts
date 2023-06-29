@@ -3,7 +3,6 @@ os.loadAPI("components/link_class")
 os.loadAPI("components/config")
 os.loadAPI("components/mine_api")
 os.loadAPI("components/crunchy")
-os.loadAPI("components/turtle")
 
 -- Initialisation
 crunchy = crunchy.init()
