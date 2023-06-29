@@ -146,7 +146,7 @@ local function Crunchy()
     function crunchy.handle_command(command)
         print("Command position: ".. command[2] .. "   own pos: " .. crunchy.forward_pos)
         crunchy.chunky_distance = math.abs(crunchy.forward_pos-command[2])
-        for i=1,crunchy.chunky_distance do
+        for i=1,crunchy.chunky_distance+1 do
             turtle.back()
         end
         if command[1] == UP then
@@ -181,7 +181,7 @@ local function Crunchy()
             turtle.down()
             turtle.turnLeft()
         end
-        for i=1,crunchy.chunky_distance+1 do
+        for i=1,crunchy.chunky_distance+2 do
             crunchy.forward()
         end
         crunchy.checking_vein = true
