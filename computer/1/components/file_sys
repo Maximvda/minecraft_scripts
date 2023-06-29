@@ -1,38 +1,20 @@
-local logfile = "/logfile.txt"
-
-local logfile = fs.open("/logfile.txt", "w")
-logfile.write("Log started")
-logfile.close()
-
-function log(str)
-    local logfile = fs.open("/logfile.txt", "a")
-    str = str .. "\n"
-    logfile.write(str)
-    logfile.close()
-end
-
-function log_table(str, table)
-    if table == nil then
-        log(str)
-    else
-        for i, value in pairs(table) do
-            str = str .. "{"..i..","..value.."}, "
-        end
-    end
-    log(str)
-end
-
-
 -- Tunnel map is like {depth_main tunnel: {Depth_tunnel_left, depth_tunnel_right}}
-
-
 function load_map(depth)
-    local file_name = "/tunnel_map"..depth..".csv"
+    local file_name = "/maps/tunnel_map"..depth..".csv"
     local map = {}
     map[0] = {0, 0} -- Default initialisation
     local file = fs.open(file_name, "r")
     if file == nil then
         return map
+    end
+    local line = file.readLine()
+    while line ~= nil do
+        local temp_t = {}
+        for str in string.gmatch(line, "([^"..",".."]+)") do
+            table.insert(temp_t, tonumber(str))
+        end
+        map[temp_t[1]] = {temp_t[2], temp_t[3]}
+        line = file.readLine()
     end
 
     file.close()
@@ -40,5 +22,10 @@ function load_map(depth)
 end
 
 function save_tunnel_map(depth, map)
-
+    local file_name = "/maps/tunnel_map"..depth..".csv"
+    local file = fs.open(file_name, "w")
+    for key, _ in pairs(map) do
+        file.write(key..","..map[key][1]..","..map[key][2].."\n")
+    end
+    file.close()
 end
