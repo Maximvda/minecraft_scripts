@@ -21,7 +21,7 @@ local function Crunchy()
     crunchy.current_command = nil
     crunchy.forward_pos = 0
     crunchy.total_blocks_back = 0
-    crunchy.depth = 26
+    crunchy.depth = 40
     crunchy.chunky_distance = 0
 
     -- Information
@@ -61,7 +61,6 @@ local function Crunchy()
 
     function crunchy.move_home()
         if crunchy.forward_pos > 0 then
-            os.sleep(1)
             turtle.back()
             crunchy.forward_pos = crunchy.forward_pos - 1
         elseif crunchy.pos_y < crunchy.home_y then
@@ -306,6 +305,7 @@ local function Crunchy()
 
     function crunchy.go_home()
         link_class.get().chunky_command(BACKWARD)
+        os.sleep(5)
         crunchy.moving_home = true
     end
 
