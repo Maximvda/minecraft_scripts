@@ -2,26 +2,25 @@
 os.loadAPI("components/link_class")
 os.loadAPI("components/config")
 os.loadAPI("components/mine_api")
---os.loadAPI("components/logger")
---os.loadAPI("components/turtle")
+os.loadAPI("components/crunchy")
 
 -- Initialisation
-miner = mine_api.init()
+crunchy = crunchy.init()
 
 local function callback_message(id, message)
     local link_ins = link_class.get()
     if id == link_ins.controller then
         if message == "Start" then
-            miner.start()
+            crunchy.start()
         elseif  message == "Go home" then
-            miner.go_home()
+            crunchy.go_home()
         elseif type(message) == table then
             if message[1] == "Set depth" then
-                miner.set_depth(message[2])
+                crunchy.set_depth(message[2])
             end
         end
     elseif id == link_ins.chunky then
-        miner.buffer_chunky_commands(message)
+        crunchy.buffer_chunky_commands(message)
     end
 end
 
@@ -41,7 +40,7 @@ local function event_loop()
         end
 
         if event[1] == "timer" and event[2] == update_timer then
-            info = miner.get_info(info)
+            info = crunchy.get_info(info)
             update_timer = os.startTimer(10)
             link.send_data(info)
         end
@@ -50,7 +49,7 @@ end
 
 local function turtle_loop()
     while true do
-        miner.tick()
+        crunchy.tick()
     end
 end
 

@@ -1,444 +1,129 @@
--- Turtle class for controlled mining
+-- Helper function for mining vieins
 
--- Helper variables
-local FORWARD = 1
-local UP = 2
-local DOWN = 3
-local LEFT = 4
-local RIGHT = 5
-local BACKWARD = 6
+function MineApi()
+    local mine_api = {}
 
--- Tunnel map has structure like this
--- First index is y_depth
--- Then 4 digits which indicate how deep the corridors are (forward, right, backward, left)
-
-local function Miner()
-    -- Initialisation
-    local miner = {}
-    -- Control variables
-    miner.idle = true
-    miner.moving_home = false
-    miner.find_tunnel_end = false
-    miner.checking_vein = false
-
-    -- Vein checking variables
-    miner.direction = nil
-    miner.vein_path = {}
-    miner.last_vein_check = nil
-    miner.command_list = {}
-    miner.current_command = nil
-    miner.forward_pos = 0
-    miner.total_block_back = 0
-    miner.depth = 29
-    miner.chunky_distance = 0
-
-    -- Information
-    miner.gps_pos = nil
-    miner.map = {0,0,0,0}
-    miner.fuel = turtle.getFuelLevel()
-    miner.tunnel_maps = {}
-    miner.tunnel_maps[miner.depth] = miner.map
-
-    -- Main loop which is executed
-    function miner.tick()
-        -- Being idle
-        if miner.idle then
-            os.sleep(5)
-            return
-        end
-        -- Going back home
-        if miner.moving_home then
-            miner.move_home()
-            return
-        end
-
-        -- Check the depth of turtle
-        if (miner.pos_y > miner.depth) then
-            miner.dig_down()
-        elseif miner.find_tunnel_end then
-            -- Go to position of corridor
-            miner.move_tunnel_end()
-        else
-            miner.strip_mine()
-        end
-        -- Finally we need to check if we need to go back home
-        miner.check_go_back()
+    function mine_api.mine_vein()
+        mine_api.vein_helper({x=0, y=0, z=0}, 'north', {})
     end
 
-    function miner.move_home()
-        if miner.checking_vein then
-            miner.strip_mine()
-        elseif miner.forward_pos > 0 then
-            miner.move(turtle.back)
-            link_class.get().chunky_command(BACKWARD)
-            miner.forward_pos = miner.forward_pos - 1
-        elseif miner.pos_y < miner.home_y then
-            link_class.get().chunky_command(UP)
-            os.sleep(1)
-            miner.move(turtle.up)
-            miner.pos_y = miner.pos_y + 1
-        else
-            miner.empty_items()
-            miner.moving_home = false
-            miner.idle = true
-        end
-        miner.total_block_back = miner.total_block_back - 1
-    end
+    function mine_api.vein_helper (xyz, orientation, traversed)
+        for _, direction in ipairs({'up', 'down', 'front', 'back', 'left', 'right'}) do
+            local destination, newOrientation = table.unpack(calcDest(xyz, orientation, direction))
+            if not contains(traversed, destination) then
+                if direction ~= 'back' then
+                    table.insert(traversed, destination)
+                end
 
-    function miner.dig_down()
-        turtle.digDown()
-        miner.move(turtle.down)
-        link_class.get().chunky_command(DOWN)
-        miner.pos_y = miner.pos_y - 1 -- Go down 1 depth
-        miner.total_block_back = miner.total_block_back + 1
-    end
-
-    function miner.move_forwards()
-        miner.forward()
-        miner.forward_pos = miner.forward_pos + 1
-        miner.total_block_back = miner.total_block_back + 1
-        miner.map[miner.direction] = miner.map[miner.direction] + 1
-        miner.checking_vein = true
-    end
-
-    function miner.forward()
-        -- Get rid of falling blocks in front of miner
-        while (miner.falling_block(turtle.inspect)) do
-            turtle.dig()
-            os.sleep(1)
-        end
-        turtle.dig()
-        miner.move(turtle.forward)
-    end
-
-    function miner.dig_up()
-        -- Get rid of falling blocks in front of miner
-        while (miner.falling_block(turtle.inspectUp)) do
-            turtle.digUp()
-            os.sleep(1)
-        end
-        turtle.digUp()
-    end
-
-    function miner.up()
-        miner.dig_up()
-        miner.move(turtle.up)
-    end
-
-    function miner.strip_mine()
-        -- Vein checking order is up,
-        if miner.checking_vein then
-            if miner.moving_home then
-                miner.move_out_vein()
-            else
-                miner.mine_vein()
+                if direction == 'up' then
+                    if mine_api.is_treasure(turtle.inspectUp) then
+                        mine_api.dig_falling(turtle.digUp, turtle.inspectUp)
+                        turtle.up()
+                        mine_api.vein_helper(destination, newOrientation, traversed);
+                        turtle.down()
+                    end
+                elseif direction == 'down' then
+                    if mine_api.is_treasure(turtle.inspectDown) then
+                        turtle.digDown()
+                        turtle.down()
+                        mine_api.vein_helper(destination, newOrientation, traversed);
+                        turtle.up()
+                    end
+                elseif direction == 'back' then
+                    local leftOrient = orientation
+                    for i=1, 3 do
+                        local calculated = mine_api.calc_dest(xyz, leftOrient, 'left')
+                        local leftDest = calculated[1]
+                        leftOrient = calculated[2]
+                        turtle.turnLeft()
+                        table.insert(traversed, leftDest)
+                        if mine_api.is_treasure(turtle.inspect) then
+                            mine_api.dig_falling(turtle.dig, turtle.inspect)
+                            turtle.forward()
+                            mine_api.vein_helper(leftDest, leftOrient, traversed);
+                            turtle.back()
+                        end
+                    end
+                    turtle.turnLeft()
+                else
+                    --turn in the direction to inspect
+                    if direction == 'left' then turtle.turnLeft()
+                    elseif direction == 'right' then turtle.turnRight()
+                    end
+                    --inspect the block
+                    if mine_api.is_treasure(turtle.inspect) then
+                        mine_api.dig_falling(turtle.dig, turtle.inspect)
+                        turtle.forward()
+                        mine_api.vein_helper(destination, newOrientation, traversed);
+                        turtle.back()
+                    end
+                    --unturn to face forwards again
+                    if direction == 'left' then turtle.turnRight()
+                    elseif direction == 'right' then turtle.turnLeft()
+                    end
+                end
             end
-        -- When commands available from chunky first execute them
-        elseif #miner.command_list > 0 then
-            miner.handle_command(table.remove(miner.command_list, 1))
-        else
-            miner.move_forwards()
         end
     end
 
-    function miner.mine_vein()
-        if miner.last_vein_check == nil then -- We have new vein
-            miner.last_vein_check = 0
+    function mine_api.is_treasure(inspect_fnc)
+        local success, data = inspect_fnc()
+        if not success then
+            return false
         end
-        if miner.find_veins(miner.last_vein_check+1) then
-            return -- If found we return and continue checks
-        end
-        -- No vein found so moving back
-        miner.move_out_vein()
-    end
-
-    function miner.vein_action(action)
-        if action == FORWARD then
-            miner.forward()
-        elseif action == LEFT then
-            miner.forward()
-        elseif action == RIGHT then
-            miner.forward()
-        elseif action == DOWN then
-            turtle.digDown()
-            miner.move(turtle.down)
-        elseif action == UP then
-            miner.up()
-        end
-        miner.last_vein_check = nil
-        table.insert(miner.vein_path, action)
-    end
-
-    function miner.move_out_vein()
-        -- Move out of vein
-        if #miner.vein_path > 0 then
-            local action = miner.vein_path[#miner.vein_path]
-            if action == FORWARD then
-                miner.move(turtle.back)
-            elseif action == LEFT then
-                miner.move(turtle.back)
-                miner.move(turtle.turnRight)
-            elseif action == RIGHT then
-                miner.move(turtle.back)
-                miner.move(turtle.turnLeft)
-            elseif action == DOWN then
-                miner.up()
-            elseif action == UP then
-                miner.move(turtle.down)
+        for _, name in pairs(config.ignore_blocks) do
+            if string.find(data.name, name) then
+                return false
             end
-            table.remove(miner.vein_path)
-            miner.last_vein_check = action
-        else
-            miner.checking_vein = false
-            miner.last_vein_check = nil
-            -- It was normal vein mining
-            if miner.current_command == nil then
-                miner.dig_up()
-                link_class.get().chunky_command(FORWARD)
-            else
-                miner.finish_chunky_command()
-            end
-
         end
+        return true
     end
 
-    function miner.find_veins(check_from)
-        for i=check_from,5 do
-            if i == 1 then
-                if miner.check_vein(turtle.inspect) then
-                    miner.vein_action(FORWARD)
-                    return true
-                end
-            elseif i == 2 then
-                if miner.check_vein(turtle.inspectUp) then
-                    miner.vein_action(UP)
-                    return true
-                end
-            elseif i == 3 then
-                if miner.check_vein(turtle.inspectDown) then
-                    miner.vein_action(DOWN)
-                    return true
-                end
-            elseif i == 4 then
-                miner.move(turtle.turnLeft)
-                if miner.check_vein(turtle.inspect) then
-                    miner.vein_action(LEFT)
-                    return true
-                end
-                miner.move(turtle.turnRight)
-            elseif i == 5 then
-                miner.move(turtle.turnRight)
-                if miner.check_vein(turtle.inspect) then
-                    miner.vein_action(RIGHT)
-                    return true
-                end
-                miner.move(turtle.turnLeft)
+    function mine_api.contains (table, xyz)
+        for _,v in ipairs(table) do
+            if v['x'] == xyz['x'] and v['y'] == xyz['y'] and v['z'] == xyz['z'] then
+                return true
             end
         end
         return false
     end
 
-    function miner.check_vein(inspect_fnc)
+    function mine_api.calc_dest (xyz, orientation, direction)
+        local dest = {x=xyz['x'], y=xyz['y'], z=xyz['z']}
+        if direction == 'up' then
+            dest['y'] = dest['y'] + 1
+        elseif direction == 'down' then
+            dest['y'] = dest['y'] - 1
+        else
+            local cardinals = {north=0, west=1, south=2, east=3}
+            local cardinalsReverse = {[0]='north', 'west', 'south', 'east'}
+            local leftTurns = {front=0, left=1, back=2, right=3}
+            orientation = cardinalsReverse[(cardinals[orientation] + leftTurns[direction]) % 4]
+            if orientation == 'north' then
+                dest['z'] = dest['z'] + 1
+            elseif orientation == 'south' then
+                dest['z'] = dest['z'] - 1
+            elseif orientation == 'east' then
+                dest['x'] = dest['x'] + 1
+            elseif orientation == 'west' then
+                dest['x'] = dest['x'] - 1
+            end
+        end
+        return {dest, orientation}
+    end
+
+    function mine_api.dig_falling(dig_fnc, inspect_fnc)
+        while (mine_api.falling_block(inspect_fnc)) do
+            dig_fnc()
+            os.sleep(0.75)
+        end
+    end
+
+    function mine_api.falling_block(inspect_fnc)
         local success, data = inspect_fnc()
         if not success then
             return false
         end
-        for i, name in pairs(config.ignore_blocks) do
-            if string.find(data.name, name) then
-                return false
-            end
-        end
-        if string.find(data.name, "coal") then
-            turtle.refuel(1)
-        end
-        return true
-    end
-
-    function miner.buffer_chunky_commands(command)
-        table.insert(miner.command_list, command)
-    end
-
-    function miner.handle_command(command)
-        print("Command position: ".. command[2] .. "   own pos: " .. miner.forward_pos)
-        miner.chunky_distance = math.abs(miner.forward_pos-command[2])
-        for i=1,miner.chunky_distance do
-            miner.move(turtle.back)
-        end
-        if command[1] == UP then
-            miner.up()
-            miner.up()
-            miner.forward()
-        elseif command[1] == LEFT then
-            miner.up()
-            miner.move(turtle.turnLeft)
-            miner.forward()
-        elseif command[1] == RIGHT then
-            miner.up()
-            miner.move(turtle.turnRight)
-            miner.forward()
-        end
-        miner.current_command = command[1]
-        miner.checking_vein = true
-        miner.last_vein_check = nil
-    end
-
-    function miner.finish_chunky_command()
-        if miner.current_command == UP then
-            miner.move(turtle.back)
-            miner.move(turtle.down)
-            miner.move(turtle.down)
-            miner.forward()
-        elseif miner.current_command == LEFT then
-            miner.move(turtle.back)
-            miner.move(turtle.down)
-            miner.move(turtle.turnRight)
-        elseif miner.current_command == RIGHT then
-            miner.move(turtle.back)
-            miner.move(turtle.down)
-            miner.move(turtle.turnLeft)
-        end
-        for i=1,miner.chunky_distance+1 do
-            miner.forward()
-        end
-        miner.checking_vein = true
-        miner.current_command = nil
-    end
-
-    function miner.move_tunnel_end()
-        -- Find direction to move in
-        if miner.direction == nil then
-            miner.find_direction()
-        end
-        -- Move till tunnel end
-        if miner.forward_pos < miner.map[miner.direction] then
-            miner.move(turtle.forward)
-            link_class.get().chunky_command(FORWARD)
-            miner.forward_pos = miner.forward_pos + 1
-            miner.total_block_back = miner.total_block_back + 1
-        else
-            miner.find_tunnel_end = false
-        end
-    end
-
-    -- Find direction to go in
-    function miner.find_direction()
-        local min = nil
-        local dir = 1
-        -- Find shortest direction to go in
-        for i, item in pairs(miner.map) do
-            if min == nil then
-                min = item
-            end
-            if item < min then
-                min = item
-                dir = i
-            end
-        end
-        miner.direction = dir
-        if miner.direction == 2 then
-            miner.move(turtle.turnLeft)
-            link_class.get().chunky_command(LEFT)
-        elseif miner.direction == 3 then
-            miner.full_turn()
-            link_class.get().chunky_command(LEFT)
-            os.sleep(1)
-            link_class.get().chunky_command(LEFT)
-        elseif miner.direction == 4 then
-            miner.move(turtle.turnRight)
-            link_class.get().chunky_command(RIGHT)
-        end
-        print("Going in direction: " .. dir)
-    end
-
-    function miner.check_go_back()
-        if turtle.getItemCount(1) > 2 then
-            if miner.fuel < miner.total_block_back + 400 then
-                turtle.refuel(1)
-            end
-        end
-        if miner.fuel < miner.total_block_back + 100 then
-            print("No fuel left, going home")
-            miner.go_home()
-        end
-        -- Check for full inventory
-        if turtle.getItemCount(16) ~= 0 then
-            print("No inventory left, going home")
-            miner.go_home()
-        end
-    end
-
-    function miner.empty_items()
-        -- Don't drop coal in inventory 0
-        miner.full_turn()
-        for i=2,16 do
-            turtle.select(i)
-            --turtle.drop(64)
-        end
-        turtle.select(1)
-        miner.full_turn()
-    end
-
-    function miner.full_turn()
-        miner.move(turtle.turnLeft)
-        miner.move(turtle.turnLeft)
-    end
-
-    ---------------------------------------------
-    -- Functions which can be called by remote --
-    -- Can only start if gps is retrieved
-    function miner.start()
-        if not miner.idle then
-            return
-        end
-        while miner.gps_pos == nil do
-            miner.update_gps()
-        end
-        miner.pos_y = miner.gps_pos[2]
-        miner.home_y = miner.pos_y
-        miner.idle = false
-        miner.find_tunnel_end = true
-        miner.vein_path = {}
-        miner.checking_vein = false
-        miner.direction = nil
-        miner.last_vein_check = nil
-    end
-
-    function miner.go_home()
-        miner.moving_home = true
-    end
-
-    function miner.set_depth(depth)
-        miner.depth = depth
-    end
-
-    -------------------
-    -- INFO FUNCTION --
-    function miner.get_info()
-        local info = {}
-        miner.fuel = turtle.getFuelLevel()
-        info.fuel = miner.fuel
-        miner.tunnel_maps[miner.depth] = miner.map
-        info.map = miner.map
-        miner.update_gps()
-        info.gps = miner.gps_pos
-        info.idle = miner.idle
-        info.find_tunnel_end = miner.find_tunnel_end
-        info.moving_home = miner.moving_home
-        info.checking_vein = miner.checking_vein
-        info.total_block_back = miner.total_block_back
-        return info
-    end
-
-    function miner.update_gps()
-        miner.gps_pos = {gps.locate(1)}
-        if miner.gps_pos[1] == nil then
-            print("Failed to get gps position")
-            return
-        end
-    end
-
-    function miner.falling_block(inspect_fnc)
-        local success, data = inspect_fnc()
         for key, value in pairs(config.falling_blocks) do
             if data.name == value then
                 return true
@@ -447,16 +132,5 @@ local function Miner()
         return false
     end
 
-    -- Basic functions which check output of miner response
-    function miner.move(move_fnc)
-        while not move_fnc() do
-            print(debug.traceback())
-        end
-    end
-
-    return miner
-end
-
-function init()
-    return Miner()
+    return mine_api
 end

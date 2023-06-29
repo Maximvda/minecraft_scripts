@@ -1,0 +1,305 @@
+-- Helper variables
+local FORWARD = 1
+local UP = 2
+local DOWN = 3
+local LEFT = 4
+local RIGHT = 5
+local BACKWARD = 6
+
+local function Crunchy()
+    -- Initialisation
+    local crunchy = {}
+    -- Control variables
+    crunchy.idle = true
+    crunchy.moving_home = false
+    crunchy.find_tunnel_end = false
+    crunchy.checking_vein = false
+
+    -- Vein checking variables
+    crunchy.direction = nil
+    crunchy.command_list = {}
+    crunchy.current_command = nil
+    crunchy.forward_pos = 0
+    crunchy.total_blocks_back = 0
+    crunchy.depth = 29
+    crunchy.chunky_distance = 0
+
+    -- Information
+    crunchy.gps_pos = nil
+    crunchy.map = {0,0,0,0}
+    crunchy.fuel = turtle.getFuelLevel()
+    crunchy.tunnel_maps = {}
+    crunchy.tunnel_maps[crunchy.depth] = crunchy.map
+
+    local mine = mine_api.MineApi()
+
+    -- Main loop which is executed
+    function crunchy.tick()
+        -- Being idle
+        if crunchy.idle then
+            os.sleep(5)
+            return
+        end
+        -- Going back home
+        if crunchy.moving_home then
+            crunchy.move_home()
+            return
+        end
+
+        -- Check the depth of turtle
+        if (crunchy.pos_y > crunchy.depth) then
+            crunchy.dig_down()
+        elseif crunchy.find_tunnel_end then
+            -- Go to position of corridor
+            crunchy.move_tunnel_end()
+        else
+            crunchy.strip_mine()
+        end
+        -- Finally we need to check if we need to go back home
+        crunchy.check_go_back()
+    end
+
+    function crunchy.move_home()
+        if crunchy.forward_pos > 0 then
+            turtle.back()
+            link_class.get().chunky_command(BACKWARD)
+            crunchy.forward_pos = crunchy.forward_pos - 1
+        elseif crunchy.pos_y < crunchy.home_y then
+            link_class.get().chunky_command(UP)
+            os.sleep(1)
+            turtle.up()
+            crunchy.pos_y = crunchy.pos_y + 1
+        else
+            crunchy.empty_items()
+            crunchy.moving_home = false
+            crunchy.idle = true
+        end
+        crunchy.total_block_back = crunchy.total_block_back - 1
+    end
+
+    function crunchy.dig_down()
+        turtle.digDown()
+        turtle.down()
+        link_class.get().chunky_command(DOWN)
+        crunchy.pos_y = crunchy.pos_y - 1 -- Go down 1 depth
+        crunchy.total_block_back = crunchy.total_block_back + 1
+    end
+
+    function crunchy.forward()
+        mine.dig_falling(turtle.dig, turtle.inspect)
+        turtle.forward()
+    end
+
+    function crunchy.move_forwards()
+        crunchy.forward()
+        crunchy.forward_pos = crunchy.forward_pos + 1
+        crunchy.total_block_back = crunchy.total_block_back + 1
+        crunchy.map[crunchy.direction] = crunchy.map[crunchy.direction] + 1
+        crunchy.checking_vein = true
+    end
+
+    function crunchy.up()
+        mine.dig_falling(turtle.digUp, turtle.inspectUp)
+        crunchy.move(turtle.up)
+    end
+
+    function crunchy.strip_mine()
+        -- Vein checking order is up,
+        if crunchy.checking_vein then
+            mine.mine_vein()
+            mine.dig_falling(turtle.digUp, turtle.inspectUp)
+            link_class.get().chunky_command(FORWARD)
+        -- When commands available from chunky first execute them
+        elseif #crunchy.command_list > 0 then
+            crunchy.handle_command(table.remove(crunchy.command_list, 1))
+        else
+            crunchy.move_forwards()
+        end
+    end
+
+    function crunchy.buffer_chunky_commands(command)
+        table.insert(crunchy.command_list, command)
+    end
+
+    function crunchy.handle_command(command)
+        print("Command position: ".. command[2] .. "   own pos: " .. crunchy.forward_pos)
+        crunchy.chunky_distance = math.abs(crunchy.forward_pos-command[2])
+        for i=1,crunchy.chunky_distance do
+            turtle.back()
+        end
+        if command[1] == UP then
+            crunchy.up()
+            crunchy.up()
+            crunchy.forward()
+        elseif command[1] == LEFT then
+            crunchy.up()
+            turtle.turnLeft()
+            crunchy.forward()
+        elseif command[1] == RIGHT then
+            crunchy.up()
+            turtle.turnRight()
+            crunchy.forward()
+        end
+        crunchy.current_command = command[1]
+        crunchy.checking_vein = true
+    end
+
+    function crunchy.finish_chunky_command()
+        if crunchy.current_command == UP then
+            turtle.back()
+            turtle.down()
+            turtle.down()
+            crunchy.forward()
+        elseif crunchy.current_command == LEFT then
+            turtle.back()
+            turtle.down()
+            turtle.turnRight()
+        elseif crunchy.current_command == RIGHT then
+            turtle.back()
+            turtle.down()
+            turtle.turnLeft()
+        end
+        for i=1,crunchy.chunky_distance+1 do
+            crunchy.forward()
+        end
+        crunchy.checking_vein = true
+        crunchy.current_command = nil
+    end
+
+    function crunchy.move_tunnel_end()
+        -- Find direction to move in
+        if crunchy.direction == nil then
+            crunchy.find_direction()
+        end
+        -- Move till tunnel end
+        if crunchy.forward_pos < crunchy.map[crunchy.direction] then
+            crunchy.move(turtle.forward)
+            link_class.get().chunky_command(FORWARD)
+            crunchy.forward_pos = crunchy.forward_pos + 1
+            crunchy.total_block_back = crunchy.total_block_back + 1
+        else
+            crunchy.find_tunnel_end = false
+        end
+    end
+
+    -- Find direction to go in
+    function crunchy.find_direction()
+        local min = nil
+        local dir = 1
+        -- Find shortest direction to go in
+        for i, item in pairs(crunchy.map) do
+            if min == nil then
+                min = item
+            end
+            if item < min then
+                min = item
+                dir = i
+            end
+        end
+        crunchy.direction = dir
+        if crunchy.direction == 2 then
+            crunchy.move(turtle.turnLeft)
+            link_class.get().chunky_command(LEFT)
+        elseif crunchy.direction == 3 then
+            crunchy.full_turn()
+            link_class.get().chunky_command(LEFT)
+            os.sleep(1)
+            link_class.get().chunky_command(LEFT)
+        elseif crunchy.direction == 4 then
+            crunchy.move(turtle.turnRight)
+            link_class.get().chunky_command(RIGHT)
+        end
+        print("Going in direction: " .. dir)
+    end
+
+    function crunchy.check_go_back()
+        if turtle.getItemCount(1) > 2 then
+            if crunchy.fuel < crunchy.total_block_back + 400 then
+                turtle.refuel(1)
+            end
+        end
+        if crunchy.fuel < crunchy.total_block_back + 100 then
+            print("No fuel left, going home")
+            crunchy.go_home()
+        end
+        -- Check for full inventory
+        if turtle.getItemCount(15) ~= 0 then
+            print("No inventory left, going home")
+            crunchy.go_home()
+        end
+    end
+
+    function crunchy.empty_items()
+        -- Don't drop coal in inventory 0
+        crunchy.full_turn()
+        for i=2,16 do
+            turtle.select(i)
+            --turtle.drop(64)
+        end
+        turtle.select(1)
+        crunchy.full_turn()
+    end
+
+    function crunchy.full_turn()
+        turtle.turnLeft()
+        turtle.turnLeft()
+    end
+
+    ---------------------------------------------
+    -- Functions which can be called by remote --
+    -- Can only start if gps is retrieved
+    function crunchy.start()
+        if not crunchy.idle then
+            return
+        end
+        while crunchy.gps_pos == nil do
+            crunchy.update_gps()
+        end
+        crunchy.pos_y = crunchy.gps_pos[2]
+        crunchy.home_y = crunchy.pos_y
+        crunchy.idle = false
+        crunchy.find_tunnel_end = true
+        crunchy.checking_vein = false
+        crunchy.direction = nil
+    end
+
+    function crunchy.go_home()
+        crunchy.moving_home = true
+    end
+
+    function crunchy.set_depth(depth)
+        crunchy.depth = depth
+    end
+
+    -------------------
+    -- INFO FUNCTION --
+    function crunchy.get_info()
+        local info = {}
+        crunchy.fuel = turtle.getFuelLevel()
+        info.fuel = crunchy.fuel
+        crunchy.tunnel_maps[crunchy.depth] = crunchy.map
+        info.map = crunchy.map
+        crunchy.update_gps()
+        info.gps = crunchy.gps_pos
+        info.idle = crunchy.idle
+        info.find_tunnel_end = crunchy.find_tunnel_end
+        info.moving_home = crunchy.moving_home
+        info.checking_vein = crunchy.checking_vein
+        info.total_block_back = crunchy.total_block_back
+        return info
+    end
+
+    function crunchy.update_gps()
+        crunchy.gps_pos = {gps.locate(1)}
+        if crunchy.gps_pos[1] == nil then
+            print("Failed to get gps position")
+            return
+        end
+    end
+
+    return miner
+end
+
+function init()
+    return Crunchy()
+end
