@@ -47,7 +47,7 @@ local function clone_pc(pc)
         get("1", "mine_api", "components")
         get("1", "link_class", "components")
         get("1", "crunchy", "components")
-        get("1", "logger", "components")
+        get("1", "file_sys", "components")
     elseif pc == "2" then
         get("2", "startup.lua", "")
         get("2", "config", "components")

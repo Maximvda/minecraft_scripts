@@ -13,6 +13,8 @@ local function Chunky()
     chunky.gps_pos = nil
     chunky.total_block_back = 0
     chunky.forward_pos = 0
+    chunky.turn_at = -1
+    chunky.turn_side = LEFT
     chunky.fuel = turtle.getFuelLevel()
     chunky.command_list = {}
 
@@ -40,14 +42,26 @@ local function Chunky()
                 turtle.up()
             end
         elseif command == LEFT then
+            chunky.turn_at = chunky.forward_pos
+            chunky.turn_side = LEFT
             turtle.turnLeft()
         elseif command == RIGHT then
+            chunky.turn_at = chunky.forward_pos
+            chunky.turn_side = RIGHT
             turtle.turnRight()
         elseif command == BACKWARD then
             while chunky.forward_pos > 0 do
                 chunky.total_block_back = chunky.total_block_back - 1
                 chunky.forward_pos = chunky.forward_pos - 1
                 turtle.back()
+                if chunky.forward_pos == chunky.turn_at then
+                    if chunky.turn_side == LEFT then
+                        turtle.turnRight()
+                    else
+                        turtle.turnLeft()
+                    end
+                    chunky.turn_at = -1
+                end
             end
             table.insert(chunky.command_list, UP)
         end

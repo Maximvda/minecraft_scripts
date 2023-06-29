@@ -21,3 +21,21 @@ function log_table(str, table)
     end
     log(str)
 end
+
+
+-- Tunnel map is like {depth_main tunnel: {Depth_tunnel_left, depth_tunnel_right}}
+
+
+function load_map(depth)
+    local file_name = "/tunnel_map"..depth..".csv"
+    local map = {}
+    map[0] = {0, 0} -- Default initialisation
+    local file = fs.open(map_file, "r")
+
+    file.close()
+    return map
+end
+
+function save_tunnel_map(depth, map)
+
+end
