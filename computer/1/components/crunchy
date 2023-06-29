@@ -21,7 +21,7 @@ local function Crunchy()
     crunchy.current_command = nil
     crunchy.forward_pos = 0
     crunchy.total_blocks_back = 0
-    crunchy.depth = 29
+    crunchy.depth = 26
     crunchy.chunky_distance = 0
 
     -- Information
