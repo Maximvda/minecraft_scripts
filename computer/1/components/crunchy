@@ -61,12 +61,10 @@ local function Crunchy()
 
     function crunchy.move_home()
         if crunchy.forward_pos > 0 then
+            os.sleep(0.2)
             turtle.back()
-            link_class.get().chunky_command(BACKWARD)
             crunchy.forward_pos = crunchy.forward_pos - 1
         elseif crunchy.pos_y < crunchy.home_y then
-            link_class.get().chunky_command(UP)
-            os.sleep(1)
             turtle.up()
             crunchy.pos_y = crunchy.pos_y + 1
         else
@@ -137,6 +135,7 @@ local function Crunchy()
             turtle.turnLeft()
             return true
         end
+        turtle.turnLeft()
         return false
     end
 
@@ -287,6 +286,7 @@ local function Crunchy()
     end
 
     function crunchy.go_home()
+        link_class.get().chunky_command(BACKWARD)
         crunchy.moving_home = true
     end
 

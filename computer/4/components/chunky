@@ -35,16 +35,21 @@ local function Chunky()
             chunky.total_block_back = chunky.total_block_back + 1
             turtle.down()
         elseif command == UP then
-            chunky.total_block_back = chunky.total_block_back - 1
-            turtle.up()
+            while (chunky.total_block_back > 0) do
+                chunky.total_block_back = chunky.total_block_back - 1
+                turtle.up()
+            end
         elseif command == LEFT then
             turtle.turnLeft()
         elseif command == RIGHT then
             turtle.turnRight()
         elseif command == BACKWARD then
-            chunky.total_block_back = chunky.total_block_back - 1
-            chunky.forward_pos = chunky.forward_pos - 1
-            turtle.back()
+            while chunky.forward_pos > 0 do
+                chunky.total_block_back = chunky.total_block_back - 1
+                chunky.forward_pos = chunky.forward_pos - 1
+                turtle.back()
+            end
+            table.insert(chunky.command_list, UP)
         end
         if chunky.fuel < chunky.total_block_back + 400 then
             chunky.refuel()
