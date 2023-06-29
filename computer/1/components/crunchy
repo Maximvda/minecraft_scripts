@@ -61,13 +61,14 @@ local function Crunchy()
 
     function crunchy.move_home()
         if crunchy.forward_pos > 0 then
-            os.sleep(0.2)
+            os.sleep(1)
             turtle.back()
             crunchy.forward_pos = crunchy.forward_pos - 1
         elseif crunchy.pos_y < crunchy.home_y then
             turtle.up()
             crunchy.pos_y = crunchy.pos_y + 1
         else
+            crunchy.reset_direction()
             crunchy.empty_items()
             crunchy.moving_home = false
             crunchy.idle = true
@@ -110,9 +111,10 @@ local function Crunchy()
             crunchy.checking_vein = false
             if crunchy.current_command then
                 crunchy.finish_chunky_command()
+            else
+                mine.dig_falling(turtle.digUp, turtle.inspectUp)
+                link_class.get().chunky_command(FORWARD)
             end
-            mine.dig_falling(turtle.digUp, turtle.inspectUp)
-            link_class.get().chunky_command(FORWARD)
         -- When commands available from chunky first execute them
         elseif #crunchy.command_list > 0 then
             crunchy.handle_command(table.remove(crunchy.command_list, 1))
@@ -147,7 +149,6 @@ local function Crunchy()
     end
 
     function crunchy.handle_command(command)
-        print("Command position: ".. command[2] .. "   own pos: " .. crunchy.forward_pos)
         crunchy.chunky_distance = math.abs(crunchy.forward_pos-command[2])
         for i=1,crunchy.chunky_distance+1 do
             turtle.back()
@@ -174,7 +175,6 @@ local function Crunchy()
             turtle.back()
             turtle.down()
             turtle.down()
-            crunchy.forward()
         elseif crunchy.current_command == LEFT then
             turtle.back()
             turtle.down()
@@ -184,10 +184,10 @@ local function Crunchy()
             turtle.down()
             turtle.turnLeft()
         end
-        for i=1,crunchy.chunky_distance+2 do
+        for i=1,crunchy.chunky_distance+1 do
             crunchy.forward()
         end
-        crunchy.checking_vein = true
+        crunchy.checking_vein = false
         crunchy.current_command = nil
     end
 
@@ -237,6 +237,22 @@ local function Crunchy()
         print("Going in direction: " .. dir)
     end
 
+    function crunchy.reset_direction()
+        if crunchy.direction == 2 then
+            turtle.turnRight()
+            link_class.get().chunky_command(RIGHT)
+        elseif crunchy.direction == 3 then
+            crunchy.full_turn()
+            link_class.get().chunky_command(LEFT)
+            os.sleep(1)
+            link_class.get().chunky_command(LEFT)
+        elseif crunchy.direction == 4 then
+            turtle.turnLeft()
+            link_class.get().chunky_command(LEFT)
+        end
+        crunchy.direction = nil
+    end
+
     function crunchy.check_go_back()
         if turtle.getItemCount(1) > 2 then
             if crunchy.fuel < crunchy.total_blocks_back + 400 then
@@ -259,7 +275,7 @@ local function Crunchy()
         crunchy.full_turn()
         for i=2,16 do
             turtle.select(i)
-            --turtle.drop(64)
+            turtle.drop(64)
         end
         turtle.select(1)
         crunchy.full_turn()

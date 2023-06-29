@@ -15,7 +15,7 @@ function Link(side, callback)
             link.controller = id
             print("Linked to controller "..id)
             rednet.send(id, config.smeltery_link_message)
-        else
+        elseif id == link.controller then
             link.callback(message)
         end
     end

@@ -24,7 +24,7 @@ function Link(side, callback)
             return
         end
         if message == config.request_chunky then
-            link.request_link()
+            rednet.broadcast(config.request_message)
             return
         end
         if id == link.turtle then
@@ -32,14 +32,9 @@ function Link(side, callback)
         end
     end
 
-    function link.request_link()
-        print("Requesting link")
-        rednet.broadcast(config.request_message)
-    end
-
     function link.send_data(info)
         if link.controller == nil then
-            link.request_link()
+            rednet.broadcast("Requesting link")
             return
         end
         rednet.send(link.controller, info)
@@ -47,13 +42,13 @@ function Link(side, callback)
 
     function link.send_command(command)
         if link.turtle == nil then
-            link.request_link()
+            rednet.broadcast(config.request_message)
             return
         end
         rednet.send(link.turtle, command)
     end
 
-    link.request_link()
+    rednet.broadcast(config.request_message)
 
     return link
 end
