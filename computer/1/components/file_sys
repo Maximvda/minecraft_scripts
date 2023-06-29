@@ -30,7 +30,10 @@ function load_map(depth)
     local file_name = "/tunnel_map"..depth..".csv"
     local map = {}
     map[0] = {0, 0} -- Default initialisation
-    local file = fs.open(map_file, "r")
+    local file = fs.open(file_name, "r")
+    if file == nil then
+        return map
+    end
 
     file.close()
     return map

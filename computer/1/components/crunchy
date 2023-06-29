@@ -12,7 +12,6 @@ local function Crunchy()
     -- Control variables
     crunchy.idle = true
     crunchy.moving_home = false
-    crunchy.find_tunnel = false
 
     -- Vein checking variables
     crunchy.direction = nil
@@ -207,9 +206,11 @@ local function Crunchy()
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
         else
             if crunchy.tunnel_side == LEFT then
+                print("Tunnel side left")
                 turtle.turnLeft()
                 link_class.get().chunky_command(LEFT)
             elseif crunchy.tunnel_side == RIGHT then
+                print("Tunnel side right")
                 turtle.turnRight()
                 link_class.get().chunky_command(RIGHT)
             end
@@ -218,6 +219,7 @@ local function Crunchy()
     end
 
     function crunchy.find_tunnel_pos()
+        print("Searching tunnel pos")
         local main_depth = 0
         local min = nil
         local tunnel_start = 0
@@ -245,7 +247,7 @@ local function Crunchy()
             tunnel_start = max_key + 3
             crunchy.tunnel_map[max_key+3] = {0, 0}
         end
-
+        print("Tunnel start at " .. tunnel_start)
         crunchy.found_tunnel_pos = tunnel_start
     end
 
@@ -297,6 +299,7 @@ local function Crunchy()
         crunchy.idle = false
         crunchy.checking_vein = false
         crunchy.found_tunnel_pos = nil
+        crunchy.find_tunnel_end = true
         crunchy.tunnel_side = LEFT
         crunchy.tunnel_map = file_sys.load_map(crunchy.depth)
     end
