@@ -20,6 +20,8 @@ function Link(side, callback)
             link.chunky = id
             print("Chunky linked "..id)
             rednet.send(id, config.turtle_link_message)
+        elseif message == "Requesting link" then
+            return -- Ignore this message is link to controller from chunky
         else
             link.callback(id, message)
         end
