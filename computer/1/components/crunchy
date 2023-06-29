@@ -152,7 +152,7 @@ local function Crunchy()
     end
 
     function crunchy.handle_command(command)
-        crunchy.chunky_distance = math.abs(crunchy.forward_pos-command[2])
+        crunchy.chunky_distance = math.abs(crunchy.tunnel_pos-command[2])
         for i=1,crunchy.chunky_distance+1 do
             turtle.back()
         end

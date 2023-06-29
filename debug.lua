@@ -13,6 +13,8 @@ end
 local link = link_class.init(config.modem_side, callback_message)
 local update_timer = os.startTimer(10)
 
+rednet.open(side)
+
 local function event_loop()
     while true do
         event = {os.pullEvent()}
@@ -30,16 +32,7 @@ local function event_loop()
         end
     end
 end
-
-local function chunky_loop()
-    while true do
-        chunky.tick()
-        os.sleep(0.1)
-    end
-end
-
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
-    event_loop,
-    chunky_loop
+    event_loop
 )
