@@ -153,8 +153,10 @@ local function Crunchy()
 
     function crunchy.handle_command(command)
         crunchy.chunky_distance = math.abs(crunchy.tunnel_pos-command[2])
+        file_sys.log_to_file("Handling command: "..command[1] " with distance: "..crunchy.chunky_distance)
         for i=1,crunchy.chunky_distance+1 do
             turtle.back()
+            file_sys.log_to_file("b")
         end
         if command[1] == UP then
             crunchy.up()
@@ -325,9 +327,9 @@ local function Crunchy()
         link_class.get().chunky_command(BACKWARD)
         -- Store the tunnel map
         if crunchy.tunnel_side == LEFT then
-            crunchy.tunnel_map[crunchy.forward_pos][0] = crunchy.tunnel_pos
-        else
             crunchy.tunnel_map[crunchy.forward_pos][1] = crunchy.tunnel_pos
+        else
+            crunchy.tunnel_map[crunchy.forward_pos][2] = crunchy.tunnel_pos
         end
         file_sys.save_tunnel_map(crunchy.depth, crunchy.tunnel_map)
         os.sleep(5)

@@ -29,3 +29,10 @@ function save_tunnel_map(depth, map)
     end
     file.close()
 end
+
+function log_to_file(str)
+    local file_name = "/log/mine_log.txt"
+    local file = fs.open(file_name, "a")
+    file.write(str.."\n")
+    file.close()
+end
