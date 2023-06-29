@@ -108,6 +108,9 @@ local function Crunchy()
                 mine.mine_vein()
             end
             crunchy.checking_vein = false
+            if crunchy.current_command then
+                crunchy.finish_chunky_command()
+            end
             mine.dig_falling(turtle.digUp, turtle.inspectUp)
             link_class.get().chunky_command(FORWARD)
         -- When commands available from chunky first execute them
