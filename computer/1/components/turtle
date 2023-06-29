@@ -5,5 +5,33 @@ function getFuelLevel()
 end
 
 function inspect()
-    return true, {name="minecraft:rock"}
+    return true, {name="minecraft:stone"}
+end
+
+function inspectUp()
+    return true, {name="minecraft:stone"}
+end
+
+function inspectDown()
+    return true, {name="minecraft:stone"}
+end
+
+function up()
+    return true
+end
+
+function turnLeft()
+    return true
+end
+
+function turnRight()
+    return true
+end
+
+function down()
+    return true
+end
+
+function forward()
+    return true
 end

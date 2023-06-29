@@ -74,7 +74,7 @@ local function Crunchy()
             crunchy.moving_home = false
             crunchy.idle = true
         end
-        crunchy.total_block_back = crunchy.total_block_back - 1
+        crunchy.total_blocks_back = crunchy.total_blocks_back - 1
     end
 
     function crunchy.dig_down()
@@ -82,7 +82,7 @@ local function Crunchy()
         turtle.down()
         link_class.get().chunky_command(DOWN)
         crunchy.pos_y = crunchy.pos_y - 1 -- Go down 1 depth
-        crunchy.total_block_back = crunchy.total_block_back + 1
+        crunchy.total_blocks_back = crunchy.total_blocks_back + 1
     end
 
     function crunchy.forward()
@@ -93,7 +93,7 @@ local function Crunchy()
     function crunchy.move_forwards()
         crunchy.forward()
         crunchy.forward_pos = crunchy.forward_pos + 1
-        crunchy.total_block_back = crunchy.total_block_back + 1
+        crunchy.total_blocks_back = crunchy.total_blocks_back + 1
         crunchy.map[crunchy.direction] = crunchy.map[crunchy.direction] + 1
         crunchy.checking_vein = true
     end
@@ -176,7 +176,7 @@ local function Crunchy()
             crunchy.move(turtle.forward)
             link_class.get().chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
-            crunchy.total_block_back = crunchy.total_block_back + 1
+            crunchy.total_blocks_back = crunchy.total_blocks_back + 1
         else
             crunchy.find_tunnel_end = false
         end
@@ -214,11 +214,11 @@ local function Crunchy()
 
     function crunchy.check_go_back()
         if turtle.getItemCount(1) > 2 then
-            if crunchy.fuel < crunchy.total_block_back + 400 then
+            if crunchy.fuel < crunchy.total_blocks_back + 400 then
                 turtle.refuel(1)
             end
         end
-        if crunchy.fuel < crunchy.total_block_back + 100 then
+        if crunchy.fuel < crunchy.total_blocks_back + 100 then
             print("No fuel left, going home")
             crunchy.go_home()
         end
@@ -285,7 +285,7 @@ local function Crunchy()
         info.find_tunnel_end = crunchy.find_tunnel_end
         info.moving_home = crunchy.moving_home
         info.checking_vein = crunchy.checking_vein
-        info.total_block_back = crunchy.total_block_back
+        info.total_block_back = crunchy.total_blocks_back
         return info
     end
 
@@ -297,7 +297,7 @@ local function Crunchy()
         end
     end
 
-    return miner
+    return crunchy
 end
 
 function init()

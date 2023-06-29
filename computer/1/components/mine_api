@@ -9,8 +9,8 @@ function MineApi()
 
     function mine_api.vein_helper (xyz, orientation, traversed)
         for _, direction in ipairs({'up', 'down', 'front', 'back', 'left', 'right'}) do
-            local destination, newOrientation = table.unpack(calcDest(xyz, orientation, direction))
-            if not contains(traversed, destination) then
+            local destination, newOrientation = table.unpack(mine_api.calc_dest(xyz, orientation, direction))
+            if not mine_api.contains(traversed, destination) then
                 if direction ~= 'back' then
                     table.insert(traversed, destination)
                 end
@@ -80,7 +80,7 @@ function MineApi()
     end
 
     function mine_api.contains (table, xyz)
-        for _,v in ipairs(table) do
+        for _,v in pairs(table) do
             if v['x'] == xyz['x'] and v['y'] == xyz['y'] and v['z'] == xyz['z'] then
                 return true
             end
@@ -117,6 +117,7 @@ function MineApi()
             dig_fnc()
             os.sleep(0.75)
         end
+        dig_fnc()
     end
 
     function mine_api.falling_block(inspect_fnc)
