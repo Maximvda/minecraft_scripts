@@ -98,7 +98,7 @@ local function Crunchy()
 
     function crunchy.up()
         mine.dig_falling(turtle.digUp, turtle.inspectUp)
-        crunchy.move(turtle.up)
+        turtle.up()
     end
 
     function crunchy.strip_mine()
@@ -195,7 +195,7 @@ local function Crunchy()
         end
         -- Move till tunnel end
         if crunchy.forward_pos < crunchy.map[crunchy.direction] then
-            crunchy.move(turtle.forward)
+            turtle.forward()
             link_class.get().chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
@@ -220,7 +220,7 @@ local function Crunchy()
         end
         crunchy.direction = dir
         if crunchy.direction == 2 then
-            crunchy.move(turtle.turnLeft)
+            turtle.turnLeft()
             link_class.get().chunky_command(LEFT)
         elseif crunchy.direction == 3 then
             crunchy.full_turn()
@@ -228,7 +228,7 @@ local function Crunchy()
             os.sleep(1)
             link_class.get().chunky_command(LEFT)
         elseif crunchy.direction == 4 then
-            crunchy.move(turtle.turnRight)
+            turtle.turnRight()
             link_class.get().chunky_command(RIGHT)
         end
         print("Going in direction: " .. dir)
