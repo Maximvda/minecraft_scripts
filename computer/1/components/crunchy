@@ -209,11 +209,11 @@ local function Crunchy()
             return
         end
         if crunchy.tunnel_side == LEFT then
-            print("Tunnel side left")
+            file_sys.log_to_file("Tunnel side left")
             turtle.turnLeft()
             link_class.get().chunky_command(LEFT)
         elseif crunchy.tunnel_side == RIGHT then
-            print("Tunnel side right")
+            file_sys.log_to_file("Tunnel side right")
             turtle.turnRight()
             link_class.get().chunky_command(RIGHT)
         end
