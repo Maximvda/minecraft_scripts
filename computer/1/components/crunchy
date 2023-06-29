@@ -291,6 +291,10 @@ local function Crunchy()
         if not crunchy.idle then
             return
         end
+        crunchy.link = link_class.get()
+        while crunchy.link.chunky == nil do
+            rednet.broadcast(config.request_chunky)
+        end
         while crunchy.gps_pos == nil do
             crunchy.update_gps()
         end
