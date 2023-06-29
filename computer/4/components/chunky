@@ -13,8 +13,8 @@ local function Chunky()
     chunky.gps_pos = nil
     chunky.total_block_back = 0
     chunky.forward_pos = 0
-    chunky.turn_at = -1
-    chunky.turn_side = LEFT
+    chunky.tunnel_pos = 0
+    chunky.turn_side = nil
     chunky.fuel = turtle.getFuelLevel()
     chunky.command_list = {}
 
@@ -29,10 +29,15 @@ local function Chunky()
         local command = table.remove(chunky.command_list, 1)
 
         if command == FORWARD then
+
             chunky.total_block_back = chunky.total_block_back + 1
             turtle.forward()
-            chunky.forward_pos = chunky.forward_pos + 1
-            chunky.find_veins()
+            if chunky.turn_side == nil then
+                chunky.forward_pos = chunky.forward_pos + 1
+            else
+                chunky.tunnel_pos = chunky.tunnel_pos + 1
+                chunky.find_veins()
+            end
         elseif command == DOWN then
             chunky.total_block_back = chunky.total_block_back + 1
             turtle.down()
@@ -42,26 +47,29 @@ local function Chunky()
                 turtle.up()
             end
         elseif command == LEFT then
-            chunky.turn_at = chunky.forward_pos
             chunky.turn_side = LEFT
             turtle.turnLeft()
         elseif command == RIGHT then
-            chunky.turn_at = chunky.forward_pos
             chunky.turn_side = RIGHT
             turtle.turnRight()
         elseif command == BACKWARD then
+            while chunky.tunnel_pos > 0 do
+                chunky.total_block_back = chunky.total_block_back - 1
+                chunky.tunnel_pos = chunky.tunnel_pos - 1
+                turtle.back()
+            end
+
+            if chunky.turn_side == LEFT then
+                turtle.turnRight()
+            else
+                turtle.turnLeft()
+            end
+            chunky.turn_side = nil
+
             while chunky.forward_pos > 0 do
                 chunky.total_block_back = chunky.total_block_back - 1
                 chunky.forward_pos = chunky.forward_pos - 1
                 turtle.back()
-                if chunky.forward_pos == chunky.turn_at then
-                    if chunky.turn_side == LEFT then
-                        turtle.turnRight()
-                    else
-                        turtle.turnLeft()
-                    end
-                    chunky.turn_at = -1
-                end
             end
             table.insert(chunky.command_list, UP)
         end
@@ -83,16 +91,16 @@ local function Chunky()
     function chunky.find_veins()
         local link = link_class.get()
         if chunky.check_vein(turtle.inspectUp) then
-            link.send_command({UP, chunky.forward_pos})
+            link.send_command({UP, chunky.tunnel_pos})
         end
         turtle.turnLeft()
         if chunky.check_vein(turtle.inspect) then
-            link.send_command({LEFT, chunky.forward_pos})
+            link.send_command({LEFT, chunky.tunnel_pos})
         end
         turtle.turnRight()
         turtle.turnRight()
         if chunky.check_vein(turtle.inspect) then
-            link.send_command({RIGHT, chunky.forward_pos})
+            link.send_command({RIGHT, chunky.tunnel_pos})
         end
         turtle.turnLeft()
     end
