@@ -224,17 +224,17 @@ local function Crunchy()
         local min = nil
         local tunnel_start = 0
         local max_key = 0
-        for key, value in pairs(crunchy.tunnel_map) do
+        for key, _ in pairs(crunchy.tunnel_map) do
             if min == nil then
-                min = key + value[0]
+                min = key + crunchy.tunnel_map[key][1]
             end
-            local dist = key + value[0]
+            local dist = key + crunchy.tunnel_map[key][1]
             if dist < min then
                 min = dist
                 tunnel_start = key
                 crunchy.tunnel_side = LEFT
             end
-            local dist = key + value[1]
+            local dist = key + crunchy.tunnel_map[key][2]
             if dist < min then
                 min = dist
                 tunnel_start = key
