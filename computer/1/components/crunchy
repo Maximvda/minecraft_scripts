@@ -204,18 +204,31 @@ local function Crunchy()
             link_class.get().chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
-        else
-            if crunchy.tunnel_side == LEFT then
-                print("Tunnel side left")
-                turtle.turnLeft()
-                link_class.get().chunky_command(LEFT)
-            elseif crunchy.tunnel_side == RIGHT then
-                print("Tunnel side right")
-                turtle.turnRight()
-                link_class.get().chunky_command(RIGHT)
-            end
-            crunchy.find_tunnel_end = false
+            return
         end
+        if crunchy.tunnel_side == LEFT then
+            print("Tunnel side left")
+            turtle.turnLeft()
+            link_class.get().chunky_command(LEFT)
+        elseif crunchy.tunnel_side == RIGHT then
+            print("Tunnel side right")
+            turtle.turnRight()
+            link_class.get().chunky_command(RIGHT)
+        end
+        local length = 0
+        if crunchy.tunnel_side == LEFT then
+            length =  crunchy.tunnel_map[crunchy.found_tunnel_pos][1]
+        else
+            length =  crunchy.tunnel_map[crunchy.found_tunnel_pos][2]
+        end
+        while crunchy.tunnel_pos < length do
+            turtle.forward()
+            link_class.get().chunky_command(FORWARD)
+            crunchy.tunnel_pos = crunchy.tunnel_pos + 1
+            crunchy.total_blocks_back = crunchy.total_blocks_back + 1
+        end
+
+        crunchy.find_tunnel_end = false
     end
 
     function crunchy.find_tunnel_pos()
