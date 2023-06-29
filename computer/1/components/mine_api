@@ -68,15 +68,7 @@ function MineApi()
 
     function mine_api.is_treasure(inspect_fnc)
         local success, data = inspect_fnc()
-        if not success then
-            return false
-        end
-        for _, name in pairs(config.ignore_blocks) do
-            if string.find(data.name, name) then
-                return false
-            end
-        end
-        return true
+        return success and string.find(data.name, "ore")
     end
 
     function mine_api.contains (table, xyz)

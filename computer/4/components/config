@@ -8,7 +8,6 @@ turtle_link_message = "Turtle linked"
 chunky_link_message = "Chunky linked"
 
 ignore_blocks = {
-    "stone",
     "marble",
     "worm",
     "cobble",

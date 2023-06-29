@@ -13,7 +13,6 @@ falling_blocks = {
 }
 
 ignore_blocks = {
-    "stone",
     "marble",
     "worm",
     "cobble",
