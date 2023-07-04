@@ -153,7 +153,7 @@ local function Crunchy()
 
     function crunchy.handle_command(command)
         crunchy.chunky_distance = math.abs(crunchy.tunnel_pos-command[2])
-        file_sys.log_to_file("Handling command: "..command[1] " with distance: "..crunchy.chunky_distance)
+        file_sys.log_to_file("Handling command: "..command[1].. " with distance: "..crunchy.chunky_distance)
         for i=1,crunchy.chunky_distance+1 do
             mine_api.move_turtle(turtle.back)
             file_sys.log_to_file("b")
