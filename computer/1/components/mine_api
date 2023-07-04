@@ -1,5 +1,11 @@
 -- Helper function for mining vieins
 
+function move_turtle(move_fnc)
+    while (not move_fnc()) do
+        file_sys.log_to_file(debug.traceback())
+    end
+end
+
 function MineApi()
     local mine_api = {}
 
@@ -18,16 +24,16 @@ function MineApi()
                 if direction == 'up' then
                     if mine_api.is_treasure(turtle.inspectUp) then
                         mine_api.dig_falling(turtle.digUp, turtle.inspectUp)
-                        turtle.up()
+                        mine_api.move_turtle(turtle.up)
                         mine_api.vein_helper(destination, newOrientation, traversed);
-                        turtle.down()
+                        mine_api.move_turtle(turtle.down)
                     end
                 elseif direction == 'down' then
                     if mine_api.is_treasure(turtle.inspectDown) then
                         turtle.digDown()
-                        turtle.down()
+                        mine_api.move_turtle(turtle.down)
                         mine_api.vein_helper(destination, newOrientation, traversed);
-                        turtle.up()
+                        mine_api.move_turtle(turtle.up)
                     end
                 elseif direction == 'back' then
                     local leftOrient = orientation
@@ -35,31 +41,31 @@ function MineApi()
                         local calculated = mine_api.calc_dest(xyz, leftOrient, 'left')
                         local leftDest = calculated[1]
                         leftOrient = calculated[2]
-                        turtle.turnLeft()
+                        mine_api.move_turtle(turtle.turnLeft)
                         table.insert(traversed, leftDest)
                         if mine_api.is_treasure(turtle.inspect) then
                             mine_api.dig_falling(turtle.dig, turtle.inspect)
-                            turtle.forward()
+                            mine_api.move_turtle(turtle.forward)
                             mine_api.vein_helper(leftDest, leftOrient, traversed);
-                            turtle.back()
+                            mine_api.move_turtle(turtle.back)
                         end
                     end
-                    turtle.turnLeft()
+                    mine_api.move_turtle(turtle.turnLeft)
                 else
                     --turn in the direction to inspect
-                    if direction == 'left' then turtle.turnLeft()
-                    elseif direction == 'right' then turtle.turnRight()
+                    if direction == 'left' then mine_api.move_turtle(turtle.turnLeft)
+                    elseif direction == 'right' then mine_api.move_turtle(turtle.turnRight)
                     end
                     --inspect the block
                     if mine_api.is_treasure(turtle.inspect) then
                         mine_api.dig_falling(turtle.dig, turtle.inspect)
-                        turtle.forward()
+                        mine_api.move_turtle(turtle.forward)
                         mine_api.vein_helper(destination, newOrientation, traversed);
-                        turtle.back()
+                        mine_api.move_turtle(turtle.back)
                     end
                     --unturn to face forwards again
-                    if direction == 'left' then turtle.turnRight()
-                    elseif direction == 'right' then turtle.turnLeft()
+                    if direction == 'left' then mine_api.move_turtle(turtle.turnRight)
+                    elseif direction == 'right' then mine_api.move_turtle(turtle.turnLeft)
                     end
                 end
             end
