@@ -71,7 +71,9 @@ function MineApi()
 
     function mine_api.is_treasure(inspect_fnc)
         local success, data = inspect_fnc()
-        return success and string.find(data.name, "ore")
+        return success and (string.find(data.name, "ore") or
+            string.find(data.name, "gravel") or
+            string.find(data.name, "sand"))
     end
 
     function mine_api.contains (table, xyz)
