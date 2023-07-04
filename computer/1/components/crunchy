@@ -202,7 +202,8 @@ local function Crunchy()
         end
         -- Move till tunnel end
         if crunchy.forward_pos < crunchy.found_tunnel_pos  then
-            mine_api.move_turtle(turtle.forward)
+            crunchy.forward()
+            mine.dig_falling(turtle.digUp, turtle.inspectUp)
             link_class.get().chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
