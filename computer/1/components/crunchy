@@ -17,7 +17,7 @@ local function Crunchy()
     crunchy.direction = nil
     crunchy.command_list = {}
     crunchy.current_command = nil
-    crunchy.forward_pos = 0
+    crunchy.forward_pos = 1
     crunchy.tunnel_pos = 0
     crunchy.total_blocks_back = 0
     crunchy.depth = 40
@@ -65,7 +65,7 @@ local function Crunchy()
                     mine_api.move_turtle(turtle.turnLeft)
                 end
             end
-        elseif crunchy.forward_pos > 0 then
+        elseif crunchy.forward_pos > 1 then
             mine_api.move_turtle(turtle.back)
             crunchy.forward_pos = crunchy.forward_pos - 1
         elseif crunchy.pos_y < crunchy.home_y then
