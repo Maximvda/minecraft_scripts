@@ -23,8 +23,7 @@ function MineApi()
 
                 if direction == 'up' then
                     if mine_api.is_treasure(turtle.inspectUp) then
-                        mine_api.dig_falling(turtle.digUp, turtle.inspectUp)
-                        move_turtle(turtle.up)
+                        mine_api.dig_falling(turtle.digUp, turtle.inspectUp, turtle.up)
                         mine_api.vein_helper(destination, newOrientation, traversed);
                         move_turtle(turtle.down)
                     end
@@ -44,8 +43,7 @@ function MineApi()
                         move_turtle(turtle.turnLeft)
                         table.insert(traversed, leftDest)
                         if mine_api.is_treasure(turtle.inspect) then
-                            mine_api.dig_falling(turtle.dig, turtle.inspect)
-                            move_turtle(turtle.forward)
+                            mine_api.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
                             mine_api.vein_helper(leftDest, leftOrient, traversed);
                             move_turtle(turtle.back)
                         end
@@ -58,8 +56,7 @@ function MineApi()
                     end
                     --inspect the block
                     if mine_api.is_treasure(turtle.inspect) then
-                        mine_api.dig_falling(turtle.dig, turtle.inspect)
-                        move_turtle(turtle.forward)
+                        mine_api.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
                         mine_api.vein_helper(destination, newOrientation, traversed);
                         move_turtle(turtle.back)
                     end
@@ -110,12 +107,17 @@ function MineApi()
         return {dest, orientation}
     end
 
-    function mine_api.dig_falling(dig_fnc, inspect_fnc)
+    function mine_api.dig_falling(dig_fnc, inspect_fnc, move_fnc)
         while (mine_api.falling_block(inspect_fnc)) do
             dig_fnc()
-            os.sleep(0.75)
+            os.sleep(1)
         end
         dig_fnc()
+        if move_fnc ~= nil then
+            while not move_fnc() do
+                mine_api.dig_falling(dig_fnc, inspect_fnc, nil)
+            end
+        end
     end
 
     function mine_api.falling_block(inspect_fnc)

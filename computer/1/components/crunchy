@@ -89,8 +89,7 @@ local function Crunchy()
     end
 
     function crunchy.forward()
-        mine.dig_falling(turtle.dig, turtle.inspect)
-        mine_api.move_turtle(turtle.forward)
+        mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
     end
 
     function crunchy.move_forwards()
@@ -101,8 +100,7 @@ local function Crunchy()
     end
 
     function crunchy.up()
-        mine.dig_falling(turtle.digUp, turtle.inspectUp)
-        mine_api.move_turtle(turtle.up)
+        mine.dig_falling(turtle.digUp, turtle.inspectUp, turtle.up)
     end
 
     function crunchy.strip_mine()
@@ -115,7 +113,7 @@ local function Crunchy()
             if crunchy.current_command then
                 crunchy.finish_chunky_command()
             else
-                mine.dig_falling(turtle.digUp, turtle.inspectUp)
+                mine.dig_falling(turtle.digUp, turtle.inspectUp, nil)
                 link_class.get().chunky_command(FORWARD)
             end
         -- When commands available from chunky first execute them
@@ -203,7 +201,7 @@ local function Crunchy()
         -- Move till tunnel end
         if crunchy.forward_pos < crunchy.found_tunnel_pos  then
             crunchy.forward()
-            mine.dig_falling(turtle.digUp, turtle.inspectUp)
+            mine.dig_falling(turtle.digUp, turtle.inspectUp, nil)
             link_class.get().chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
