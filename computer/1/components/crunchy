@@ -6,6 +6,8 @@ local LEFT = 4
 local RIGHT = 5
 local BACKWARD = 6
 
+local MAX_RUNS = 10
+
 local function Crunchy()
     -- Initialisation
     local crunchy = {}
@@ -22,6 +24,7 @@ local function Crunchy()
     crunchy.total_blocks_back = 0
     crunchy.depth = 40
     crunchy.chunky_distance = 0
+    crunchy.total_runs = 0
 
     -- Information
     crunchy.gps_pos = nil
@@ -33,7 +36,9 @@ local function Crunchy()
         -- Being idle
         if crunchy.idle then
             os.sleep(5)
-            crunchy.start()
+            if crunchy.total_runs < MAX_RUNS  and crunchy._start_checks() then
+                crunchy._start()
+            end
             return
         end
         -- Going back home
@@ -303,17 +308,29 @@ local function Crunchy()
     -- Functions which can be called by remote --
     -- Can only start if gps is retrieved
     function crunchy.start()
+        if crunchy._start_checks() then
+            crunchy.total_runs = 0
+            crunchy._start()
+        end
+    end
+
+    function crunchy._start_checks()
         if not crunchy.idle then
-            return
+            return false
         end
         crunchy.link = link_class.get()
         if crunchy.link.chunky == nil then
             print("Chunky not linked yet")
-            return
+            return false
         end
+        return true
+    end
+
+    function crunchy._start()
         while crunchy.gps_pos == nil do
             crunchy.update_gps()
         end
+        crunchy.total_runs = crunchy.total_runs + 1
         crunchy.pos_y = crunchy.gps_pos[2]
         crunchy.home_y = crunchy.pos_y
         crunchy.idle = false
