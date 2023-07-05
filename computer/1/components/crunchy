@@ -33,6 +33,7 @@ local function Crunchy()
         -- Being idle
         if crunchy.idle then
             os.sleep(5)
+            crunchy.start()
             return
         end
         -- Going back home
@@ -83,7 +84,7 @@ local function Crunchy()
     function crunchy.dig_down()
         turtle.digDown()
         mine_api.move_turtle(turtle.down)
-        link_class.get().chunky_command(DOWN)
+        crunchy.link.chunky_command(DOWN)
         crunchy.pos_y = crunchy.pos_y - 1 -- Go down 1 depth
         crunchy.total_blocks_back = crunchy.total_blocks_back + 1
     end
@@ -114,7 +115,7 @@ local function Crunchy()
                 crunchy.finish_chunky_command()
             else
                 mine.dig_falling(turtle.digUp, turtle.inspectUp, nil)
-                link_class.get().chunky_command(FORWARD)
+                crunchy.link.chunky_command(FORWARD)
             end
         -- When commands available from chunky first execute them
         elseif #crunchy.command_list > 0 then
@@ -202,7 +203,7 @@ local function Crunchy()
         if crunchy.forward_pos < crunchy.found_tunnel_pos  then
             crunchy.forward()
             mine.dig_falling(turtle.digUp, turtle.inspectUp, nil)
-            link_class.get().chunky_command(FORWARD)
+            crunchy.link.chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
             return
@@ -210,11 +211,11 @@ local function Crunchy()
         if crunchy.tunnel_side == LEFT then
             file_sys.log_to_file("Tunnel side left")
             mine_api.move_turtle(turtle.turnLeft)
-            link_class.get().chunky_command(LEFT)
+            crunchy.link.chunky_command(LEFT)
         elseif crunchy.tunnel_side == RIGHT then
             file_sys.log_to_file("Tunnel side right")
             mine_api.move_turtle(turtle.turnRight)
-            link_class.get().chunky_command(RIGHT)
+            crunchy.link.chunky_command(RIGHT)
         end
         local length = 0
         if crunchy.tunnel_side == LEFT then
@@ -224,7 +225,7 @@ local function Crunchy()
         end
         while crunchy.tunnel_pos < length do
             crunchy.forward()
-            link_class.get().chunky_command(FORWARD)
+            crunchy.link.chunky_command(FORWARD)
             crunchy.tunnel_pos = crunchy.tunnel_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
         end
@@ -287,7 +288,7 @@ local function Crunchy()
         crunchy.full_turn()
         for i=2,16 do
             turtle.select(i)
-            --turtle.drop(64)
+            turtle.drop(64)
         end
         turtle.select(1)
         crunchy.full_turn()
@@ -306,8 +307,9 @@ local function Crunchy()
             return
         end
         crunchy.link = link_class.get()
-        while crunchy.link.chunky == nil do
-            rednet.broadcast(config.request_chunky)
+        if crunchy.link.chunky == nil then
+            print("Chunky not linked yet")
+            return
         end
         while crunchy.gps_pos == nil do
             crunchy.update_gps()
@@ -323,7 +325,7 @@ local function Crunchy()
     end
 
     function crunchy.go_home()
-        link_class.get().chunky_command(BACKWARD)
+        crunchy.link.chunky_command(BACKWARD)
         -- Store the tunnel map
         if crunchy.tunnel_side == LEFT then
             crunchy.tunnel_map[crunchy.forward_pos][1] = crunchy.tunnel_pos
