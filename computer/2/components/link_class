@@ -11,29 +11,14 @@ function Link(side, callback)
     link.callback = callback
 
     function link.handle_message(id, message)
-        if message == "discovery" then
-            link.controller = id
-            print("Linked to controller "..id)
-            rednet.send(id, config.smeltery_link_message)
-        elseif id == link.controller then
+        if id == config.id_hub then
             link.callback(message)
         end
     end
 
-    function link.request_link()
-        print("Requesting link")
-        rednet.broadcast(config.request_message)
-    end
-
     function link.send_data(info)
-        if link.controller == nil then
-            link.request_link()
-            return
-        end
-        rednet.send(link.controller, info)
+        rednet.send(config.id_hub, info)
     end
-
-    link.request_link()
 
     return link
 end

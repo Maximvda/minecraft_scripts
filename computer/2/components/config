@@ -4,5 +4,4 @@ modem_side = "right"
 smelt_per = "tconstruct:drain_0"
 redstone_side = "top"
 number_casting_basins = 6
-smeltery_link_message = "Smeltery linked"
-request_message = "Requesting link"
+id_hub = 28
