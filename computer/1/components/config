@@ -5,6 +5,8 @@ id_hub = 28
 id_chunky = 22
 id_crunchy = 25
 
+update_interval = 3
+
 falling_blocks = {
     sand="minecraft:sand",
     gravel="minecraft:gravel",

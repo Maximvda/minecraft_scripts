@@ -27,7 +27,7 @@ end
 
 
 local link = link_class.init(config.modem_side, callback_message)
-update_timer = os.startTimer(10)
+update_timer = os.startTimer(config.update_interval)
 
 
 local function event_loop()
@@ -42,7 +42,7 @@ local function event_loop()
 
         if event[1] == "timer" and event[2] == update_timer then
             info = crunchy.get_info(info)
-            update_timer = os.startTimer(10)
+            update_timer = os.startTimer(config.update_interval)
             link.send_data(info)
         end
     end

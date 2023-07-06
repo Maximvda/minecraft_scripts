@@ -17,19 +17,19 @@ local function Smeltery(display)
 
     function smeltery.btn_cb(button)
         if (button.label == "Blocks") then
-            link.send_command(link.ids.smeltery, 1)
+            link.send_command(config.id_smeltery, 1)
             button.toggle_color()
         elseif (button.label == "Ingots") then
-            link.send_command(link.ids.smeltery, 0)
+            link.send_command(config.id_smeltery, 0)
             button.toggle_color()
         elseif (button.label == "Rods") then
-            link.send_command(link.ids.smeltery, 2)
+            link.send_command(config.id_smeltery, 2)
             button.toggle_color()
         elseif (button.label == "Wires") then
-            link.send_command(link.ids.smeltery, 3)
+            link.send_command(config.id_smeltery, 3)
             button.toggle_color()
         elseif (button.label == "Plates") then
-            link.send_command(link.ids.smeltery, 4)
+            link.send_command(config.id_smeltery, 4)
             button.toggle_color()
         end
     end

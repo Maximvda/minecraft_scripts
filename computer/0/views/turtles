@@ -15,10 +15,10 @@ local function Turtles(display)
 
     function turtles.btn_cb(button)
         if (button.label == "Start") then
-            link.send_command(link.ids.turtle, "Start")
+            link.send_command(config.id_crunchy, "Start")
             button.set_color(colors.green)
         elseif (button.label == "Go home") then
-            link.send_command(link.ids.turtle, "Go home")
+            link.send_command(config.id_crunchy, "Go home")
             button.set_color(colors.green)
         end
     end
