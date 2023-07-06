@@ -33,20 +33,18 @@ end
 monitor.show_view("reactor")
 
 local function handle_info(id, message)
-    if id == link.ids.smeltery then
+    if id == config.id_smeltery then
         smelter_view.handle_message(message)
-    elseif id == link.ids.turtle then
+    elseif id == config.id_crunchy then
         turtle_view.set_miner_data(message)
-    elseif id == link.ids.chunky then
+    elseif id == config.id_chunky then
         turtle_view.set_chunky_data(message)
-    elseif id == link.ids.reactor then
+    elseif id == config.id_reactor then
         reactor_view.set_data(message)
     end
 end
 
 link.init(config.modem_side, handle_info)
-link.discovery()
-
 
 while true do
     if not main() then

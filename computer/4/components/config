@@ -1,11 +1,12 @@
 -- Configuration variables
 
 modem_side = "left"
-chunky_link_message = "Chunky linked"
-request_chunky = "Turtle for chunky"
-request_message = "Chunky for link"
-turtle_link_message = "Turtle linked"
-chunky_link_message = "Chunky linked"
+
+id_hub = 28
+id_chunky = 22
+id_crunchy = 25
+
+update_interval = 3
 
 ignore_blocks = {
     "marble",

@@ -3,8 +3,9 @@
 
 modem_side = "right"
 monitor = "left"
-request_message = "Requesting link"
-smeltery_link_message = "Smeltery linked"
-reactor_link_message = "Reactor linked"
-turtle_link_message = "Turtle linked"
-chunky_link_message = "Chunky linked"
+
+id_hub = 28
+id_chunky = 22
+id_crunchy = 25
+id_smeltery = 26
+id_reactor = 29

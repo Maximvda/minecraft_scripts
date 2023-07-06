@@ -14,41 +14,7 @@ function init(side, callback)
     rednet.open(side)
 end
 
-function discovery()
-    rednet.broadcast("discovery")
-end
-
 function handle_message(id, message)
-    if message == config.request_message then
-        print("Link requested from "..id)
-        rednet.send(id, "discovery")
-        return
-    end
-    if message == config.smeltery_link_message then
-        print("Smeltery is linked")
-        ids.smeltery = id
-        return
-    end
-    if message == config.turtle_link_message then
-        print("Mine turtle linked")
-        ids.turtle = id
-        return
-    end
-    if message == config.reactor_link_message then
-        print("Reactor linked")
-        ids.reactor = id
-        return
-    end
-    if message == config.chunky_link_message then
-        print("Chunky linked")
-        ids.chunky = id
-        return
-    end
-
-    if ids.smeltery == nil or ids.turtle == nil or ids.chunky == nil then
-        discovery()
-    end
-
     if fnc_callback ~= nil then
         fnc_callback(id, message)
     end

@@ -6,49 +6,22 @@ local instance = nil
 
 function Link(side, callback)
     local link = {}
-    link.controller = nil
-    link.turtle = nil
     rednet.open(side)
     link.callback = callback
 
     function link.handle_message(id, message)
-        if message == "discovery" then
-            link.controller = id
-            print("Linked to controller "..id)
-            rednet.send(id, config.chunky_link_message)
-            return
-        end
-        if message == config.turtle_link_message then
-            print("Mine turtle linked")
-            link.turtle = id
-            return
-        end
-        if message == config.request_chunky then
-            rednet.broadcast(config.request_message)
-            return
-        end
-        if id == link.turtle then
+        if id == config.id_crunchy then
             link.callback(message)
         end
     end
 
     function link.send_data(info)
-        if link.controller == nil then
-            rednet.broadcast("Requesting link")
-            return
-        end
-        rednet.send(link.controller, info)
+        rednet.send(config.id_hub, info)
     end
 
     function link.send_command(command)
-        if link.turtle == nil then
-            rednet.broadcast(config.request_message)
-            return
-        end
-        rednet.send(link.turtle, command)
+        rednet.send(config.id_crunchy, command)
     end
-
-    rednet.broadcast(config.request_message)
 
     return link
 end

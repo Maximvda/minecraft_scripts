@@ -11,7 +11,7 @@ local function callback_message(message)
 end
 
 local link = link_class.init(config.modem_side, callback_message)
-local update_timer = os.startTimer(10)
+local update_timer = os.startTimer(config.update_interval)
 
 local function event_loop()
     while true do
@@ -25,7 +25,7 @@ local function event_loop()
 
         if event[1] == "timer" and event[2] == update_timer then
             info = chunky.get_info(info)
-            update_timer = os.startTimer(10)
+            update_timer = os.startTimer(config.update_interval)
             link.send_data(info)
         end
     end

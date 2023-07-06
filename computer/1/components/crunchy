@@ -13,6 +13,7 @@ local function Crunchy()
     local crunchy = {}
     -- Control variables
     crunchy.idle = true
+    crunchy.running = false
     crunchy.moving_home = false
 
     -- Vein checking variables
@@ -24,23 +25,26 @@ local function Crunchy()
     crunchy.total_blocks_back = 0
     crunchy.depth = 40
     crunchy.chunky_distance = 0
-    crunchy.total_runs = 0
 
     -- Information
     crunchy.gps_pos = nil
     crunchy.fuel = turtle.getFuelLevel()
     local mine = mine_api.MineApi()
+    crunchy.link = link_class.get()
 
     -- Main loop which is executed
     function crunchy.tick()
         -- Being idle
         if crunchy.idle then
-            os.sleep(5)
-            if crunchy.total_runs < MAX_RUNS  and crunchy._start_checks() then
+            -- Start new run when still going
+            if crunchy.running then
                 crunchy._start()
+                return
             end
+            os.sleep(1)
             return
         end
+
         -- Going back home
         if crunchy.moving_home then
             crunchy.move_home()
@@ -62,20 +66,20 @@ local function Crunchy()
 
     function crunchy.move_home()
         if crunchy.tunnel_pos > 0 then
-            mine_api.move_turtle(turtle.back)
+            mine.move_turtle(turtle.back)
             crunchy.tunnel_pos = crunchy.tunnel_pos - 1
             if crunchy.tunnel_pos == 0 then
                 if crunchy.tunnel_side == LEFT then
-                    mine_api.move_turtle(turtle.turnRight)
+                    mine.move_turtle(turtle.turnRight)
                 else
-                    mine_api.move_turtle(turtle.turnLeft)
+                    mine.move_turtle(turtle.turnLeft)
                 end
             end
         elseif crunchy.forward_pos > 1 then
-            mine_api.move_turtle(turtle.back)
+            mine.move_turtle(turtle.back)
             crunchy.forward_pos = crunchy.forward_pos - 1
         elseif crunchy.pos_y < crunchy.home_y then
-            mine_api.move_turtle(turtle.up)
+            mine.move_turtle(turtle.up)
             crunchy.pos_y = crunchy.pos_y + 1
         else
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
@@ -87,19 +91,14 @@ local function Crunchy()
     end
 
     function crunchy.dig_down()
-        turtle.digDown()
-        mine_api.move_turtle(turtle.down)
+        mine.dig_falling(turtle.digDown, turtle.inspectDown, turtle.down)
         crunchy.link.chunky_command(DOWN)
         crunchy.pos_y = crunchy.pos_y - 1 -- Go down 1 depth
         crunchy.total_blocks_back = crunchy.total_blocks_back + 1
     end
 
-    function crunchy.forward()
-        mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
-    end
-
     function crunchy.move_forwards()
-        crunchy.forward()
+        mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
         crunchy.tunnel_pos = crunchy.tunnel_pos + 1
         crunchy.total_blocks_back = crunchy.total_blocks_back + 1
         crunchy.checking_vein = true
@@ -137,17 +136,17 @@ local function Crunchy()
         if mine.is_treasure(turtle.inspectDown) then
             return true
         end
-        mine_api.move_turtle(turtle.turnLeft)
+        mine.move_turtle(turtle.turnLeft)
         if mine.is_treasure(turtle.inspect) then
-            mine_api.move_turtle(turtle.turnRight)
+            mine.move_turtle(turtle.turnRight)
             return true
         end
         crunchy.full_turn()
         if mine.is_treasure(turtle.inspect) then
-            mine_api.move_turtle(turtle.turnLeft)
+            mine.move_turtle(turtle.turnLeft)
             return true
         end
-        mine_api.move_turtle(turtle.turnLeft)
+        mine.move_turtle(turtle.turnLeft)
         return false
     end
 
@@ -157,23 +156,22 @@ local function Crunchy()
 
     function crunchy.handle_command(command)
         crunchy.chunky_distance = math.abs(crunchy.tunnel_pos-command[2])
-        file_sys.log_to_file("Handling command: "..command[1].. " with distance: "..crunchy.chunky_distance)
+        --file_sys.log_to_file("Handling command: "..command[1].. " with distance: "..crunchy.chunky_distance)
         for i=1,crunchy.chunky_distance+1 do
-            mine_api.move_turtle(turtle.back)
-            file_sys.log_to_file("b")
+            mine.move_turtle(turtle.back)
         end
         if command[1] == UP then
             crunchy.up()
             crunchy.up()
-            crunchy.forward()
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
         elseif command[1] == LEFT then
             crunchy.up()
-            mine_api.move_turtle(turtle.turnLeft)
-            crunchy.forward()
+            mine.move_turtle(turtle.turnLeft)
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
         elseif command[1] == RIGHT then
             crunchy.up()
-            mine_api.move_turtle(turtle.turnRight)
-            crunchy.forward()
+            mine.move_turtle(turtle.turnRight)
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
         end
         crunchy.current_command = command[1]
         crunchy.checking_vein = true
@@ -181,20 +179,20 @@ local function Crunchy()
 
     function crunchy.finish_chunky_command()
         if crunchy.current_command == UP then
-            mine_api.move_turtle(turtle.back)
-            mine_api.move_turtle(turtle.down)
-            mine_api.move_turtle(turtle.down)
+            mine.move_turtle(turtle.back)
+            mine.move_turtle(turtle.down)
+            mine.move_turtle(turtle.down)
         elseif crunchy.current_command == LEFT then
-            mine_api.move_turtle(turtle.back)
-            mine_api.move_turtle(turtle.down)
-            mine_api.move_turtle(turtle.turnRight)
+            mine.move_turtle(turtle.back)
+            mine.move_turtle(turtle.down)
+            mine.move_turtle(turtle.turnRight)
         elseif crunchy.current_command == RIGHT then
-            mine_api.move_turtle(turtle.back)
-            mine_api.move_turtle(turtle.down)
-            mine_api.move_turtle(turtle.turnLeft)
+            mine.move_turtle(turtle.back)
+            mine.move_turtle(turtle.down)
+            mine.move_turtle(turtle.turnLeft)
         end
         for i=1,crunchy.chunky_distance+1 do
-            crunchy.forward()
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
         end
         crunchy.checking_vein = false
         crunchy.current_command = nil
@@ -206,7 +204,7 @@ local function Crunchy()
         end
         -- Move till tunnel end
         if crunchy.forward_pos < crunchy.found_tunnel_pos  then
-            crunchy.forward()
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
             mine.dig_falling(turtle.digUp, turtle.inspectUp, nil)
             crunchy.link.chunky_command(FORWARD)
             crunchy.forward_pos = crunchy.forward_pos + 1
@@ -214,12 +212,12 @@ local function Crunchy()
             return
         end
         if crunchy.tunnel_side == LEFT then
-            file_sys.log_to_file("Tunnel side left")
-            mine_api.move_turtle(turtle.turnLeft)
+            --file_sys.log_to_file("Tunnel side left")
+            mine.move_turtle(turtle.turnLeft)
             crunchy.link.chunky_command(LEFT)
         elseif crunchy.tunnel_side == RIGHT then
-            file_sys.log_to_file("Tunnel side right")
-            mine_api.move_turtle(turtle.turnRight)
+            --file_sys.log_to_file("Tunnel side right")
+            mine.move_turtle(turtle.turnRight)
             crunchy.link.chunky_command(RIGHT)
         end
         local length = 0
@@ -229,7 +227,7 @@ local function Crunchy()
             length =  crunchy.tunnel_map[crunchy.found_tunnel_pos][2]
         end
         while crunchy.tunnel_pos < length do
-            crunchy.forward()
+            mine.dig_falling(turtle.dig, turtle.inspect, turtle.forward)
             crunchy.link.chunky_command(FORWARD)
             crunchy.tunnel_pos = crunchy.tunnel_pos + 1
             crunchy.total_blocks_back = crunchy.total_blocks_back + 1
@@ -300,30 +298,15 @@ local function Crunchy()
     end
 
     function crunchy.full_turn()
-        mine_api.move_turtle(turtle.turnLeft)
-        mine_api.move_turtle(turtle.turnLeft)
+        mine.move_turtle(turtle.turnLeft)
+        mine.move_turtle(turtle.turnLeft)
     end
 
     ---------------------------------------------
     -- Functions which can be called by remote --
     -- Can only start if gps is retrieved
     function crunchy.start()
-        if crunchy._start_checks() then
-            crunchy.total_runs = 0
-            crunchy._start()
-        end
-    end
-
-    function crunchy._start_checks()
-        if not crunchy.idle then
-            return false
-        end
-        crunchy.link = link_class.get()
-        if crunchy.link.chunky == nil then
-            print("Chunky not linked yet")
-            return false
-        end
-        return true
+        crunchy.running = true
     end
 
     function crunchy._start()
