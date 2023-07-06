@@ -4,14 +4,13 @@ os.loadAPI("components/config")
 os.loadAPI("components/chunky")
 
 -- Initialisation
-chunky = chunky.init()
-
 local function callback_message(message)
     chunky.handle_command(message)
 end
 
 local link = link_class.init(config.modem_side, callback_message)
 local update_timer = os.startTimer(config.update_interval)
+chunky = chunky.init()
 
 local function event_loop()
     while true do

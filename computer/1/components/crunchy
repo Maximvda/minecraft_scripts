@@ -317,7 +317,6 @@ local function Crunchy()
         while crunchy.gps_pos == nil do
             crunchy.update_gps()
         end
-        crunchy.total_runs = crunchy.total_runs + 1
         crunchy.pos_y = crunchy.gps_pos[2]
         crunchy.home_y = crunchy.pos_y
         crunchy.idle = false

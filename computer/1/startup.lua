@@ -6,11 +6,8 @@ os.loadAPI("components/crunchy")
 os.loadAPI("components/file_sys")
 
 -- Initialisation
-crunchy = crunchy.init()
-
 local function callback_message(id, message)
-    local link_ins = link_class.get()
-    if id == link_ins.controller then
+    if id == config.id_hub then
         if message == "Start" then
             crunchy.start()
         elseif  message == "Go home" then
@@ -20,13 +17,14 @@ local function callback_message(id, message)
                 crunchy.set_depth(message[2])
             end
         end
-    elseif id == link_ins.chunky then
+    elseif id == config.id_chunky then
         crunchy.buffer_chunky_commands(message)
     end
 end
 
 
 local link = link_class.init(config.modem_side, callback_message)
+crunchy = crunchy.init()
 update_timer = os.startTimer(config.update_interval)
 
 
