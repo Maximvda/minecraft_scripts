@@ -309,6 +309,10 @@ local function Crunchy()
         crunchy.running = true
     end
 
+    function crunchy.stop()
+        crunchy.running = false
+    end
+
     function crunchy._start()
         while crunchy.gps_pos == nil do
             crunchy.update_gps()

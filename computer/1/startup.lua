@@ -14,7 +14,7 @@ local function callback_message(id, message)
         if message == "Start" then
             crunchy.start()
         elseif  message == "Go home" then
-            crunchy.go_home()
+            crunchy.stop()
         elseif type(message) == table then
             if message[1] == "Set depth" then
                 crunchy.set_depth(message[2])
