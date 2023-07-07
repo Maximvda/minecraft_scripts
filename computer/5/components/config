@@ -3,7 +3,7 @@
 modem_side = "top"
 id_hub = 28
 id_battery = 34
-config.update_interval = 3
+update_interval = 3
 
 batteries = {}
 batteries['ll'] = {

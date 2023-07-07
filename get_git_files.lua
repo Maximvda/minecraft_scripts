@@ -42,6 +42,7 @@ local function clone_pc(pc)
         get("0", "turtles", "views")
         get("0", "reactor", "views")
         get("0", "smeltery", "views")
+        get("0", "battery", "views")
     elseif pc == "1" then
         get("1", "startup.lua", "")
         get("1", "config", "components")

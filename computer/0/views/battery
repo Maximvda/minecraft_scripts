@@ -25,7 +25,7 @@ local function Battery(display)
         battery._render()
     end
 
-    function turtles.write_line(pos_x, pos_y, str, color)
+    function battery.write_line(pos_x, pos_y, str, color)
         if color ~= nil then
             display.setTextColor(color)
         end
@@ -41,6 +41,7 @@ local function Battery(display)
         end
         battery.write_line(2, 4,"Capacity: "..battery.capacity, colors.white)
         battery.write_line(2, 6,"Energy: "..battery.energy, colors.white)
+        battery.write_line(2, 8,"Smooth Energy: "..battery.smooth_energy, colors.white)
     end
 
     function battery.set_render_allowed(bool)
@@ -48,8 +49,9 @@ local function Battery(display)
     end
 
     function battery.set_data(info)
-        battery.capacity = info.capacity
-        battery.energy = info.energy
+        battery.capacity = info.capacity[1]
+        battery.energy = info.energy[1]
+        battery.smooth_energy = info.smooth_energy
         battery._render()
     end
 

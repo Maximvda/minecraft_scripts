@@ -4,6 +4,7 @@ function Battery()
     local battery = {}
     battery.capacity = 0
     battery.energy = 0
+    battery.smooth_energy = 0
 
     battery.batteries = {}
     for section, section_i in pairs(config.batteries) do
@@ -16,14 +17,15 @@ function Battery()
         end
     end
 
+    battery.get_total_capacity()
+
     function battery.get_total_capacity()
-        local cap, tbl = battery.iter_bat("getEnergyCapacity")
-        battery.capacity = cap
+        battery.capacity = battery.iter_bat("getEnergyCapacity")
     end
 
     function battery.get_energy()
-        local energy, tbl = battery.iter_bat("getEnergyCapacity")
-        battery.energy = energy
+        battery.energy = battery.iter_bat("getEnergy")
+        battery.smooth_energy = battery.smooth_energy*0.9 + 0.1*battery.energy
     end
 
     function battery.iter_bat(fnc_name)
@@ -45,8 +47,10 @@ function Battery()
 
     function battery.get_info()
         local info = {}
+        battery.get_energy()
         info['capacity'] = battery.capacity
         info['energy'] = battery.energy
+        info['smooth_energy'] = battery.smooth_energy
         return info
     end
 
