@@ -1,0 +1,55 @@
+-- Small script to get info on battery
+
+function Battery()
+    local battery = {}
+    battery.capacity = 0
+    battery.energy = 0
+
+    battery.batteries = {}
+    for section, section_i in pairs(config.batteries) do
+        battery.batteries[section] = {}
+        for row, row_i in pairs(section_i) do
+            battery.batteries[section][row] = {}
+            for i, id in pairs(row_i) do
+                battery.batteries[section][row][i] = peripheral.wrap("thermal:energy_cell_"..id)
+            end
+        end
+    end
+
+    function battery.get_total_capacity()
+        local cap, tbl = battery.iter_bat("getEnergyCapacity")
+        battery.capacity = cap
+    end
+
+    function battery.get_energy()
+        local energy, tbl = battery.iter_bat("getEnergyCapacity")
+        battery.energy = energy
+    end
+
+    function battery.iter_bat(fnc_name)
+        local ret_tbl = {}
+        local total = 0
+        for section, section_i in pairs(battery.batteries) do
+            ret_tbl[section] = {}
+            for row, row_i in pairs(section_i) do
+                ret_tbl[section][row] = {}
+                for i, id in pairs(row_i) do
+                    local value = id[fnc_name]()
+                    ret_tbl[section][row][i] = value
+                    total = total + value
+                end
+            end
+        end
+        return {total, ret_tbl}
+    end
+
+    function battery.get_info()
+        local info = {}
+        info['capacity'] = battery.capacity
+        info['energy'] = battery.energy
+        return info
+    end
+
+    return battery
+
+end

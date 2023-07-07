@@ -5,11 +5,12 @@ function Interface(display)
     interface.buttons = {}
     interface.view = "smeltery"
     interface.view_instance = nil
-    interface.view_names = {"smeltery", "reactor", "lighting", "turtle"}
+    interface.view_names = {"smeltery", "reactor", "lighting", "turtle", "battery"}
     interface.views = {}
     interface.views.turtle = turtles.Get()
     interface.views.reactor = reactor.Get()
     interface.views.smeltery = smeltery.Get()
+    interface.views.battery = battery.Get()
     interface.views_index = 1
     interface.reactor_data = nil
 
@@ -43,6 +44,10 @@ function Interface(display)
             interface.set_title("Mining turtle")
             interface.views.turtle.render()
             interface.view_instance = interface.views.turtle
+        elseif view == "battery" then
+            interface.set_title("Battery state")
+            interface.views.battery.render()
+            interface.view_instance = interface.views.battery
         end
         buttons.cycle_left.set_color(colors.lightGray)
         buttons.cycle_right.set_color(colors.lightGray)

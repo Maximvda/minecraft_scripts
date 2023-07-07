@@ -1,0 +1,67 @@
+-- Class for turtle view
+local instance = nil
+
+local function Battery(display)
+    local battery = {}
+    battery.render_allowed = false
+    battery.capacity = 0
+    battery.energy = 0
+    -- Initialise buttons
+    local buttons = {}
+
+    function battery.btn_cb(button)
+    end
+
+    function battery.check_buttons(pos_x, pos_y)
+        for key, but in pairs(buttons) do
+            if but.check_touch(pos_x, pos_y) then
+                battery.btn_cb(but)
+            end
+        end
+    end
+
+    function battery.render()
+        battery.render_allowed = true
+        battery._render()
+    end
+
+    function turtles.write_line(pos_x, pos_y, str, color)
+        if color ~= nil then
+            display.setTextColor(color)
+        end
+        display.setCursorPos(pos_x, pos_y)
+        display.clearLine()
+        display.write(str)
+        display.setTextColor(colors.white)
+    end
+
+    function battery._render()
+        if not battery.render_allowed then
+            return
+        end
+        battery.write_line(2, 4,"Capacity: "..battery.capacity, colors.white)
+        battery.write_line(2, 6,"Energy: "..battery.energy, colors.white)
+    end
+
+    function battery.set_render_allowed(bool)
+        battery.render_allowed = bool
+    end
+
+    function battery.set_data(info)
+        battery.capacity = info.capacity
+        battery.energy = info.energy
+        battery._render()
+    end
+
+    return battery
+end
+
+function Init(display)
+    instance = Battery(display)
+    return instance
+end
+
+function Get()
+    return instance
+end
+

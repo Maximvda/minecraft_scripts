@@ -8,12 +8,14 @@ os.loadAPI("components/button_class")
 os.loadAPI("views/turtles")
 os.loadAPI("views/smeltery")
 os.loadAPI("views/reactor")
+os.loadAPI("views/battery")
 
 local display = peripheral.wrap(config.monitor)
 
 local turtle_view = turtles.Init(display)
 local smelter_view = smeltery.Init(display)
 local reactor_view = reactor.Init(display)
+local battery_view = battery.Init(display)
 
 local monitor = interface.Interface(display)
 
@@ -41,6 +43,8 @@ local function handle_info(id, message)
         turtle_view.set_chunky_data(message)
     elseif id == config.id_reactor then
         reactor_view.set_data(message)
+    elseif id == config.id_battery then
+        battery_view.set_data(message)
     end
 end
 
