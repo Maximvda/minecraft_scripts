@@ -59,6 +59,11 @@ local function clone_pc(pc)
         get("4", "config", "components")
         get("4", "link_class", "components")
         get("4", "chunky", "components")
+    elseif pc == "5" then
+        get("5", "startup.lua", "")
+        get("5", "config", "components")
+        get("5", "link", "components")
+        get("5", "battery", "components")
     end
 
 end

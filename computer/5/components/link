@@ -1,0 +1,7 @@
+-- Simple linking of rednet
+
+rednet.open(config.modem_side)
+
+function send_data(data)
+    rednet.send(config.id_hub, data)
+end
