@@ -33,6 +33,8 @@ local function Turtles(display)
 
     function turtles.render()
         turtles.render_allowed = true
+        buttons.go_home.set_color(colors.orange)
+        buttons.start_mining.set_color(colors.orange)
         turtles.chunky_render()
         turtles.miner_render()
     end

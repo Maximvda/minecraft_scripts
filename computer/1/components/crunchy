@@ -331,10 +331,13 @@ local function Crunchy()
         crunchy.link.chunky_command(BACKWARD)
         -- Store the tunnel map
         if crunchy.tunnel_side == LEFT then
+            print("Saving left side " .. crunchy.tunnel_pos)
             crunchy.tunnel_map[crunchy.forward_pos][1] = crunchy.tunnel_pos
         else
+            print("Saving right side " .. crunchy.tunnel_pos)
             crunchy.tunnel_map[crunchy.forward_pos][2] = crunchy.tunnel_pos
         end
+        print("Values: ".. crunchy.tunnel_map[crunchy.forward_pos][1] .. ":" .. crunchy.tunnel_map[crunchy.forward_pos][2])
         file_sys.save_tunnel_map(crunchy.depth, crunchy.tunnel_map)
         os.sleep(5)
         crunchy.moving_home = true
