@@ -241,7 +241,7 @@ local function Crunchy()
         local main_depth = 0
         local min = nil
         local tunnel_start = 1
-        local max_key = 0
+        local max_key = 1
         for key, _ in pairs(crunchy.tunnel_map) do
             if min == nil then
                 min = key + crunchy.tunnel_map[key][1]
@@ -258,7 +258,9 @@ local function Crunchy()
                 tunnel_start = key
                 crunchy.tunnel_side = RIGHT
             end
-            max_key = key
+            if key > max_key then
+                max_key = key
+            end
         end
 
         if max_key + 3 < min then
@@ -266,7 +268,7 @@ local function Crunchy()
             print("Writing new max pos to map"..tunnel_start)
             crunchy.tunnel_map[max_key+3] = {0, 0}
         end
-        print("Tunnel start at " .. tunnel_start)
+        print("Tunnel start at " .. tunnel_start .." with map" .. crunchy.tunnel_map[tunnel_start][1] .. ":" .. crunchy.tunnel_map[tunnel_start][2])
         crunchy.found_tunnel_pos = tunnel_start
     end
 

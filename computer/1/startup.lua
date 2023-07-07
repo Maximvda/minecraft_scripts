@@ -62,5 +62,6 @@ end
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
     turtle_loop,
-    event_loop
+    event_loop,
+    refuel_loop
 )
