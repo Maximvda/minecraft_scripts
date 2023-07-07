@@ -52,6 +52,13 @@ local function turtle_loop()
     end
 end
 
+local function refuel_loop()
+    while true do
+        crunchy.refuel()
+        os.sleep(2)
+    end
+end
+
 -- Run the os loop and turtle tick simulatinous
 parallel.waitForAny(
     turtle_loop,

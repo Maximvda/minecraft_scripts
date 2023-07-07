@@ -271,11 +271,6 @@ local function Crunchy()
     end
 
     function crunchy.check_go_back()
-        if turtle.getItemCount(1) > 2 then
-            if crunchy.fuel < crunchy.total_blocks_back + 400 then
-                turtle.refuel(1)
-            end
-        end
         -- Already moving home so nothing to do
         if crunchy.moving_home then
             return
@@ -288,6 +283,14 @@ local function Crunchy()
         if turtle.getItemCount(15) ~= 0 then
             print("No inventory left, going home")
             crunchy.go_home()
+        end
+    end
+
+    function crunchy.refuel()
+        if turtle.getItemCount(1) > 2 then
+            if crunchy.fuel < crunchy.total_blocks_back + 10000 then
+                turtle.refuel(1)
+            end
         end
     end
 
