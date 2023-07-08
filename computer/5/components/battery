@@ -5,6 +5,7 @@ function Battery()
     battery.capacity = 0
     battery.energy = 0
     battery.smooth_energy = 0
+    battery.soc = 0
 
     battery.batteries = {}
     for section, section_i in pairs(config.batteries) do
@@ -17,15 +18,16 @@ function Battery()
         end
     end
 
-    battery.get_total_capacity()
-
     function battery.get_total_capacity()
         battery.capacity = battery.iter_bat("getEnergyCapacity")
     end
 
     function battery.get_energy()
         battery.energy = battery.iter_bat("getEnergy")
-        battery.smooth_energy = battery.smooth_energy*0.9 + 0.1*battery.energy
+        battery.smooth_energy = math.floor(battery.smooth_energy*0.9 + 0.1*battery.energy[1])
+        if battery.capacity > 0 then
+            battery.soc = math.floor(battery.smooth_energy/battery.capacity*100)
+        end
     end
 
     function battery.iter_bat(fnc_name)
@@ -51,8 +53,11 @@ function Battery()
         info['capacity'] = battery.capacity
         info['energy'] = battery.energy
         info['smooth_energy'] = battery.smooth_energy
+        info['soc'] = battery.soc
         return info
     end
+
+    battery.get_total_capacity()
 
     return battery
 

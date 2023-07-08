@@ -6,6 +6,8 @@ local function Battery(display)
     battery.render_allowed = false
     battery.capacity = 0
     battery.energy = 0
+    battery.smooth_energy = 0
+    battery.soc = 0
     -- Initialise buttons
     local buttons = {}
 
@@ -42,6 +44,7 @@ local function Battery(display)
         battery.write_line(2, 4,"Capacity: "..battery.capacity, colors.white)
         battery.write_line(2, 6,"Energy: "..battery.energy, colors.white)
         battery.write_line(2, 8,"Smooth Energy: "..battery.smooth_energy, colors.white)
+        battery.write_line(2, 8,"State of charge: "..battery.soc .. "%", colors.white)
     end
 
     function battery.set_render_allowed(bool)
@@ -52,6 +55,7 @@ local function Battery(display)
         battery.capacity = info.capacity[1]
         battery.energy = info.energy[1]
         battery.smooth_energy = info.smooth_energy
+        battery.soc = info.soc
         battery._render()
     end
 
