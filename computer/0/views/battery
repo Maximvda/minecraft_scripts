@@ -44,7 +44,7 @@ local function Battery(display)
         battery.write_line(2, 4,"Capacity: "..battery.capacity, colors.white)
         battery.write_line(2, 6,"Energy: "..battery.energy, colors.white)
         battery.write_line(2, 8,"Smooth Energy: "..battery.smooth_energy, colors.white)
-        battery.write_line(2, 8,"State of charge: "..battery.soc .. "%", colors.white)
+        battery.write_line(2, 10,"State of charge: "..battery.soc .. "%", colors.white)
     end
 
     function battery.set_render_allowed(bool)
